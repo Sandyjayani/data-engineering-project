@@ -90,7 +90,7 @@ def test_returns_only_new_rows(connection):
     connection.run.side_effect = return_result
     output = gt('currency', connection, timestamp)
     last_updated = list(output['last_updated'])
-    assert all(time > timestamp for time in last_updated)
+    assert all([time > timestamp for time in last_updated])
 
 
 @pytest.mark.it('Returns none when connecting to real db if no valid rows')
@@ -107,6 +107,6 @@ def test_queries_real_db_with_result():
     conn = create_connection()
     output = gt('currency', conn, timestamp)
     last_updated = list(output['last_updated'])
-    assert all(time > timestamp for time in last_updated)
+    assert all([time > timestamp for time in last_updated])
 
 
