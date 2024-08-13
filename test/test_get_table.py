@@ -48,16 +48,16 @@ def create_connection():
 @pytest.fixture(scope='function')
 def connection():
     connection = Mock()
+    currency_columns = [{'name': 'currency_id'}, 
+                    {'name': 'currency_code'}, 
+                    {'name': 'created_at'},
+                    {'name': 'last_updated'}]
+    connection.columns = currency_columns
     return connection
 
 
 @pytest.mark.it('Returns data frame')
 def test_returns_data_frame(connection):
-    currency_columns = [{'name': 'currency_id'}, 
-                        {'name': 'currency_code'}, 
-                        {'name': 'created_at'},
-                        {'name': 'last_updated'}]
-    connection.columns = currency_columns
     connection.run.return_value = [[1, 'GBP', datetime.datetime(2022, 11, 3, 14, 20, 49, 962000), datetime.datetime(2022, 11, 3, 14, 20, 49, 962000)], 
                                    [2, 'USD', datetime.datetime(2022, 11, 3, 14, 20, 49, 962000), datetime.datetime(2022, 11, 3, 14, 20, 49, 962000)], 
                                    [3, 'EUR', datetime.datetime(2022, 11, 3, 14, 20, 49, 962000), datetime.datetime(2022, 11, 3, 14, 20, 49, 962000)]]
@@ -74,11 +74,6 @@ def test_returns_none(connection):
             [3, 'EUR', datetime.datetime(2022, 11, 3, 14, 20, 49, 962000), datetime.datetime(2022, 11, 3, 14, 20, 49, 962000)]]
     def return_result(query, table_name):
         return [row for row in data if row[3] > timestamp]
-    currency_columns = [{'name': 'currency_id'}, 
-                        {'name': 'currency_code'}, 
-                        {'name': 'created_at'},
-                        {'name': 'last_updated'}]
-    connection.columns = currency_columns
     connection.run.side_effect = return_result
     output = gt('currency', connection, timestamp)
     assert output == None
@@ -92,11 +87,6 @@ def test_returns_only_new_rows(connection):
             [3, 'EUR', datetime.datetime(2024, 11, 3, 14, 20, 49, 962000), datetime.datetime(2024, 11, 3, 14, 20, 49, 962000)]]
     def return_result(query, table_name):
         return [row for row in data if row[3] > timestamp]
-    currency_columns = [{'name': 'currency_id'}, 
-                        {'name': 'currency_code'}, 
-                        {'name': 'created_at'},
-                        {'name': 'last_updated'}]
-    connection.columns = currency_columns
     connection.run.side_effect = return_result
     output = gt('currency', connection, timestamp)
     last_updated = list(output['last_updated'])
