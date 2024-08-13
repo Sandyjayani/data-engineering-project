@@ -1,0 +1,103 @@
+import pytest
+from upload_to_s3_util_func import upload_tables_to_s3, save_timestamps
+from moto import mock_aws
+import boto3
+from unittest.mock import patch, Mock
+import pandas as pd
+import os
+from datetime import datetime
+
+@pytest.fixture()
+def aws_credentials():
+    """Mocked AWS Credentials for moto."""
+    os.environ["AWS_ACCESS_KEY_ID"] = "test"
+    os.environ["AWS_SECRET_ACCESS_KEY"] = "test"
+    os.environ["AWS_SECURITY_TOKEN"] = "test"
+    os.environ["AWS_SESSION_TOKEN"] = "test"
+    os.environ["AWS_DEFAULT_REGION"] = "eu-west-2"
+
+
+@pytest.fixture(scope="function")
+def mock_client(aws_credentials):
+    with mock_aws():
+        yield boto3.client("s3")
+
+class TestUploadToS3:
+    @pytest.mark.it("Test if the a correct confirmation message is returned")
+    @patch('upload_to_s3_util_func.datetime')
+    def test_confirmation_message_is_returned(self, mock_datetime, mock_client):
+
+        test_table = 'test_table'
+        test_bucket = 'test_bucket'
+        test_key = 'test_table/2024/8/13/16-57/test_table-2024-08-13_16-57.csv'
+
+        mock_client.create_bucket(Bucket=test_bucket, 
+        CreateBucketConfiguration = {"LocationConstraint": "eu-west-2"})
+
+        mock_now = datetime(2024,8,13,16,57)
+        mock_datetime.now.return_value = mock_now
+
+        mock_df = Mock(spec=pd.DataFrame)
+        mock_df.to_csv.return_value  = 'mock_csv'
+
+        expected = f"Table {test_table} has been uploaded to {test_bucket} with key {test_key}."
+        assert upload_tables_to_s3(mock_df, test_table, test_bucket) == expected
+        
+
+    @pytest.mark.it("Test if correct file being uploaded to the given bucket")
+    @patch('upload_to_s3_util_func.datetime')
+    def test_correct_files_being_uploaded(self, mock_datetime, mock_client):
+        test_table = 'test_table'
+        test_bucket = 'test_bucket'
+        test_key = 'test_table/2024/8/13/16-57/test_table-2024-08-13_16-57.csv'
+
+        mock_client.create_bucket(Bucket=test_bucket, 
+        CreateBucketConfiguration = {"LocationConstraint": "eu-west-2"})
+
+        mock_now = datetime(2024,8,13,16,57)
+        mock_datetime.now.return_value = mock_now
+
+        mock_df = Mock(spec=pd.DataFrame)
+        mock_df.to_csv.return_value  = 'mock_csv'
+        
+        upload_tables_to_s3(mock_df, test_table, test_bucket) 
+
+        response = mock_client.list_objects_v2(Bucket=test_bucket)
+
+        assert response['KeyCount'] == 2
+        assert response['Contents'][0]['Key'] == test_key
+
+        mock_now = datetime(2024,8,13,17,27)
+        mock_datetime.now.return_value = mock_now
+
+        test_key2 = 'test_table/2024/8/13/17-27/test_table-2024-08-13_17-27.csv'
+
+        upload_tables_to_s3(mock_df, test_table, test_bucket) 
+
+        response2 = mock_client.list_objects_v2(Bucket=test_bucket)
+        assert response2['KeyCount'] == 3
+        assert response2['Contents'][1]['Key'] == test_key2
+
+
+class TestSaveTimestamps:
+    @pytest.mark.it('Test a new_timestamp is created when there is not existing timestamp table')
+    def test_new_timestamp(self, mock_client):
+        test_table = 'test_table_timestamp'
+        test_bucket = 'test_bucket_timestamp'
+        test_timestamp = '2024-08-13_17-27'
+
+        mock_client.create_bucket(Bucket=test_bucket, 
+            CreateBucketConfiguration = {"LocationConstraint": "eu-west-2"})
+
+        save_timestamps(test_table, test_timestamp, test_bucket)
+
+        response = mock_client.get_object(Bucket=test_bucket, Key=f"{test_table}/timestamps.csv")
+        content = response['Body'].read().decode('utf-8')
+        expected_df = pd.DataFrame({'Date': [test_timestamp]})
+        expected_csv = expected_df.to_csv(index=False)
+        assert content == expected_csv
+
+    
+
+
+        
