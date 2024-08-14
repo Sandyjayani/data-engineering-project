@@ -1,6 +1,6 @@
 #TODO:
 resource "aws_lambda_function" "s3_file_reader" {
-    function_name = "${var.lambda_name}"
+    function_name = "${common_terraform.var.lambda_name}"
     s3_bucket = aws_s3_bucket.lambda_code_bucket.bucket
     s3_key = "<new_file_name>.zip"
     role = aws_iam_role.lambda_role.arn

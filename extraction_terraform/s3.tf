@@ -1,9 +1,9 @@
 resource "aws_s3_bucket" "lambda_code_bucket" {
-    bucket_prefix = "${var.team_name}-code-bucket" # or replace with a name rather than prefix instead
+    bucket_prefix = "${common_terraform.var.team_name}-code-bucket" # or replace with a name rather than prefix instead
 }
 
 resource "aws_s3_bucket" "ingestion_bucket" {
-    bucket_prefix = "${var.team_name}-ingestion-bucket" # or replace with a name rather than prefix instead
+    bucket_prefix = "${common_terraform.var.team_name}-ingestion-bucket" # or replace with a name rather than prefix instead
 }
 
 #TODO:
