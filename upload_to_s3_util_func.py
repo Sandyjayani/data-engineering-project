@@ -3,9 +3,12 @@ import boto3
 from io import StringIO
 import pandas as pd
 from botocore.exceptions import ClientError
+import logging
+# from setup_logger import setup_logger
 
-# loggling for discussion -> create a setup_logger function 
-
+# logger = setup_logger('extraction_looger')
+logger = logging.getLogger('save_timestamps')
+logger.setLevel(logging.DEBUG)
 
 def upload_tables_to_s3(dataframe:pd.DataFrame, table_name:str, bucket_name:str) -> pd.DataFrame:
 
@@ -20,8 +23,14 @@ def upload_tables_to_s3(dataframe:pd.DataFrame, table_name:str, bucket_name:str)
     '''
 
     # get the current timestampe
+
+    logger.info('Starting upload_tables_to_s3 function.', extra={'table_name': table_name, 'bucket_name': bucket_name})
+
+
     timestamp_datetime = datetime.now()
     timestamp_str = timestamp_datetime.strftime('%Y-%m-%d_%H-%M')
+
+    logger.debug(f'Timestamp generated for the upload: {timestamp_str}', extra={'table_name': table_name, 'bucket_name': bucket_name})
 
     save_timestamps(table_name, timestamp_str, bucket_name)
 
@@ -35,6 +44,8 @@ def upload_tables_to_s3(dataframe:pd.DataFrame, table_name:str, bucket_name:str)
         f"{table_name}-{timestamp_str}.csv"
     )
 
+    logger.debug(f'S3 key for the file: {s3_key}', extra={'table_name': table_name, 's3_key': s3_key})
+
     # written to an in-memory buffer
     csv_buffer = StringIO()
     # convert the given dataframe to csv 
@@ -45,20 +56,20 @@ def upload_tables_to_s3(dataframe:pd.DataFrame, table_name:str, bucket_name:str)
     #upload the csv from the buffer to the s3
     s3_client = boto3.client('s3')
 
+
     try:
         s3_client.put_object(Bucket=bucket_name, Key=s3_key, Body=csv_buffer.getvalue())
-        print(f"Table {table_name} has been uploaded to {bucket_name} with key {s3_key}.")
+        logger.info(f"Table {table_name} has been uploaded to {bucket_name} with key {s3_key}.",
+                    extra={'table_name':f"{table_name}", 'bucket_name':f"{bucket_name}", 's3_key':f"{s3_key}"})
         return f"Table {table_name} has been uploaded to {bucket_name} with key {s3_key}."
+        
     except ClientError as e:
-        print(f"Failed to upload CSV file to S3: {e}")
-        return f"Failed to upload CSV file to S3: {e}"
+        logger.error(f"Failed to upload CSV file for table {table_name} to S3 bucket {bucket_name}: {e}",
+                    extra={'table_name':f"{table_name}", 'bucket_name':f"{bucket_name}", 's3_key':f"{s3_key}"})
+        raise e
 
 
-    # save the timestamp in a csv file (for the get_timestamp func to input)
-
-    return f"Table {table_name} has been uploaded to {bucket_name} with key {s3_key}."
-
-
+        
 
 def save_timestamps(table_name:str, timestamp:str, bucket_name:str):
     '''
@@ -75,15 +86,17 @@ def save_timestamps(table_name:str, timestamp:str, bucket_name:str):
     timestamp_key = f"{table_name}/timestamps.csv"
     try:
         # download the existing timestamps csv if it exits 
+        logger.debug(f'Attempting to download timestamps CSV from S3 with key: {timestamp_key}', extra={'table_name': table_name, 'bucket_name': bucket_name})
         response = s3_client.get_object(Bucket=bucket_name, Key=timestamp_key)
         timestamp_df = pd.read_csv(StringIO(response['Body'].read().decode('utf-8')))
 
     except s3_client.exceptions.NoSuchKey:
         # if timestamps csv does not exists, create an empty one
+        logger.warning('Timestamps CSV not found in S3. Creating a new one.')
         timestamp_df = pd.DataFrame(columns=['Date'])
     
     except Exception as e:
-        print(f'An unexpected error occurred: {e}')
+        logger.error(f'An unexpected error occurred: {e}', extra={'table_name': table_name, 'bucket_name': bucket_name})
         return f"Failed to download timestamps file"
     
     new_timestamp_df = pd.DataFrame({'Date':[timestamp]})
@@ -94,13 +107,15 @@ def save_timestamps(table_name:str, timestamp:str, bucket_name:str):
     timestamp_csv_buffer.seek(0)
 
     try:
+        logger.debug(f'Attempting to upload timestamps CSV from S3 with key: {timestamp_key}', extra={'table_name': table_name, 'bucket_name': bucket_name})
         s3_client.put_object(Bucket=bucket_name, Key=timestamp_key, Body=timestamp_csv_buffer.getvalue())
+        
     except Exception as e:
-        print(f'An unexpected error occurred: {e}')
+        logger.debug(f'An unexpected error occurred while uploading timestamps CSV:{e}', extra={'table_name': table_name, 'bucket_name': bucket_name})
         raise e
 
 
-# A test to see the output 
+# A test to see the demo
 # data = {
 #     'Column1': [1, 2, 3],
 #     'Column2': ['A', 'B', 'C'],

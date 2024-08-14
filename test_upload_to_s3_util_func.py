@@ -6,6 +6,7 @@ from unittest.mock import patch, Mock
 import pandas as pd
 import os
 from datetime import datetime
+from io import StringIO
 
 @pytest.fixture()
 def aws_credentials():
@@ -96,6 +97,50 @@ class TestSaveTimestamps:
         expected_df = pd.DataFrame({'Date': [test_timestamp]})
         expected_csv = expected_df.to_csv(index=False)
         assert content == expected_csv
+
+
+    @pytest.mark.it('Test if it appends to an existing timestamp table')
+    def test_append_timestamp(self, mock_client):
+        test_table = 'test_table_timestamp'
+        test_bucket = 'test_bucket_timestamp'
+        test_initial_timestamp = '2024-08-13_17-27'
+        test_new_timestamp = '2024-08-13_17-57'
+
+        mock_client.create_bucket(Bucket=test_bucket, 
+            CreateBucketConfiguration = {"LocationConstraint": "eu-west-2"})
+
+        initial_df = pd.DataFrame({'Date':[test_initial_timestamp]})
+
+        initial_csv_buffer = StringIO()
+        initial_df.to_csv(initial_csv_buffer, index=False)
+        initial_csv_buffer.seek(0)
+
+        save_timestamps(test_table, test_initial_timestamp, test_bucket)
+
+
+
+        new_df = pd.DataFrame({'Date':[test_new_timestamp]})
+        new_csv_buffer = StringIO()
+        new_df.to_csv(new_csv_buffer, index=False)
+        new_csv_buffer.seek(0)
+
+        save_timestamps(test_table, test_new_timestamp, test_bucket)
+
+        response = mock_client.get_object(Bucket=test_bucket, Key=f"{test_table}/timestamps.csv")
+        content = response['Body'].read().decode('utf-8')
+        expected_df = pd.DataFrame({'Date': [test_initial_timestamp, test_new_timestamp]})
+        expected_csv = expected_df.to_csv(index=False)
+        assert content == expected_csv
+
+
+
+
+
+
+
+        
+
+
 
     
 
