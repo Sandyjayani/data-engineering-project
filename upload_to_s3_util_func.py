@@ -97,8 +97,7 @@ def save_timestamps(table_name:str, timestamp:str, bucket_name:str):
         s3_client.put_object(Bucket=bucket_name, Key=timestamp_key, Body=timestamp_csv_buffer.getvalue())
     except Exception as e:
         print(f'An unexpected error occurred: {e}')
-        return f"Failed to upload timestamps file"
-
+        raise e
 
 
 # A test to see the output 
