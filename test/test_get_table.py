@@ -3,7 +3,7 @@ import pandas as pd
 import datetime
 import boto3
 import json
-from pg8000.native import Connection
+from pg8000.native import Connection, DatabaseError
 from unittest.mock import Mock
 from src.get_table import get_table as gt
 
@@ -110,3 +110,14 @@ def test_queries_real_db_with_result():
     assert all([time > timestamp for time in last_updated])
 
 
+@pytest.mark.it('Logs exception when error raised')
+def test_logs_error(connection, caplog):
+    timestamp = datetime.datetime(2023, 11, 3, 14, 20, 49, 962000)
+    connection.run.side_effect = DatabaseError({'S': 'FATAL', 'V': 'FATAL', 'C': '53300', 
+                                                'M': 'remaining connection slots are reserved for non-replication superuser and rds_superuser connections', 
+                                                'F': 'postinit.c', 
+                                                'L': '846', 
+                                                'R': 'InitPostgres'})
+    with pytest.raises(DatabaseError):
+        gt('currency', connection, timestamp)
+    assert 'query failed' in caplog.text
