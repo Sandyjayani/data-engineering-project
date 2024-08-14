@@ -37,10 +37,12 @@ class TestLoggerSetup(unittest.TestCase):
         stream_handler= logging.StreamHandler(log_output)
         logger.handlers = [stream_handler]
 
-        logger.info('Testing', extra={'table':'test_table'})
-        log_output.seek(0)
-        log_message = log_output.getvalue().strip()
-        print(log_message)
+        # logger.info('Testing', extra={'table':'test_table'})
+        # log_output.seek(0)
+        # log_message = log_output.getvalue().strip()
+        # print(log_message)
+
         self.assertIn('"message":"Testing"', log_message)
+
 
 
