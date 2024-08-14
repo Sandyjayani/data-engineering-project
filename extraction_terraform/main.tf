@@ -9,7 +9,7 @@ terraform {
     #TODO:
     backend "s3" {
         bucket = "smith-morra-terraform-state-bucket"
-        key = "common_terraform.tfstate"
+        key = "extraction_terraform.tfstate"
         region = "eu-west-2"
     }
 }
@@ -19,7 +19,7 @@ provider "aws" {
         default_tags {
         tags = {
             ProjectName = "Final Project"
-            Team = var.team_name
+            Team = common_terraform.var.team_name
             DeployedFrom = "Terraform"
             Repository = "data-engineering-project"
             CostCentre = "DE"
