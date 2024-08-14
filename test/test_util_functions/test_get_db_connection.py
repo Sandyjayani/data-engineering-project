@@ -1,4 +1,4 @@
-from src.get_db_connection import get_secret, create_connection
+from src.util_functions.get_db_connection import get_secret, create_connection
 import os
 import boto3
 import pytest
