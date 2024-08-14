@@ -33,16 +33,28 @@ class TestLoggerSetup(unittest.TestCase):
     @pytest.mark.it('Test if the output is correct in each field')
     def test_if_correct_output_each_field(self):
         logger = setup_logger('test_logger')
+        
         log_output = StringIO()
-        stream_handler= logging.StreamHandler(log_output)
-        logger.handlers = [stream_handler]
+        test_handler= logging.StreamHandler(log_output)
+        formatter =  jsonlogger.JsonFormatter(
+                    '%(asctime)s %(levelname)s %(name)s %(message)s '+
+                    '%(filename)s %(funcName)s'
+                    )
+        test_handler.setFormatter(formatter)
+        logger.addHandler(test_handler)
+        
 
-        # logger.info('Testing', extra={'table':'test_table'})
-        # log_output.seek(0)
-        # log_message = log_output.getvalue().strip()
-        # print(log_message)
+        logger.info('Testing', extra={'table':'test_table'})
+        log_output.seek(0)
+        log_message = log_output.getvalue()
 
-        self.assertIn('"message":"Testing"', log_message)
+        self.assertIn("asctime", log_message)
+        self.assertIn('"levelname": "INFO"', log_message)
+        self.assertIn('"name": "test_logger"', log_message)
+        self.assertIn('"message": "Testing"', log_message)
+        self.assertIn('"filename": "test_setup_logger.py"', log_message)
+        self.assertIn('"funcName": "test_if_correct_output_each_field"', log_message)
+        self.assertIn('"table": "test_table"', log_message)
 
 
 
