@@ -5,7 +5,7 @@ Aim:
 Set up and return a logger with JSON formatting
 parameter: name 
 (differnt logging instances but still in the same log group)
-output: a logger
+output: a logger, could be used in the other functions 
 '''
 def setup_logger(name: str):
     logger = logging.getLogger(name)

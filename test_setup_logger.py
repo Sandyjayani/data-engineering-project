@@ -31,7 +31,7 @@ class TestLoggerSetup(unittest.TestCase):
         self.assertEqual(formatter._fmt, expected_format)
 
     @pytest.mark.it('Test if the output is correct in each field')
-    def test_if_correct_output_each_field(self):
+    def test_if_correct_output_each_field(self): # in doubt
         logger = setup_logger('test_logger')
         
         log_output = StringIO()
@@ -48,7 +48,7 @@ class TestLoggerSetup(unittest.TestCase):
         log_output.seek(0)
         log_message = log_output.getvalue()
 
-        self.assertIn("asctime", log_message)
+        self.assertIn("asctime", log_message) 
         self.assertIn('"levelname": "INFO"', log_message)
         self.assertIn('"name": "test_logger"', log_message)
         self.assertIn('"message": "Testing"', log_message)
