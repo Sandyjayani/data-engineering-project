@@ -6,43 +6,7 @@ import json
 from pg8000.native import Connection, DatabaseError
 from unittest.mock import Mock
 from src.get_table import get_table as gt
-
-
-def get_secret():
-    secret_name = "DataSource_PostgresDB_Credentials"
-    region_name = "eu-west-2"
-    # Create a Secrets Manager client
-    session = boto3.session.Session()
-    client = session.client(
-        service_name='secretsmanager',
-        region_name=region_name
-    )
-    get_secret_value_response = client.get_secret_value(
-        SecretId=secret_name
-    )
-    secret = get_secret_value_response['SecretString']
-    return secret
-
-
-def create_connection():
-    # Retrieve the secret
-    secret = get_secret()
-    secret_dict = json.loads(secret)
-    # Extract credentials from the secret
-    user = secret_dict['user']
-    password = secret_dict['password']
-    host = secret_dict['host']
-    database = secret_dict['database']
-    port = secret_dict['port']
-    # Establish the database connection
-    conn = Connection(
-        user=user,
-        database=database,
-        host=host,
-        password=password,
-        port=port
-    )
-    return conn
+from src.get_db_connection import create_connection, get_secret
 
 
 @pytest.fixture(scope='function')
@@ -114,7 +78,7 @@ def test_queries_real_db_with_result():
 def test_logs_error(connection, caplog):
     timestamp = datetime.datetime(2023, 11, 3, 14, 20, 49, 962000)
     connection.run.side_effect = DatabaseError({'S': 'FATAL', 'V': 'FATAL', 'C': '53300', 
-                                                'M': 'remaining connection slots are reserved for non-replication superuser and rds_superuser connections', 
+                                                'M': 'Too many silly students connecting to the db at once!', 
                                                 'F': 'postinit.c', 
                                                 'L': '846', 
                                                 'R': 'InitPostgres'})
