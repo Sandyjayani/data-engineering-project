@@ -3,7 +3,8 @@ name: data-engineering-project
 on:
   push:
     branches:
-      - main
+      # - main
+      - git-actions
 
 jobs:
   run-tests:
