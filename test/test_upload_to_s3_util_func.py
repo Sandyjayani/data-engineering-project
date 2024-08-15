@@ -27,7 +27,7 @@ def mock_client(aws_credentials):
 
 class TestUploadToS3:
     @pytest.mark.it("Test if the correct confirmation message is returned")
-    @patch("upload_to_s3_util_func.datetime")
+    @patch("src.upload_to_s3_util_func.datetime")
     def test_confirmation_message_is_returned(self, mock_datetime, mock_client):
 
         test_table = "test_table"
@@ -52,7 +52,7 @@ class TestUploadToS3:
         assert upload_tables_to_s3(mock_df, test_table, test_bucket) == expected
 
     @pytest.mark.it("Test if correct file being uploaded to the given bucket")
-    @patch("upload_to_s3_util_func.datetime")
+    @patch("src.upload_to_s3_util_func.datetime")
     def test_correct_files_being_uploaded(self, mock_datetime, mock_client):
         test_table = "test_table"
         test_bucket = "test_bucket"
