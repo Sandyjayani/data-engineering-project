@@ -38,7 +38,7 @@ def get_timestamp(table_name: str) -> str:
     except ClientError as e:
         error_code = e.response['Error']['Code']
         if error_code == 'NoSuchKey':
-            logger.error(f"No timestamps file found for table '{table_name}'. This might be the first run.",
+            logger.warning(f"No timestamps file found for table '{table_name}'. This might be the first run.",
                         extra={'table_name': table_name, 'bucket_name': bucket_name})
             return '0001-01-01_01-01'
         else:
