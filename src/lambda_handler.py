@@ -64,6 +64,8 @@ def lambda_handler(event, context):
     try:
         conn = create_connection()
 
+        logger = setup_logger('extraction_logger')
+
         table_name = "table name"
         bucket_name = "smith-morra-ingestion-bucket"
         last_timestamp = get_timestamp(table_name)
