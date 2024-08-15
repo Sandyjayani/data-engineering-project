@@ -4,11 +4,11 @@ from io import StringIO
 import pandas as pd
 from botocore.exceptions import ClientError
 import logging
-# from setup_logger import setup_logger
+from setup_logger import setup_logger
 
-# logger = setup_logger('extraction_looger')
-logger = logging.getLogger('save_timestamps')
-logger.setLevel(logging.DEBUG)
+logger = setup_logger('extraction_looger')
+# logger = logging.getLogger('save_timestamps')
+# logger.setLevel(logging.DEBUG)
 
 
 def upload_tables_to_s3(dataframe: pd.DataFrame, table_name: str,
