@@ -4,6 +4,7 @@ from src.util_functions.upload_to_s3_util_func import upload_tables_to_s3
 from src.util_functions.setup_logger import setup_logger
 from src.util_functions.get_timestamp import get_timestamp
 from requests import Response
+from datetime import datetime
 
 
 def lambda_handler(event, context):
@@ -53,6 +54,7 @@ def lambda_handler(event, context):
 
             logger.info(f'Getting last timestamp for {table_name} table.')
             last_timestamp = get_timestamp(table_name)
+            last_timestamp = datetime.strptime(last_timestamp, '%Y-%m-%d_%H-%M')
             logger.info(f'Last timestamp for {table_name} table ({last_timestamp}) has been retrieved')
 
             logger.info(f'Getting newest table data from {table_name} table.')
@@ -73,5 +75,6 @@ def lambda_handler(event, context):
     
     finally:
         if "conn" in locals():
-            logger.info(f'Closing connection.')
+            logger.info('Closing connection.')
             conn.close()
+lambda_handler({},{})
