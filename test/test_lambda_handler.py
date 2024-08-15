@@ -9,7 +9,6 @@ import boto3
 
 
 @pytest.fixture(scope="function")
-@pytest.fixture(scope="function")
 def aws_creds():
     os.environ["AWS_ACCESS_KEY_ID"] = "test"
     os.environ["AWS_SECRET_ACCESS_KEY"] = "test"
@@ -35,7 +34,6 @@ def mock_aws_client(aws_creds):
 
 @pytest.fixture
 def mock_connection():
-    with patch("src.lambda_handler.create_connection") as conn:
     with patch("src.lambda_handler.create_connection") as conn:
         yield conn
 
