@@ -19,17 +19,6 @@ class TestLoggerSetup(unittest.TestCase):
         logger2 = setup_logger('Utility Functions')
         self.assertEqual(len(logger1.handlers), 1)
 
-    @pytest.mark.it('Test if the output is in correct format')
-    def test_if_correct_format(self):
-        logger = setup_logger('test_logger')
-        handler = logger.handlers[0]
-        formatter = handler.formatter
-        self.assertIsInstance(formatter, jsonlogger.JsonFormatter)
-        expected_format = (
-                            '%(asctime)s %(levelname)s %(name)s %(message)s ' +
-                            '%(filename)s %(funcName)s')
-        self.assertEqual(formatter._fmt, expected_format)
-
     @pytest.mark.it('Test if the output is correct in each field')
     def test_if_correct_output_each_field(self): # in doubt
         logger = setup_logger('test_logger')

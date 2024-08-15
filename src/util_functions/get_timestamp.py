@@ -2,7 +2,7 @@ import boto3
 import pandas as pd
 from io import StringIO
 from botocore.exceptions import ClientError
-from setup_logger import setup_logger  # Change path when lambda is ready
+from src.util_functions.setup_logger import setup_logger
 
 logger = setup_logger("extraction")
 
