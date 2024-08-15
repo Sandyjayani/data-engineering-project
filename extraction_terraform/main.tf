@@ -19,12 +19,12 @@ provider "aws" {
         default_tags {
         tags = {
             ProjectName = "Final Project"
-            Team = common_terraform.var.team_name
+            Team = var.team_name
             DeployedFrom = "Terraform"
             Repository = "data-engineering-project"
             CostCentre = "DE"
             Environment = "dev"
-            RetentionDate = "2024-05-31"
+            RetentionDate = "2024-08-31"
         }
     }
 }
