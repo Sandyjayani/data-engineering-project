@@ -85,3 +85,4 @@ def lambda_handler(event,context):
     logger.info('Testing 123')
 
     print('Test')
+    logger.critical('test for alert')

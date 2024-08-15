@@ -21,7 +21,7 @@ variable "secrets_arn" {
   default = "arn:aws:secretsmanager:eu-west-2:637423603039:secret:DataSource_PostgresDB_Credentials-is1p1K"
 }
 
-variable "sns_topic_email" {
+variable "subscription_email" {
   type = string
   description = "email to send noticification"
   default = "cwc3214@gmail.com"

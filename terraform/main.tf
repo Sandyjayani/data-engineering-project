@@ -35,7 +35,7 @@ module "extraction" {
   source = "./modules/extraction"
   s3_ingestion_bucket = var.s3_ingestion_bucket
   secrets_arn = var.secrets_arn
-  sns_topic_email = var.sns_topic_email
+  subscription_email = var.subscription_email
   lambda_schedule_expression = var.lambda_schedule_expression
   team_name = var.team_name
 }
