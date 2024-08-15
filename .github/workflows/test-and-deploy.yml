@@ -1,0 +1,83 @@
+name: data-engineering-project
+
+
+on:
+  push:
+    branches:
+      # - main
+      - git-actions
+
+jobs:
+  run-tests:
+    name: run-tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Set Up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11.1'
+      - name: AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-2
+      - name: Set Up Env and Requirements
+        run: make requirements 
+      - name: Dev Setup
+        run: make dev-setup
+      - name: Run Tests
+        run: make run-checks
+
+  deploy-common-terraform:
+    name: deploy-common-terraform
+    runs-on: ubuntu-latest
+    needs: run-tests
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v3
+      - name: AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-2
+      - name: Terraform Init
+        working-directory: common_terraform   
+        run: terraform init
+      - name: Terraform Plan
+        working-directory: common_terraform
+        run: terraform plan
+      - name: Terraform Apply   
+        working-directory: common_terraform
+        run: terraform apply --auto-approve  
+
+
+  deploy-extraction-terraform:
+    name: deploy-extraction-terraform
+    runs-on: ubuntu-latest
+    needs: deploy-common-terraform
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v3
+      - name: AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-2
+      - name: Terraform Init
+        working-directory: extraction_terraform   
+        run: terraform init
+      - name: Terraform Plan
+        working-directory: extraction_terraform
+        run: terraform plan
+      - name: Terraform Apply   
+        working-directory: extraction_terraform
+        run: terraform apply --auto-approve  

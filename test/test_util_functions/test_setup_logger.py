@@ -1,4 +1,4 @@
-from setup_logger import setup_logger
+from src.util_functions.setup_logger import setup_logger
 import pytest
 import unittest
 import logging
