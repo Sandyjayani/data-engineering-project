@@ -1,5 +1,5 @@
 import pytest
-from src.upload_to_s3_util_func import upload_tables_to_s3, save_timestamps
+from src.util_functions.upload_to_s3_util_func import upload_tables_to_s3, save_timestamps
 from moto import mock_aws
 import boto3
 from unittest.mock import patch, Mock

@@ -1,4 +1,4 @@
-from src.get_timestamp import get_timestamp as gt
+from src.util_functions.get_timestamp import get_timestamp as gt
 from botocore.exceptions import ClientError
 import pytest
 from moto import mock_aws
