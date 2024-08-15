@@ -1,8 +1,13 @@
 from src.get_timestamp import get_timestamp as gt
+from botocore.exceptions import ClientError
 import pytest
 from moto import mock_aws
 import os
 import boto3
+from unittest.mock import patch
+
+
+
 
 
 @pytest.fixture(scope='function')
@@ -41,3 +46,21 @@ def test_no_timestamps(s3_client):
     assert gt(table_name) == '0001-01-01_01-01'
 
 
+@pytest.mark.it('Test ClientError handling')
+def test_client_error(s3_client):
+    with patch('boto3.client') as mock_client:
+        mock_client.return_value.get_object.side_effect = ClientError(
+            error_response={'Error': {'Code': 'NoSuchBucket', 'Message': 'The specified bucket does not exist'}},
+            operation_name='GetObject'
+        )
+        
+        table_name = 'test_table'
+        with pytest.raises(ClientError):
+            gt(table_name)
+
+@pytest.mark.it('Handles unexpected exceptions')
+def test_unexpected_exception(s3_client):
+    with patch('boto3.client', side_effect=Exception('Unexpected error')):
+        table_name = 'test_table'
+        with pytest.raises(Exception):
+            gt(table_name)
