@@ -9,6 +9,7 @@ import boto3
 
 
 @pytest.fixture(scope="function")
+@pytest.fixture(scope="function")
 def aws_creds():
     os.environ["AWS_ACCESS_KEY_ID"] = "test"
     os.environ["AWS_SECRET_ACCESS_KEY"] = "test"
@@ -34,6 +35,7 @@ def mock_aws_client(aws_creds):
 
 @pytest.fixture
 def mock_connection():
+    with patch("src.lambda_handler.create_connection") as conn:
     with patch("src.lambda_handler.create_connection") as conn:
         yield conn
 
@@ -63,6 +65,7 @@ def mock_logger():
 
 class TestOutput:
 
+
     # check lambda handler returns status code and message
     def test__returns_a_response_object(
         self, mock_aws_client, mock_connection, mock_table, mock_upload, mock_timestamp, mock_logger
@@ -76,6 +79,7 @@ class TestOutput:
     ):
         response = lambda_handler({}, {})
         assert response.status_code == 201
+
 
     # def test_returns_success_message(mock_aws_client):
     #     response = lambda_handler({},{})

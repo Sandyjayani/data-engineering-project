@@ -3,12 +3,8 @@ import boto3
 from io import StringIO
 import pandas as pd
 from botocore.exceptions import ClientError
-import logging
 from src.util_functions.setup_logger import setup_logger
 
-logger = setup_logger('extraction_looger')
-# logger = logging.getLogger('save_timestamps')
-# logger.setLevel(logging.DEBUG)
 
 
 def upload_tables_to_s3(
@@ -33,10 +29,7 @@ def upload_tables_to_s3(
 
     # get the current timestampe
 
-    logger.info(
-        "Starting upload_tables_to_s3 function.",
-        extra={"table_name": table_name, "bucket_name": bucket_name},
-    )
+    logger = setup_logger('Upload table to s3 logger')
 
     timestamp_datetime = datetime.now()
     timestamp_str = timestamp_datetime.strftime("%Y-%m-%d_%H-%M")
@@ -111,7 +104,7 @@ def save_timestamps(table_name: str, timestamp: str, bucket_name: str):
     - concate the two dataframes
     - upload the combined dataframe, allow overwriting
     """
-
+    logger = setup_logger('Save timestamps logger')
     s3_client = boto3.client("s3")
 
     timestamp_key = f"{table_name}/timestamps.csv"
