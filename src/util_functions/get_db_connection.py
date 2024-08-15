@@ -39,3 +39,4 @@ def create_connection():
         user=user, database=database, host=host, password=password, port=port
     )
     return conn
+

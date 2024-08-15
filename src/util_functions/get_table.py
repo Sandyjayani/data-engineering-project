@@ -1,6 +1,6 @@
 import pandas as pd
 from pg8000.native import literal, identifier, DatabaseError
-import logging
+from src.util_functions.setup_logger import setup_logger
 
 
 def get_table(table_name: str, conn, timestamp) -> pd.DataFrame | None:
@@ -16,12 +16,11 @@ def get_table(table_name: str, conn, timestamp) -> pd.DataFrame | None:
         - table_name: str
         - conn: pg8000.native Connection
         - timestamp: datetime.datetime
-        – logger: a precreated logger from the logging library
 
     Return value:
         - pd.DataFrame | None
     """
-
+    logger = setup_logger('get_table logger')
     try:
         str_timestamp = str(timestamp)
         query = f"""SELECT * FROM {identifier(table_name)}
@@ -31,12 +30,9 @@ def get_table(table_name: str, conn, timestamp) -> pd.DataFrame | None:
             return None
         column_names = [desc["name"] for desc in conn.columns]
         table_data_frame = pd.DataFrame(results, columns=column_names)
-        logging.info(f"{table_name} succesfully queried.")
+        logger.info(f"{table_name} succesfully queried.")
         return table_data_frame
     except DatabaseError as e:
         er_msg = e.args[0]["M"]
-        logging.error(f"{table_name} table query failed. Error: {er_msg}")
+        logger.warning(f"{table_name} table query failed. Error: {er_msg}")
         raise e
-
-
-# We are planning to refactor logging once we have a create_logger helper function.

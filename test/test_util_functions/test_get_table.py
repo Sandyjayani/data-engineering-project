@@ -1,12 +1,10 @@
 import pytest
 import pandas as pd
 import datetime
-import boto3
-import json
-from pg8000.native import Connection, DatabaseError
+from pg8000.native import DatabaseError
 from unittest.mock import Mock
 from src.util_functions.get_table import get_table as gt
-from src.util_functions.get_db_connection import create_connection, get_secret
+from src.util_functions.get_db_connection import create_connection
 
 
 @pytest.fixture(scope="function")
