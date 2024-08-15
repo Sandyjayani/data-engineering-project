@@ -7,73 +7,65 @@ from requests import Response
 
 
 def lambda_handler(event, context):
+    """
+    queries totesys database
+
+    collects any updates to it since last checked
+
+    uploads new data to s3 bucket
+
+    returns response object with 201 status
+    """
+
+    # notes during dev:
 
     # event is caused by scheduler/step function telling it to run
     # what format is that? will we even use that to begin with?
-
-    # try:
-
-    # create a connection using create_connection util function
-    # doesn't take arguments
-    # returns connection
-
-    # have a list of all table names
-    # is there a way to get these easily or are we just typing them out?
-    # either way I wanna hard code them
-
-    # get timestamp using util (to be added)
-    # outputs last timestamp
-
-    # iterate through table names, for each table:
-
-    # get table data using get_table:
-    # takes table_name, connection, timestamp as arguments
-    # table name from loop variable
-    # connection we just made with connection util
-    # timestamp we just made with timestamp util
-    # returns data frame
-
-    # upload to s3 bucket
-    # takes dataframe, table_name, bucket_name
-    # dataframe from get_table util
-    # table name from loop variable
-    # bucket name is smith-morra-ingestion-bucket (available in terraform)
-    # returns string to confirm that upload was successful or raises error
-
-    # 🔴 do we need this func to get time stamp
-    # when we already need timestamp before,
-    # and could pass the same one in?
-    # -> ask for refactor
-
-    # except:
 
     # if an error is raised at any point during this
     # we allow it to be raised in order to handle it in the step function
     # -> do we need an except block then?
 
-    # finally:
-
-    # we close our connection
-
-    # 🔴 where do we do our logging?
-    # I would like for it to be consistent, ie:
-    # if we log in each util -> log in each util
-    # if we log only in lambda handler -> only log in lambda handler
-    # if we log in both -> make sure all aspects are logging
 
     try:
-        conn = create_connection()
-
         logger = setup_logger('extraction_logger')
 
-        table_name = "sales"
-        bucket_name = "smith-morra-ingestion-bucket"
-        last_timestamp = get_timestamp(table_name)
+        logger.info('Creating connection.')
+        conn = create_connection()
+        logger.info('Connection has been created.')
 
-        table_data = get_table(table_name, conn, last_timestamp)
+        BUCKET_NAME = "smith-morra-ingestion-bucket"
+        TABLE_NAMES = [
+            "payment",
+            "payment_type",
+            "currency",
+            "staff",
+            "department",
+            "purchase_order",
+            "transaction",
+            "sales_order",
+            "design",
+            "address",
+            "counterparty"
+        ]
 
-        upload_tables_to_s3(table_data, table_name, bucket_name)
+        for table_name in sorted(TABLE_NAMES):
 
+            logger.info(f'Getting last timestamp for {table_name} table.')
+            last_timestamp = get_timestamp(table_name)
+            logger.info(f'Last timestamp for {table_name} table ({last_timestamp}) has been retrieved')
+
+            logger.info(f'Getting newest table data from {table_name} table.')
+            table_data = get_table(table_name, conn, last_timestamp)
+            logger.info(f'Successfully retrieved new table data from {table_name} table.')
+
+            logger.info(f'Uploading newest {table_name} data to s3 bucket.')
+            upload_response = upload_tables_to_s3(table_data, table_name, BUCKET_NAME)
+            logger.info(f'Successfully uploaded newest {table_name} data to s3 bucket.')
+        
+        logger.info('Table iteration has finished.')
+
+        logger.info('Creating output response object.')
         response_message = Response()
         response_message.status_code = 201
         # response_message.text = 'new data was successfully uploaded'
@@ -81,4 +73,5 @@ def lambda_handler(event, context):
     
     finally:
         if "conn" in locals():
+            logger.info(f'Closing connection.')
             conn.close()
