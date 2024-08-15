@@ -4,7 +4,7 @@ from io import StringIO
 import pandas as pd
 from botocore.exceptions import ClientError
 import logging
-from setup_logger import setup_logger
+from src.util_functions.setup_logger import setup_logger
 
 logger = setup_logger('extraction_looger')
 # logger = logging.getLogger('save_timestamps')
