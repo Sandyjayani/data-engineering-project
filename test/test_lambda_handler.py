@@ -18,10 +18,18 @@ def aws_creds():
 
 @pytest.fixture(scope="function")
 def mock_aws_client(aws_creds):
+    """
+    starts mock_aws, creates a mock bucket within it, and yields a mock s3 client
+    """
     with mock_aws():
         s3_client = boto3.client('s3')
-        s3_client.create_bucket('smith-morra-ingestion-bucket')
-        yield
+        s3_client.create_bucket(
+            Bucket='smith-morra-ingestion-bucket',
+            CreateBucketConfiguration={
+                "LocationConstraint": "eu-west-2"
+            }
+        )
+        yield s3_client
 
 
 @pytest.fixture
@@ -73,9 +81,8 @@ class TestOutput:
     #     response = lambda_handler({},{})
     #     assert response.text == 'new data was successfully uploaded'
 
-    # mock util functions to check they are running
 
-
+# mock util functions to check they are running
 class TestCallUtils:
 
     def test_db_connection_running(
@@ -109,11 +116,12 @@ class TestCallUtils:
         mock_logger.assert_called()
 
 
-    # mock s3 bucket to check that it is uploading data
+# mock s3 bucket to check that it is uploading data
 class TestLambdaResult:
     
     def test_uploads_to_s3_bucket(self,mock_aws_client,mock_connection,mock_table,mock_timestamp,mock_logger):
         lambda_handler({}, {})
-        bucket_content = boto3.list_objects('smith-morra-ingestion-bucket')
-        assert bucket_content == False
+        bucket_content = mock_aws_client.list_objects(Bucket='smith-morra-ingestion-bucket')
+        assert len(bucket_content["Contents"]) > 0
+
         
