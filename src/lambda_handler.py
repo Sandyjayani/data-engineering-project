@@ -66,7 +66,7 @@ def lambda_handler(event, context):
 
         logger = setup_logger('extraction_logger')
 
-        table_name = "table name"
+        table_name = "sales"
         bucket_name = "smith-morra-ingestion-bucket"
         last_timestamp = get_timestamp(table_name)
 
