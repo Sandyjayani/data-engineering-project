@@ -1,9 +1,10 @@
-from util_functions.get_db_connection import create_connection
-from util_functions.get_table import get_table
-from util_functions.upload_to_s3_util_func import upload_tables_to_s3
+from src.util_functions.get_db_connection import create_connection
+from src.util_functions.get_table import get_table
+from src.util_functions.upload_to_s3_util_func import upload_tables_to_s3
+from requests import Response
 
 def lambda_handler(event, context):
-    pass
+    
 
     # event is caused by scheduler/step function telling it to run
         # what format is that? will we even use that to begin with?
@@ -19,8 +20,7 @@ def lambda_handler(event, context):
             # either way I wanna hard code them
 
         # get timestamp using util (to be added)
-            # 🟡 should output a timestamp in a format 
-            # that can be used by both get_table and upload_to_s3
+            # outputs last timestamp
 
         # iterate through table names, for each table:
 
@@ -58,3 +58,18 @@ def lambda_handler(event, context):
         # if we log in each util -> log in each util
         # if we log only in lambda handler -> only log in lambda handler
         # if we log in both -> make sure all aspects are logging
+        
+    try:    
+        conn = create_connection()
+        table_name = 'table name'
+        bucket_name = 'smith-morra-ingestion-bucket'
+        table_data = get_table(table_name,conn,'timestamp')
+        upload_tables_to_s3(table_data,table_name,bucket_name)
+        response_message = Response() 
+        response_message.status_code = 201
+        # response_message.text = 'new data was successfully uploaded'
+        return response_message
+    finally:
+        if 'conn' in locals():
+            conn.close()
+    
