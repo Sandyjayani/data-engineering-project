@@ -4,6 +4,8 @@ import os
 import pytest
 from requests import Response
 from unittest.mock import patch
+import pandas as pd
+import boto3
 
 
 @pytest.fixture(scope="function")
@@ -17,6 +19,8 @@ def aws_creds():
 @pytest.fixture(scope="function")
 def mock_aws_client(aws_creds):
     with mock_aws():
+        s3_client = boto3.client('s3')
+        s3_client.create_bucket('smith-morra-ingestion-bucket')
         yield
 
 
@@ -28,6 +32,9 @@ def mock_connection():
 @pytest.fixture
 def mock_table():
     with patch("src.lambda_handler.get_table") as table:
+        test_series = pd.Series([1,2,3,4,5])
+        test_dataframe = pd.DataFrame({'table data': test_series})
+        table.return_value = test_dataframe
         yield table
 
 @pytest.fixture
@@ -103,3 +110,10 @@ class TestCallUtils:
 
 
     # mock s3 bucket to check that it is uploading data
+class TestLambdaResult:
+    
+    def test_uploads_to_s3_bucket(self,mock_aws_client,mock_connection,mock_table,mock_timestamp,mock_logger):
+        lambda_handler({}, {})
+        bucket_content = boto3.list_objects('smith-morra-ingestion-bucket')
+        assert bucket_content == False
+        
