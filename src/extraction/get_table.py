@@ -1,6 +1,6 @@
 import pandas as pd
 from pg8000.native import literal, identifier, DatabaseError
-from util_functions.setup_logger import setup_logger
+from src.extraction.setup_logger import setup_logger
 
 
 def get_table(table_name: str, conn, timestamp) -> pd.DataFrame | None:

@@ -1,5 +1,5 @@
 import pytest
-from src.util_functions.upload_to_s3_util_func import upload_tables_to_s3, save_timestamps
+from src.extraction.upload_to_s3_util_func import upload_tables_to_s3, save_timestamps
 from moto import mock_aws
 import boto3
 from botocore.exceptions import ClientError
@@ -28,7 +28,7 @@ def mock_client(aws_credentials):
 
 class TestUploadToS3:
     @pytest.mark.it("Test if the correct confirmation message is returned")
-    @patch("src.util_functions.upload_to_s3_util_func.datetime")
+    @patch("src.extraction.upload_to_s3_util_func.datetime")
     def test_confirmation_message_is_returned(self, mock_datetime, mock_client):
 
         test_table = "test_table"
@@ -53,7 +53,7 @@ class TestUploadToS3:
         assert upload_tables_to_s3(mock_df, test_table, test_bucket) == expected
 
     @pytest.mark.it("Test if correct file being uploaded to the given bucket")
-    @patch("src.util_functions.upload_to_s3_util_func.datetime")
+    @patch("src.extraction.upload_to_s3_util_func.datetime")
     def test_correct_files_being_uploaded(self, mock_datetime, mock_client):
         test_table = "test_table"
         test_bucket = "test_bucket"
@@ -91,7 +91,7 @@ class TestUploadToS3:
     
 
     @pytest.mark.it('Excepts and raises client error if raised during execution')
-    @patch('src.util_functions.upload_to_s3_util_func.boto3')
+    @patch('src.extraction.upload_to_s3_util_func.boto3')
     def test_excepts_raises_client_error(self, mock_boto_3, mock_client):
         mock_boto_3.client.side_effect = ClientError(
             error_response={"Error": {"Code": "DecryptionFailureException"}}, 

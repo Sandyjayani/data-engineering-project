@@ -1,10 +1,9 @@
 import json
-from util_functions.get_db_connection import create_connection
-from util_functions.get_table import get_table
-from util_functions.upload_to_s3_util_func import upload_tables_to_s3
-from util_functions.setup_logger import setup_logger
-from util_functions.get_timestamp import get_timestamp
-# from requests import Response
+from src.extraction.get_db_connection import create_connection
+from src.extraction.get_table import get_table
+from src.extraction.upload_to_s3_util_func import upload_tables_to_s3
+from src.extraction.setup_logger import setup_logger
+from src.extraction.get_timestamp import get_timestamp
 from datetime import datetime
 
 
@@ -55,7 +54,6 @@ def lambda_handler(event, context):
 
             logger.info(f'Getting last timestamp for {table_name} table.')
             last_timestamp = get_timestamp(table_name)
-            last_timestamp = datetime.strptime(last_timestamp, '%Y-%m-%d_%H-%M')
             logger.info(f'Last timestamp for {table_name} table ({last_timestamp}) has been retrieved')
 
             logger.info(f'Getting newest table data from {table_name} table.')
@@ -69,24 +67,13 @@ def lambda_handler(event, context):
         logger.info('Table iteration has finished.')
 
         logger.info('Creating output response object.')
-        # response_message = Response()
-        # response_message.status_code = 201
-        # response_message.text = 'new data was successfully uploaded'
+
         return  {
-                 'statusCode': 200,
-                 'body': json.dumps('Extraction Lambda is executed successfully')
+                'statusCode': 200,
+                'body': json.dumps('Extraction Lambda is executed successfully')
                 } 
 
     finally:
         if "conn" in locals():
             logger.info('Closing connection.')
             conn.close()
-# lambda_handler({},{})
-
-
-# def lambda_handler(event,context):
-#     logger = setup_logger('extraction_logger')
-#     logger.info('Testing 123')
-
-#     print('Test')
-#     logger.critical('test for alert')
