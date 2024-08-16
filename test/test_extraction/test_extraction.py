@@ -1,5 +1,5 @@
 from moto import mock_aws
-from src.lambda_handler import lambda_handler
+from src.extraction.extraction import lambda_handler
 import os
 import pytest
 from requests import Response
@@ -34,12 +34,12 @@ def mock_aws_client(aws_creds):
 
 @pytest.fixture
 def mock_connection():
-    with patch("src.lambda_handler.create_connection") as conn:
+    with patch("src.extraction.extraction.create_connection") as conn:
         yield conn
 
 @pytest.fixture
 def mock_table():
-    with patch("src.lambda_handler.get_table") as table:
+    with patch("src.extraction.extraction.get_table") as table:
         test_series = pd.Series([1,2,3,4,5])
         test_dataframe = pd.DataFrame({'table data': test_series})
         table.return_value = test_dataframe
@@ -47,17 +47,17 @@ def mock_table():
 
 @pytest.fixture
 def mock_upload():
-    with patch("src.lambda_handler.upload_tables_to_s3") as upload:
+    with patch("src.extraction.extraction.upload_tables_to_s3") as upload:
         yield upload
 
 @pytest.fixture
 def mock_timestamp():
-    with patch("src.lambda_handler.get_timestamp") as timestamp:
+    with patch("src.extraction.extraction.get_timestamp") as timestamp:
         yield timestamp
 
 @pytest.fixture
 def mock_logger():
-    with patch("src.lambda_handler.setup_logger") as logger:
+    with patch("src.extraction.extraction.setup_logger") as logger:
         yield logger
 
 
@@ -65,18 +65,12 @@ class TestOutput:
 
 
     # check lambda handler returns status code and message
-    def test__returns_a_response_object(
-        self, mock_aws_client, mock_connection, mock_table, mock_upload, mock_timestamp, mock_logger
-    ):
-        response = lambda_handler({}, {})
-        test_response = Response()
-        assert type(test_response) == type(response)
 
-    def test_returns_status_code_201(
+    def test_returns_status_code_200(
         self, mock_aws_client, mock_connection, mock_table, mock_upload, mock_timestamp, mock_logger
     ):
         response = lambda_handler({}, {})
-        assert response.status_code == 201
+        assert response['statusCode'] == 200
 
 
     # def test_returns_success_message(mock_aws_client):

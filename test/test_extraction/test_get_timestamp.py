@@ -1,4 +1,4 @@
-from src.util_functions.get_timestamp import get_timestamp as gt
+from src.extraction.get_timestamp import get_timestamp as gt
 from botocore.exceptions import ClientError
 from datetime import datetime
 import pytest
@@ -31,9 +31,9 @@ def s3_client(aws_creds):
 
 
 @pytest.mark.it("Test returns datetime timestamp")
-def test_returns_string(s3_client):
+def test_returns_datetime(s3_client):
     table_name = "test_table"
-    with open("test/test_timestamps.csv", "r", encoding="utf-8") as f:
+    with open("test/test_extraction/test_timestamps.csv", "r", encoding="utf-8") as f:
         s3_client.put_object(
             Bucket="smith-morra-ingestion-bucket", Key=f"{table_name}/timestamps.csv", Body=f.read()
         )

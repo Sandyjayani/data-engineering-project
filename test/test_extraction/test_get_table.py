@@ -3,8 +3,7 @@ import pandas as pd
 import datetime
 from pg8000.native import DatabaseError
 from unittest.mock import Mock
-from src.util_functions.get_table import get_table as gt
-from src.util_functions.get_db_connection import create_connection
+from src.extraction.get_table import get_table as gt
 
 
 @pytest.fixture(scope="function")
@@ -76,7 +75,7 @@ def test_returns_none(connection):
 
     connection.run.side_effect = return_result
     output = gt("currency", connection, timestamp)
-    assert output == None
+    assert output is None
 
 
 @pytest.mark.it(
@@ -139,5 +138,5 @@ def test_run_invoked_with_correct_params(connection):
     connection.run.return_value = None
     gt("currency", connection, timestamp)
     connection.run.assert_called_once_with("SELECT * FROM currency\n        WHERE last_updated > '2025-11-03 14:20:49.962000'::timestamp", 
-                                           table_name='currency'
+                                        table_name='currency'
     )
