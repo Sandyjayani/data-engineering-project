@@ -77,4 +77,3 @@ def lambda_handler(event, context):
         if "conn" in locals():
             logger.info('Closing connection.')
             conn.close()
-lambda_handler({},{})
