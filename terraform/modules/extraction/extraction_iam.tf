@@ -33,6 +33,8 @@ data "aws_iam_policy_document" "s3_document" {
         resources = [
             "${aws_s3_bucket.ingestion_bucket.arn}/*",
             "${aws_s3_bucket.lambda_code_bucket.arn}/*",
+            "${aws_s3_bucket.ingestion_bucket.arn}",
+            "${aws_s3_bucket.lambda_code_bucket.arn}",
         ]
     }
 }
@@ -59,6 +61,20 @@ data "aws_iam_policy_document" "cw_document" {
 }
 
 
+data "aws_iam_policy_document" "secretsmanager_document" {
+    statement {
+
+        actions = [
+            "secretsmanager:GetSecretValue"
+        ] 
+ 
+        resources = [
+            var.secrets_arn
+        ]
+    }
+}
+
+
 # policies
 resource "aws_iam_policy" "s3_policy" {
     name_prefix = "s3-policy-${var.extraction_lambda_name}"
@@ -68,6 +84,11 @@ resource "aws_iam_policy" "s3_policy" {
 resource "aws_iam_policy" "cw_policy" {
     name_prefix = "cw-policy-${var.extraction_lambda_name}"
     policy = data.aws_iam_policy_document.cw_document.json
+}
+
+resource "aws_iam_policy" "secretsmanager_policy" {
+    name_prefix = "secretsmanager-policy-${var.extraction_lambda_name}"
+    policy = data.aws_iam_policy_document.secretsmanager_document.json
 }
 
 
@@ -80,4 +101,9 @@ resource "aws_iam_role_policy_attachment" "lambda_s3_policy_attachment" {
 resource "aws_iam_role_policy_attachment" "lambda_cw_policy_attachment" {
     role = aws_iam_role.extraction_lambda_role.name
     policy_arn = aws_iam_policy.cw_policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_secretsmanager_policy_attachment" {
+    role = aws_iam_role.extraction_lambda_role.name
+    policy_arn = aws_iam_policy.secretsmanager_policy.arn
 }
