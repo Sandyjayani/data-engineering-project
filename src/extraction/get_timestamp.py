@@ -3,7 +3,12 @@ import pandas as pd
 from datetime import datetime
 from io import StringIO
 from botocore.exceptions import ClientError
-from src.extraction.setup_logger import setup_logger  # Change path when lambda is ready
+import os
+
+if os.environ.get("AWS_EXECUTION_ENV") is not None:
+    from setup_logger import setup_logger
+else:
+    from src.extraction.setup_logger import setup_logger
 
 
 logger = setup_logger("extraction")
@@ -29,7 +34,7 @@ def get_timestamp(table_name: str) -> str:
         timestamp = timestamp_df["Date"].max()
         if not timestamp:
             timestamp = "0001-01-01_01-01"
-        timestamp = datetime.strptime(timestamp, '%Y-%m-%d_%H-%M')
+        timestamp = datetime.strptime(timestamp, "%Y-%m-%d_%H-%M")
         print(timestamp)
         print(type(timestamp))
         logger.info(
@@ -45,7 +50,7 @@ def get_timestamp(table_name: str) -> str:
                 f"No timestamps file found for table '{table_name}'. This might be the first run.",
                 extra={"table_name": table_name, "bucket_name": bucket_name},
             )
-            return datetime.strptime("0001-01-01_01-01", '%Y-%m-%d_%H-%M')
+            return datetime.strptime("0001-01-01_01-01", "%Y-%m-%d_%H-%M")
         else:
             logger.error(
                 f"An AWS related error occurred: {e}",

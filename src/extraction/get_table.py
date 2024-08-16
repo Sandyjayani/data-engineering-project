@@ -1,6 +1,11 @@
 import pandas as pd
 from pg8000.native import literal, identifier, DatabaseError
-from src.extraction.setup_logger import setup_logger
+import os
+
+if os.environ.get("AWS_EXECUTION_ENV") is not None:
+    from setup_logger import setup_logger
+else:
+    from src.extraction.setup_logger import setup_logger
 
 
 def get_table(table_name: str, conn, timestamp) -> pd.DataFrame | None:
@@ -20,7 +25,7 @@ def get_table(table_name: str, conn, timestamp) -> pd.DataFrame | None:
     Return value:
         - pd.DataFrame | None
     """
-    logger = setup_logger('get_table logger')
+    logger = setup_logger("get_table logger")
     try:
         str_timestamp = str(timestamp)
         query = f"""SELECT * FROM {identifier(table_name)}

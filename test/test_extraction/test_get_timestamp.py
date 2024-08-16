@@ -35,7 +35,9 @@ def test_returns_datetime(s3_client):
     table_name = "test_table"
     with open("test/test_extraction/test_timestamps.csv", "r", encoding="utf-8") as f:
         s3_client.put_object(
-            Bucket="smith-morra-ingestion-bucket", Key=f"{table_name}/timestamps.csv", Body=f.read()
+            Bucket="smith-morra-ingestion-bucket",
+            Key=f"{table_name}/timestamps.csv",
+            Body=f.read(),
         )
     assert gt(table_name) == datetime(2024, 8, 14, 14, 9)
 

@@ -88,15 +88,13 @@ class TestUploadToS3:
         assert response2["KeyCount"] == 3
         assert response2["Contents"][1]["Key"] == test_key2
 
-    
-
-    @pytest.mark.it('Excepts and raises client error if raised during execution')
-    @patch('src.extraction.upload_to_s3_util_func.boto3')
+    @pytest.mark.it("Excepts and raises client error if raised during execution")
+    @patch("src.extraction.upload_to_s3_util_func.boto3")
     def test_excepts_raises_client_error(self, mock_boto_3, mock_client):
         mock_boto_3.client.side_effect = ClientError(
-            error_response={"Error": {"Code": "DecryptionFailureException"}}, 
-            operation_name='Test'
-            )
+            error_response={"Error": {"Code": "DecryptionFailureException"}},
+            operation_name="Test",
+        )
         test_table = "test_table"
         test_bucket = "test_bucket"
         with pytest.raises(ClientError):
@@ -161,4 +159,3 @@ class TestSaveTimestamps:
         )
         expected_csv = expected_df.to_csv(index=False)
         assert content == expected_csv
-
