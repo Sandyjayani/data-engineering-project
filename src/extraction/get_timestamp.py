@@ -3,7 +3,12 @@ import pandas as pd
 from datetime import datetime
 from io import StringIO
 from botocore.exceptions import ClientError
-from src.extraction.setup_logger import setup_logger  # Change path when lambda is ready
+import os
+
+if os.environ.get("AWS_EXECUTION_ENV") is not None:
+    from setup_logger import setup_logger
+else:
+    from src.extraction.setup_logger import setup_logger
 
 
 logger = setup_logger("extraction")

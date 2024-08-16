@@ -3,7 +3,12 @@ import boto3
 from io import StringIO
 import pandas as pd
 from botocore.exceptions import ClientError
-from src.extraction.setup_logger import setup_logger
+import os
+
+if os.environ.get("AWS_EXECUTION_ENV") is not None:
+    from setup_logger import setup_logger
+else:
+    from src.extraction.setup_logger import setup_logger
 
 
 

@@ -1,6 +1,12 @@
 import pandas as pd
 from pg8000.native import literal, identifier, DatabaseError
-from src.extraction.setup_logger import setup_logger
+import os
+
+if os.environ.get("AWS_EXECUTION_ENV") is not None:
+    from setup_logger import setup_logger
+else:
+    from src.extraction.setup_logger import setup_logger
+
 
 
 def get_table(table_name: str, conn, timestamp) -> pd.DataFrame | None:
