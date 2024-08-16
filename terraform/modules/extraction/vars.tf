@@ -40,5 +40,5 @@ variable "extraction_lambda_name" {
 
 variable "python_runtime" {
   type    = string
-  default = "python3.12"
+  default = "python3.11"
 }
