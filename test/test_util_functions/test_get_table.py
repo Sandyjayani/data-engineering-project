@@ -114,23 +114,6 @@ def test_returns_only_new_rows(connection):
     assert all([time > timestamp for time in last_updated])
 
 
-@pytest.mark.it("Returns none when connecting to real db if no valid rows")
-def test_queries_real_db_with_no_result():
-    timestamp = datetime.datetime(2023, 11, 3, 14, 20, 49, 962000)
-    conn = create_connection()
-    output = gt("currency", conn, timestamp)
-    assert output == None
-
-
-@pytest.mark.it("Returns rows when connecting to real db if valid rows")
-def test_queries_real_db_with_result():
-    timestamp = datetime.datetime(2021, 11, 3, 14, 20, 49, 962000)
-    conn = create_connection()
-    output = gt("currency", conn, timestamp)
-    last_updated = list(output["last_updated"])
-    assert all([time > timestamp for time in last_updated])
-
-
 @pytest.mark.it("Logs exception when error raised")
 def test_logs_error(connection, caplog):
     timestamp = datetime.datetime(2023, 11, 3, 14, 20, 49, 962000)
@@ -148,3 +131,13 @@ def test_logs_error(connection, caplog):
     with pytest.raises(DatabaseError):
         gt("currency", connection, timestamp)
     assert "query failed" in caplog.text
+
+
+@pytest.mark.it('Run is called with expected params')
+def test_run_invoked_with_correct_params(connection):
+    timestamp = datetime.datetime(2025, 11, 3, 14, 20, 49, 962000)
+    connection.run.return_value = None
+    gt("currency", connection, timestamp)
+    connection.run.assert_called_once_with("SELECT * FROM currency\n        WHERE last_updated > '2025-11-03 14:20:49.962000'::timestamp", 
+                                           table_name='currency'
+    )
