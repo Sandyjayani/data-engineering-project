@@ -3,7 +3,7 @@ import pandas as pd
 from datetime import datetime
 from io import StringIO
 from botocore.exceptions import ClientError
-from src.util_functions.setup_logger import setup_logger  # Change path when lambda is ready
+from util_functions.setup_logger import setup_logger  # Change path when lambda is ready
 
 
 logger = setup_logger("extraction")

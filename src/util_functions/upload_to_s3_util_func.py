@@ -3,7 +3,7 @@ import boto3
 from io import StringIO
 import pandas as pd
 from botocore.exceptions import ClientError
-from src.util_functions.setup_logger import setup_logger
+from util_functions.setup_logger import setup_logger
 
 
 
