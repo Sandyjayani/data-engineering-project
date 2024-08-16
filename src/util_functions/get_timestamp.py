@@ -1,8 +1,10 @@
 import boto3
 import pandas as pd
+from datetime import datetime
 from io import StringIO
 from botocore.exceptions import ClientError
 from src.util_functions.setup_logger import setup_logger  # Change path when lambda is ready
+
 
 logger = setup_logger("extraction")
 
@@ -26,8 +28,10 @@ def get_timestamp(table_name: str) -> str:
         timestamp_df = pd.read_csv(StringIO(response.read().decode("utf-8")))
         timestamp = timestamp_df["Date"].max()
         if not timestamp:
-            return "0001-01-01_01-01"
-
+            timestamp = "0001-01-01_01-01"
+        timestamp = datetime.strptime(timestamp, '%Y-%m-%d_%H-%M')
+        print(timestamp)
+        print(type(timestamp))
         logger.info(
             "Retrieved get_timestamp.",
             extra={"table_name": table_name, "bucket_name": bucket_name},
@@ -41,7 +45,7 @@ def get_timestamp(table_name: str) -> str:
                 f"No timestamps file found for table '{table_name}'. This might be the first run.",
                 extra={"table_name": table_name, "bucket_name": bucket_name},
             )
-            return "0001-01-01_01-01"
+            return datetime.strptime("0001-01-01_01-01", '%Y-%m-%d_%H-%M')
         else:
             logger.error(
                 f"An AWS related error occurred: {e}",

@@ -2,6 +2,7 @@ import pytest
 from src.util_functions.upload_to_s3_util_func import upload_tables_to_s3, save_timestamps
 from moto import mock_aws
 import boto3
+from botocore.exceptions import ClientError
 from unittest.mock import patch, Mock
 import pandas as pd
 import os
@@ -87,6 +88,20 @@ class TestUploadToS3:
         assert response2["KeyCount"] == 3
         assert response2["Contents"][1]["Key"] == test_key2
 
+    
+
+    @pytest.mark.it('Excepts and raises client error if raised during execution')
+    @patch('src.util_functions.upload_to_s3_util_func.boto3')
+    def test_excepts_raises_client_error(self, mock_boto_3, mock_client):
+        mock_boto_3.client.side_effect = ClientError(
+            error_response={"Error": {"Code": "DecryptionFailureException"}}, 
+            operation_name='Test'
+            )
+        test_table = "test_table"
+        test_bucket = "test_bucket"
+        with pytest.raises(ClientError):
+            upload_tables_to_s3(None, test_table, test_bucket)
+
 
 class TestSaveTimestamps:
     @pytest.mark.it("Test new_timestamp is created when no timestamp table")
@@ -146,3 +161,4 @@ class TestSaveTimestamps:
         )
         expected_csv = expected_df.to_csv(index=False)
         assert content == expected_csv
+

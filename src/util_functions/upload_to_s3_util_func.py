@@ -38,7 +38,6 @@ def upload_tables_to_s3(
         f"Timestamp generated for the upload: {timestamp_str}",
         extra={"table_name": table_name, "bucket_name": bucket_name},
     )
-    save_timestamps(table_name, timestamp_str, bucket_name)
     # create a var for the file key in
     # "[Table Name]/Year/Month/Day/hh-mm/[tablename]-[timestamp].csv"
 
@@ -79,10 +78,12 @@ def upload_tables_to_s3(
                     "s3_key": f"{s3_key}",
                 },
             )
+            save_timestamps(table_name, timestamp_str, bucket_name)
             return (
                 f"Table {table_name} has been uploaded to "
                 + f"{bucket_name} with key {s3_key}."
             )
+        save_timestamps(table_name, timestamp_str, bucket_name)
         return("No new data to upload")
 
     except ClientError as e:
