@@ -4,6 +4,10 @@ resource "aws_s3_bucket" "lambda_code_bucket" {
 
 resource "aws_s3_bucket" "ingestion_bucket" {
     bucket = "smith-morra-ingestion-bucket"
+
+    # lifecycle {
+    #   prevent_destroy = true
+    # }
 }
 
 

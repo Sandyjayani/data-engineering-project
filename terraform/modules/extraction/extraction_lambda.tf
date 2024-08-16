@@ -23,6 +23,7 @@ resource "aws_lambda_function" "s3_file_reader" {
   s3_key        = aws_s3_object.lambda_code.key
   role          = aws_iam_role.extraction_lambda_role.arn
   handler       = "extraction.lambda_handler"
-  layers =  [aws_lambda_layer_version.layer.arn]
+  layers        = [aws_lambda_layer_version.layer.arn, "arn:aws:lambda:eu-west-2:336392948345:layer:AWSSDKPandas-Python311:16"]
   runtime       = var.python_runtime
+  timeout       = 180
 }
