@@ -1,8 +1,8 @@
-from src.util_functions.get_db_connection import create_connection
-from src.util_functions.get_table import get_table
-from src.util_functions.upload_to_s3_util_func import upload_tables_to_s3
-from src.util_functions.setup_logger import setup_logger
-from src.util_functions.get_timestamp import get_timestamp
+from util_functions.get_db_connection import create_connection
+from util_functions.get_table import get_table
+from util_functions.upload_to_s3_util_func import upload_tables_to_s3
+from util_functions.setup_logger import setup_logger
+from util_functions.get_timestamp import get_timestamp
 from requests import Response
 from datetime import datetime
 
@@ -77,7 +77,7 @@ def lambda_handler(event, context):
         if "conn" in locals():
             logger.info('Closing connection.')
             conn.close()
-lambda_handler({},{})
+# lambda_handler({},{})
 
 
 # def lambda_handler(event,context):
