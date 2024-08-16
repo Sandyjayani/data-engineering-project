@@ -132,11 +132,12 @@ def test_logs_error(connection, caplog):
     assert "query failed" in caplog.text
 
 
-@pytest.mark.it('Run is called with expected params')
+@pytest.mark.it("Run is called with expected params")
 def test_run_invoked_with_correct_params(connection):
     timestamp = datetime.datetime(2025, 11, 3, 14, 20, 49, 962000)
     connection.run.return_value = None
     gt("currency", connection, timestamp)
-    connection.run.assert_called_once_with("SELECT * FROM currency\n        WHERE last_updated > '2025-11-03 14:20:49.962000'::timestamp", 
-                                        table_name='currency'
+    connection.run.assert_called_once_with(
+        "SELECT * FROM currency\n        WHERE last_updated > '2025-11-03 14:20:49.962000'::timestamp",
+        table_name="currency",
     )

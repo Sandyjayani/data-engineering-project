@@ -8,7 +8,6 @@ else:
     from src.extraction.setup_logger import setup_logger
 
 
-
 def get_table(table_name: str, conn, timestamp) -> pd.DataFrame | None:
     """Queries a table using a pg8000 connection and returns all rows
     where last_updated is after the passed timestamp.
@@ -26,7 +25,7 @@ def get_table(table_name: str, conn, timestamp) -> pd.DataFrame | None:
     Return value:
         - pd.DataFrame | None
     """
-    logger = setup_logger('get_table logger')
+    logger = setup_logger("get_table logger")
     try:
         str_timestamp = str(timestamp)
         query = f"""SELECT * FROM {identifier(table_name)}

@@ -11,7 +11,6 @@ else:
     from src.extraction.setup_logger import setup_logger
 
 
-
 def upload_tables_to_s3(
     table_data: pd.DataFrame | None, table_name: str, bucket_name: str
 ) -> pd.DataFrame:
@@ -34,7 +33,7 @@ def upload_tables_to_s3(
 
     # get the current timestampe
 
-    logger = setup_logger('Upload table to s3 logger')
+    logger = setup_logger("Upload table to s3 logger")
 
     timestamp_datetime = datetime.now()
     timestamp_str = timestamp_datetime.strftime("%Y-%m-%d_%H-%M")
@@ -73,7 +72,9 @@ def upload_tables_to_s3(
             # upload the csv from the buffer to the s3
             s3_client = boto3.client("s3")
 
-            s3_client.put_object(Bucket=bucket_name, Key=s3_key, Body=csv_buffer.getvalue())
+            s3_client.put_object(
+                Bucket=bucket_name, Key=s3_key, Body=csv_buffer.getvalue()
+            )
             logger.info(
                 f"Table {table_name} has been uploaded to {bucket_name} "
                 f"with key {s3_key}.",
@@ -89,7 +90,7 @@ def upload_tables_to_s3(
                 + f"{bucket_name} with key {s3_key}."
             )
         save_timestamps(table_name, timestamp_str, bucket_name)
-        return("No new data to upload")
+        return "No new data to upload"
 
     except ClientError as e:
         logger.error(
@@ -113,7 +114,7 @@ def save_timestamps(table_name: str, timestamp: str, bucket_name: str):
     - concate the two dataframes
     - upload the combined dataframe, allow overwriting
     """
-    logger = setup_logger('Save timestamps logger')
+    logger = setup_logger("Save timestamps logger")
     s3_client = boto3.client("s3")
 
     timestamp_key = f"{table_name}/timestamps.csv"
