@@ -14,9 +14,9 @@ resource "aws_s3_object" "lambda_code" {
 }
 
 
-# resource "aws_s3_object" "layer_code" {
-#   bucket = aws_s3_bucket.lambda_code_bucket.bucket
-#   key = "layer.zip"
-#   source = "${path.module}/../../../layer.zip"
-#   }
+resource "aws_s3_object" "layer_code" {
+    bucket = aws_s3_bucket.lambda_code_bucket.bucket
+    key = "layer.zip"
+    source = "${path.module}/../../../layer.zip"
+    }
 
