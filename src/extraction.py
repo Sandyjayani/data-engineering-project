@@ -55,7 +55,7 @@ def lambda_handler(event, context):
 
             logger.info(f'Getting last timestamp for {table_name} table.')
             last_timestamp = get_timestamp(table_name)
-            last_timestamp = datetime.strptime(last_timestamp, '%Y-%m-%d_%H-%M')
+            #last_timestamp = datetime.strptime(last_timestamp, '%Y-%m-%d_%H-%M')
             logger.info(f'Last timestamp for {table_name} table ({last_timestamp}) has been retrieved')
 
             logger.info(f'Getting newest table data from {table_name} table.')
