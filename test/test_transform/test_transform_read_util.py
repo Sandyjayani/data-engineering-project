@@ -36,9 +36,21 @@ def test_load_multiple_tables_from_s3(mock_get_timestamp, mock_client):
         )
 
     # test_key = "test_table/2024/8/13/16-57/test_table-2024-08-13_16.57.00.csv"
-    table_names = ['test_1', 'test_2', 'test_3']
+    TABLE_NAMES = [
+        "payment",
+        "payment_type",
+        "currency",
+        "staff",
+        "department",
+        "purchase_order",
+        "transaction",
+        "sales_order",
+        "design",
+        "address",
+        "counterparty",
+    ]
 
-    for table in table_names:
+    for table in TABLE_NAMES:
         df = pd.DataFrame({
             'id':[1,2,3],
             'value':['A', 'B', 'C']
@@ -47,18 +59,20 @@ def test_load_multiple_tables_from_s3(mock_get_timestamp, mock_client):
         csv_buffer = BytesIO()
         df.to_csv(csv_buffer, index=False)
         csv_buffer.seek(0)
-        mock_client.put_object(Bucket=test_bucket, Key=f'{table}/2024/8/13/16-57/{table}-2024-08-13_16.57.csv', Body=csv_buffer.getvalue())
+        mock_client.put_object(Bucket=test_bucket, Key=f'{table}/2024/8/13/16-57/{table}-2024-08-13_16.57.00.csv', Body=csv_buffer.getvalue())  # noqa: E501
 
     response = ingestion_data_from_s3()
 
     assert isinstance(response, dict)
-    for table in table_names:
+    for table in TABLE_NAMES:
         df = response[table]
         assert isinstance(df, pd.DataFrame)
         assert not df.empty
-        assert df == pd.DataFrame({
-            'id':[1,2,3],
-            'value':['A', 'B', 'C']
-        })
+        assert list(df.columns) == ['id', 'value']
+        assert df['id'].to_list() == [1,2,3]
+        assert df['value'].tolist() == ['A', 'B', 'C']
 
 
+def test_error():
+    with pytest.raises(Exception):
+        ingestion_data_from_s3()
