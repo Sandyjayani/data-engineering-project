@@ -17,13 +17,14 @@ logger = setup_logger("extraction")
 def get_timestamp(table_name: str) -> str:
     """Function takes name of table and searches for latest timestamp
     in csv file for that table. If no timestamp CSV exist, it will return
-    timestamp of 0001-01-01_01-01
+    timestamp of "0001-01-01_01.01.01".
 
     parameters:
         - table_name: str
 
     return value:
-        - timestamp: str (e.g., '2024-08-14_14-09')"""
+        - timestamp: str (e.g., '2024-08-14_14-09.01')"""
+    
     bucket_name = "smith-morra-ingestion-bucket"
     key = f"{table_name}/timestamps.csv"
     s3_client = boto3.client("s3")
@@ -33,10 +34,8 @@ def get_timestamp(table_name: str) -> str:
         timestamp_df = pd.read_csv(StringIO(response.read().decode("utf-8")))
         timestamp = timestamp_df["Date"].max()
         if not timestamp:
-            timestamp = "0001-01-01_01-01"
-        timestamp = datetime.strptime(timestamp, "%Y-%m-%d_%H-%M")
-        print(timestamp)
-        print(type(timestamp))
+            timestamp = "0001-01-01_01.01.01"
+        timestamp = datetime.strptime(timestamp, "%Y-%m-%d_%H.%M.%S")
         logger.info(
             "Retrieved get_timestamp.",
             extra={"table_name": table_name, "bucket_name": bucket_name},
@@ -50,7 +49,7 @@ def get_timestamp(table_name: str) -> str:
                 f"No timestamps file found for table '{table_name}'. This might be the first run.",
                 extra={"table_name": table_name, "bucket_name": bucket_name},
             )
-            return datetime.strptime("0001-01-01_01-01", "%Y-%m-%d_%H-%M")
+            return datetime.strptime("0001-01-01_01.01.01", "%Y-%m-%d_%H.%M.%S")
         else:
             logger.error(
                 f"An AWS related error occurred: {e}",
