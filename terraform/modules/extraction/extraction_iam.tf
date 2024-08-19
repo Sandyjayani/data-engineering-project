@@ -31,9 +31,9 @@ data "aws_iam_policy_document" "s3_document" {
         ] 
 
         resources = [
-            "${aws_s3_bucket.ingestion_bucket.arn}/*",
+            "${var.s3_ingestion_bucket_arn}/*",
             "${aws_s3_bucket.lambda_code_bucket.arn}/*",
-            "${aws_s3_bucket.ingestion_bucket.arn}",
+            "${var.s3_ingestion_bucket_arn}",
             "${aws_s3_bucket.lambda_code_bucket.arn}",
         ]
     }

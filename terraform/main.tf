@@ -29,14 +29,24 @@ provider "aws" {
     }
 }
 
+module "permanent" {
+  source = "./modules/permanent"
+  team_name = var.team_name
+  subscription_email = var.subscription_email
+  s3_ingestion_bucket = var.s3_ingestion_bucket
+}
+
+output "ingestion_bucket_arn" {
+  value = module.permanent.ingestion_bucket_arn
+}
+
 
 module "extraction" {
-  #source = "./terraform/extraction"
   source = "./modules/extraction"
-  s3_ingestion_bucket = var.s3_ingestion_bucket
   secrets_arn = var.secrets_arn
-  subscription_email = var.subscription_email
   lambda_schedule_expression = var.lambda_schedule_expression
+  s3_ingestion_bucket_arn = module.permanent.ingestion_bucket_arn
+  critical_error_topic_extraction_arn = module.permanent.critical_error_topic_extraction_arn
   team_name = var.team_name
 }
 
@@ -53,8 +63,5 @@ module "extraction" {
 # }
 
 
-output "s3_ingestion_bucket_arn" {
-  value = module.extraction.s3_ingestion_bucket_arn
-}
 
 
