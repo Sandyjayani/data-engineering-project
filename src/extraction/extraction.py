@@ -85,7 +85,9 @@ def lambda_handler(event, context):
             "statusCode": 200,
             "body": json.dumps("Extraction Lambda is executed successfully"),
         }
-
+    except Exception as e:
+        logger.critical(f"Critical error: {e}")
+        raise e
     finally:
         if "conn" in locals():
             logger.info("Closing connection.")
