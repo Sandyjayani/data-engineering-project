@@ -36,7 +36,7 @@ def upload_tables_to_s3(
     logger = setup_logger("Upload table to s3 logger")
 
     timestamp_datetime = datetime.now()
-    timestamp_str = timestamp_datetime.strftime("%Y-%m-%d_%H-%M")
+    timestamp_str = str(timestamp_datetime)
 
     logger.debug(
         f"Timestamp generated for the upload: {timestamp_str}",
