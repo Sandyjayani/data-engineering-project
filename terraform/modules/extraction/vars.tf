@@ -9,10 +9,20 @@ variable "team_name" {
     default = "smith-morra"
 }
 
-variable "s3_ingestion_bucket" {
-  description = "S3 bucket name for storing ingested data"
+# variable "s3_ingestion_bucket" {
+#   description = "S3 bucket name for storing ingested data"
+#   type = string
+#   default     = "smith-morra-ingestion-bucket"
+# }
+
+variable "s3_ingestion_bucket_arn" {
+  description = "The ARN of the S3 ingestion bucket"
   type = string
-  default     = "smith-morra-ingestion-bucket"
+}
+
+variable "critical_error_topic_extraction_arn" {
+  description = "The ARN of the sns topic for critical error for extraction"
+  type = string
 }
 
 variable "secrets_arn" {
