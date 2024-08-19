@@ -39,13 +39,13 @@ def test_returns_datetime(s3_client):
             Key=f"{table_name}/timestamps.csv",
             Body=f.read(),
         )
-    assert gt(table_name) == datetime(2024, 8, 14, 14, 9)
+    assert gt(table_name) == datetime(2024, 8, 19, 9, 55, 38)
 
 
 @pytest.mark.it("Returns 0 AD if no timestamps")
 def test_no_timestamps(s3_client):
     table_name = "test_table"
-    assert gt(table_name) == datetime(1, 1, 1, 1, 1)
+    assert gt(table_name) == datetime(1, 1, 1, 1, 1, 1)
 
 
 @pytest.mark.it("Test ClientError handling")

@@ -33,14 +33,14 @@ class TestUploadToS3:
 
         test_table = "test_table"
         test_bucket = "test_bucket"
-        test_key = "test_table/2024/8/13/16-57/test_table-2024-08-13_16-57.csv"
+        test_key = "test_table/2024/8/13/16-57/test_table-2024-08-13_16.57.00.csv"
 
         mock_client.create_bucket(
             Bucket=test_bucket,
             CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
         )
 
-        mock_now = datetime(2024, 8, 13, 16, 57)
+        mock_now = datetime(2024, 8, 13, 16, 57, 00)
         mock_datetime.now.return_value = mock_now
 
         mock_df = Mock(spec=pd.DataFrame)
@@ -57,14 +57,14 @@ class TestUploadToS3:
     def test_correct_files_being_uploaded(self, mock_datetime, mock_client):
         test_table = "test_table"
         test_bucket = "test_bucket"
-        test_key = "test_table/2024/8/13/16-57/test_table-2024-08-13_16-57.csv"
+        test_key = "test_table/2024/8/13/16-57/test_table-2024-08-13_16.57.00.csv"
 
         mock_client.create_bucket(
             Bucket=test_bucket,
             CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
         )
 
-        mock_now = datetime(2024, 8, 13, 16, 57)
+        mock_now = datetime(2024, 8, 13, 16, 57, 00)
         mock_datetime.now.return_value = mock_now
 
         mock_df = Mock(spec=pd.DataFrame)
@@ -80,7 +80,7 @@ class TestUploadToS3:
         mock_now = datetime(2024, 8, 13, 17, 27)
         mock_datetime.now.return_value = mock_now
 
-        test_key2 = "test_table/2024/8/13/17-27/test_table-2024-08-13_17-27.csv"
+        test_key2 = "test_table/2024/8/13/17-27/test_table-2024-08-13_17.27.00.csv"
 
         upload_tables_to_s3(mock_df, test_table, test_bucket)
 
