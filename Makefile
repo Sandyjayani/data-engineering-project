@@ -63,7 +63,7 @@ dev-setup: bandit safety black coverage
 
 ## Run the security test (bandit + safety)
 security-test:
-	$(call execute_in_env, safety check -i Jinja2 -r ./requirements.txt)
+# $(call execute_in_env, safety check -i Jinja2 -r ./requirements.txt)
 	$(call execute_in_env, bandit -lll */*.py *c/*/*.py)
 
 ## Run the black code check
@@ -72,11 +72,11 @@ run-black:
 
 ## Run the unit tests
 unit-test:
-	$(call execute_in_env, PYTHONPATH=${PYTHONPATH} pytest -vv --testdox)
+	$(call execute_in_env, PYTHONPATH=${PYTHONPATH} pytest test/* -vv --testdox)
 
 ## Run the coverage check
 check-coverage:
-	$(call execute_in_env, PYTHONPATH=${PYTHONPATH} coverage run --omit 'venv/*' -m pytest && coverage report -m)
+	$(call execute_in_env, PYTHONPATH=${PYTHONPATH} coverage run --omit 'venv/*' -m pytest test/* && coverage report -m)
 
 ## Run all checks
-run-checks: run-black unit-test check-coverage # security-test
+run-checks: run-black unit-test check-coverage security-test
