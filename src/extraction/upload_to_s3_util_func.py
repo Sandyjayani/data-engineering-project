@@ -19,6 +19,10 @@ def upload_tables_to_s3(
     table_data: pd.DataFrame | None, table_name: str, bucket_name: str
 ) -> str:
     """
+    IMPORTANT: This function would only save and upload the dfas parquet 
+    if thebucket name contains the word "transform", case insensitive
+    csv otherwise
+
     - get the current timestamp
     - call save_timestamps to save the current timestamp in a csv
     file (for the get_timestamp func
@@ -47,7 +51,7 @@ def upload_tables_to_s3(
         extra={"table_name": table_name, "bucket_name": bucket_name},
     )
 
-    if 'transform' in bucket_name:
+    if 'transform' in bucket_name.lower():
         file_type = 'parquet'
     else:
         file_type = 'csv'
@@ -76,7 +80,7 @@ def upload_tables_to_s3(
             # convert the given dataframe to csv
             # reposition stream to the beginning
 
-            if file_type == 'csv':
+            if file_type == 'parquet':
                 buffer = BytesIO()
                 table_data.to_parquet(buffer, index=False)
             else:
