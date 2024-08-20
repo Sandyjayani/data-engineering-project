@@ -3,28 +3,20 @@ from botocore.exceptions import ClientError
 from pg8000.native import Connection, Error
 import pandas as pd
 import json
+import os
+
+if os.environ.get("AWS_EXECUTION_ENV") is not None:
+    from get_secret import get_secret
+else:
+    from src.extraction.get_secret import get_secret
 
 
-def get_secret():
-    secret_name = "DataSource_PostgresDB_Credentials"
-    region_name = "eu-west-2"
-
-    # Create a Secrets Manager client
-    session = boto3.session.Session()
-    client = session.client(service_name="secretsmanager", region_name=region_name)
-
-    try:
-        get_secret_value_response = client.get_secret_value(SecretId=secret_name)
-    except ClientError as e:
-        raise e
-
-    secret = get_secret_value_response["SecretString"]
-    return secret
-
-
-def create_connection():
+def create_connection(stage_name):
     # Retrieve the secret
-    secret = get_secret()
+    if stage_name == "extraction":
+        secret = get_secret("DataSource_PostgresDB_Credentials")
+    elif stage_name == "transformation":
+        secret = get_secret("DataTarget_PostgresDB_Credentials")
     secret_dict = json.loads(secret)
 
     # Extract credentials from the secret
