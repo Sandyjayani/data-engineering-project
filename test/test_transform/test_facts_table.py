@@ -168,3 +168,8 @@ def test_df_values_are_within_expected_range(test_dataframe):
 def test_returns_same_amount_of_rows_as_input(test_dataframe):
     result = facts_table(test_dataframe)
     assert len(result.index) == len(test_dataframe.index)
+
+def test_raises_error_for_invalid_input(test_dataframe):
+    rando_df = pd.DataFrame([1,2,3])
+    with pytest.raises(ValueError):
+        assert facts_table(rando_df)
