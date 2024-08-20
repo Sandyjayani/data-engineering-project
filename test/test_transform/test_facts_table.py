@@ -154,7 +154,17 @@ def test_df_values_are_expected_types(test_dataframe):
             assert type(row[time_i]) == time
         assert type(float(row[8])) == float # I think?? "numeric(10, 2)"
 
+def test_df_values_are_within_expected_range(test_dataframe):
+    result = facts_table(test_dataframe)
+    for index in range(5):
+        row = result.loc[index]
+        for id_index in [0,5,6,9,10,13]:
+            assert row[id_index] >= 0 and row[id_index] < 30
+        assert row[7] >= 0 and row[7] < 100000
+        assert row[8] >= 0 and row[8] < 1000
+        for date_index in [1,3,11,12]:
+            assert row[date_index].year > 1900 and row[date_index].year < 2100
 
-# values are within expected range
-
-# same amount of rows as input (I think??)
+def test_returns_same_amount_of_rows_as_input(test_dataframe):
+    result = facts_table(test_dataframe)
+    assert len(result.index) == len(test_dataframe.index)
