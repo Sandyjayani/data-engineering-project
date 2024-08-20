@@ -14,7 +14,7 @@ else:
 logger = setup_logger("extraction")
 
 
-def get_timestamp(table_name: str) -> str:
+def get_timestamp(table_name: str):
     """Function takes name of table and searches for latest timestamp
     in csv file for that table. If no timestamp CSV exist, it will return
     timestamp of "0001-01-01_01.01.01".
