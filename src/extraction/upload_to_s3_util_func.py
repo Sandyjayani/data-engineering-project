@@ -2,6 +2,10 @@ from datetime import datetime
 import boto3
 from io import StringIO
 import pandas as pd
+from datetime import datetime
+import boto3
+from io import StringIO, BytesIO
+import pandas as pd
 from botocore.exceptions import ClientError
 import os
 
@@ -42,6 +46,12 @@ def upload_tables_to_s3(
         f"Timestamp generated for the upload: {timestamp_str}",
         extra={"table_name": table_name, "bucket_name": bucket_name},
     )
+
+    if 'transform' in bucket_name:
+        file_type = 'parquet'
+    else:
+        file_type = 'csv'
+    
     # create a var for the file key in
     # "[Table Name]/Year/Month/Day/hh-mm/[tablename]-[timestamp].csv"
 
@@ -51,7 +61,7 @@ def upload_tables_to_s3(
         f"{timestamp_datetime.month}/"
         f"{timestamp_datetime.day}/"
         f"{timestamp_datetime.hour}-{timestamp_datetime.minute}/"
-        f"{table_name}-{timestamp_str}.csv"
+        f"{table_name}-{timestamp_str}.{file_type}"
     )
 
     logger.debug(
@@ -63,17 +73,23 @@ def upload_tables_to_s3(
 
         if isinstance(table_data, pd.DataFrame):
             # written to an in-memory buffer
-            csv_buffer = StringIO()
             # convert the given dataframe to csv
-            table_data.to_csv(csv_buffer, index=False)
             # reposition stream to the beginning
-            csv_buffer.seek(0)
+
+            if file_type == 'csv':
+                buffer = BytesIO()
+                table_data.to_parquet(buffer, index=False)
+            else:
+                buffer = StringIO()
+                table_data.to_csv(buffer, index=False)
+                
+            buffer.seek(0)
 
             # upload the csv from the buffer to the s3
             s3_client = boto3.client("s3")
 
             s3_client.put_object(
-                Bucket=bucket_name, Key=s3_key, Body=csv_buffer.getvalue()
+                Bucket=bucket_name, Key=s3_key, Body=buffer.getvalue()
             )
             logger.info(
                 f"Table {table_name} has been uploaded to {bucket_name} "
@@ -103,6 +119,7 @@ def upload_tables_to_s3(
             },
         )
         raise e
+
 
 
 def save_timestamps(table_name: str, timestamp: str, bucket_name: str):
