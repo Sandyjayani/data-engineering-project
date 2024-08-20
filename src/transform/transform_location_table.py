@@ -27,4 +27,5 @@ import pandas as pd
 # }
 
 def transform_location_table(address_df):
-    return address_df
+    transformed_df = address_df.rename(columns={'address_id': 'location_id' })
+    return transformed_df
