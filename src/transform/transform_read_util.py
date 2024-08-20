@@ -55,7 +55,7 @@ def ingestion_data_from_s3():
                 f"{timestamp_datetime.hour}-{timestamp_datetime.minute}/"
                 f"{table}-{timestamp_str}.csv"
             )
-            print(s3_key)
+
             obj = s3.get_object(Bucket=BUCKET_NAME, Key=s3_key)['Body']
 
             df = pd.read_csv(StringIO(obj.read().decode('utf-8')))
