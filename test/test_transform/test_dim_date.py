@@ -225,3 +225,8 @@ def test_returns_unique_date_rows(test_dataframe):
         "2023-08-04", 
         "2023-08-07", 
     ] # expected values
+
+def test_raises_error_for_invalid_input():
+    rando_df = pd.DataFrame([1,2,3])
+    with pytest.raises(ValueError):
+        assert dim_date(rando_df)

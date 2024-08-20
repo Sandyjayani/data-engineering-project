@@ -11,6 +11,21 @@ def dim_date(dataframe):
 
     there will be one row output for each input date
     """
+    if list(dataframe.columns) != [
+        "sales_order_id",
+        "created_at",
+        "last_updated",
+        "design_id",
+        "staff_id",
+        "counterparty_id",
+        "units_sold",
+        "unit_price",
+        "currency_id",
+        "agreed_delivery_date",
+        "agreed_payment_date",
+        "agreed_delivery_location_id",
+    ]:
+        raise ValueError
 
     output_columns = [
         "date_id",
