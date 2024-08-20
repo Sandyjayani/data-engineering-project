@@ -14,10 +14,10 @@ def test_dataframe():
         "staff_id",
         "counterparty_id",
         "units_sold",
-        "unit_price numeric",
+        "unit_price",
         "currency_id",
-        "agreed_delivery_date varchar",
-        "agreed_payment_date varchar",
+        "agreed_delivery_date",
+        "agreed_payment_date",
         "agreed_delivery_location_id",
     ]
     test_row_1 = [
