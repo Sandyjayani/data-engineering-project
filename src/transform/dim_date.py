@@ -41,9 +41,9 @@ def dim_date(dataframe):
     all_dates = []
     for index in range(len(dataframe)):
         row = dataframe.loc[index]
-        timestamp = row[1]
-        delivery_date = row[9]
-        payment_date = row[10]
+        timestamp = row.iloc[1]
+        delivery_date = row.iloc[9]
+        payment_date = row.iloc[10]
 
         new_timestamp = datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S.%f")
         new_delivery = datetime.strptime(delivery_date, "%Y-%m-%d")

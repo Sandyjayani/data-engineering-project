@@ -147,12 +147,12 @@ def test_returns_df_with_expected_column_names(test_dataframe):
 def test_returns_df_with_expected_column_value_types(test_dataframe):
     result = dim_date(test_dataframe)
     row = result.loc[0]
-    assert type(row[0]) == date
+    assert type(row.iloc[0]) == date
     for int_index in [1,2,3,4,7]:
-        assert type(int(row[int_index])) == int
+        assert type(int(row.iloc[int_index])) == int
     for string_index in [5,6]:
-        print(row[string_index])
-        assert type(row[string_index]) == str
+        print(row.iloc[string_index])
+        assert type(row.iloc[string_index]) == str
 
 def test_returns_dataframe_with_expected_kind_of_values(test_dataframe):
     week_days = [
@@ -182,22 +182,22 @@ def test_returns_dataframe_with_expected_kind_of_values(test_dataframe):
     for index in range(4):
         row = result.loc[index]
 
-        string_year = str(row[1])
-        if row[2] < 10:
-            string_month = "0" + str(row[2])
-        else: string_month = str(row[2])
-        if row[3] < 10:
-            string_day = "0" + str(row[3])
-        else: string_day = str(row[3])
-        assert row[0].strftime("%Y-%m-%d") == string_year + "-" + string_month + "-" + string_day
+        string_year = str(row.iloc[1])
+        if row.iloc[2] < 10:
+            string_month = "0" + str(row.iloc[2])
+        else: string_month = str(row.iloc[2])
+        if row.iloc[3] < 10:
+            string_day = "0" + str(row.iloc[3])
+        else: string_day = str(row.iloc[3])
+        assert row.iloc[0].strftime("%Y-%m-%d") == string_year + "-" + string_month + "-" + string_day
         
-        assert row[1] >= 1900 and row[1] < 2100
-        assert row[2] >= 1 and row[2] <= 12
-        assert row[3] >= 1 and row[3] <= 31
-        assert row[4] >= 1 and row[4] <= 7
-        assert row[5] in week_days
-        assert row[6] in months
-        assert row[7] >= 1 and row[7] <= 4
+        assert row.iloc[1] >= 1900 and row.iloc[1] < 2100
+        assert row.iloc[2] >= 1 and row.iloc[2] <= 12
+        assert row.iloc[3] >= 1 and row.iloc[3] <= 31
+        assert row.iloc[4] >= 1 and row.iloc[4] <= 7
+        assert row.iloc[5] in week_days
+        assert row.iloc[6] in months
+        assert row.iloc[7] >= 1 and row.iloc[7] <= 4
 
 def test_returns_all_dates_passed_as_rows(test_dataframe):
     result = dim_date(test_dataframe)
