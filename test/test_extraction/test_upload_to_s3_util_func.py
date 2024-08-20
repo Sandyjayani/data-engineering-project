@@ -52,9 +52,9 @@ class TestUploadToS3:
         )
         assert upload_tables_to_s3(mock_df, test_table, test_bucket) == expected
 
-    @pytest.mark.it("Test if correct file being uploaded to the given bucket")
+    @pytest.mark.it("Test if csv file being uploaded to the given bucket")
     @patch("src.extraction.upload_to_s3_util_func.datetime")
-    def test_correct_files_being_uploaded(self, mock_datetime, mock_client):
+    def test_csv_files_being_uploaded(self, mock_datetime, mock_client):
         test_table = "test_table"
         test_bucket = "test_bucket"
         test_key = "test_table/2024/8/13/16-57/test_table-2024-08-13_16.57.00.csv"
@@ -81,6 +81,42 @@ class TestUploadToS3:
         mock_datetime.now.return_value = mock_now
 
         test_key2 = "test_table/2024/8/13/17-27/test_table-2024-08-13_17.27.00.csv"
+
+        upload_tables_to_s3(mock_df, test_table, test_bucket)
+
+        response2 = mock_client.list_objects_v2(Bucket=test_bucket)
+        assert response2["KeyCount"] == 3
+        assert response2["Contents"][1]["Key"] == test_key2
+
+    @pytest.mark.it("Test if upload as parquet files if transform in bucket name")
+    @patch("src.extraction.upload_to_s3_util_func.datetime")
+    def test_parquet_files_being_uploaded_if(self, mock_datetime, mock_client):
+        test_table = "test_table"
+        test_bucket = "transformation_bucket"
+        test_key = "test_table/2024/8/13/16-57/test_table-2024-08-13_16.57.00.parquet"
+
+        mock_client.create_bucket(
+            Bucket=test_bucket,
+            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
+        )
+
+        mock_now = datetime(2024, 8, 13, 16, 57, 00)
+        mock_datetime.now.return_value = mock_now
+
+        mock_df = Mock(spec=pd.DataFrame)
+        mock_df.to_csv.return_value = "mock_csv"
+
+        upload_tables_to_s3(mock_df, test_table, test_bucket)
+
+        response = mock_client.list_objects_v2(Bucket=test_bucket)
+
+        assert response["KeyCount"] == 2
+        assert response["Contents"][0]["Key"] == test_key
+
+        mock_now = datetime(2024, 8, 13, 17, 27)
+        mock_datetime.now.return_value = mock_now
+
+        test_key2 = "test_table/2024/8/13/17-27/test_table-2024-08-13_17.27.00.parquet"
 
         upload_tables_to_s3(mock_df, test_table, test_bucket)
 
