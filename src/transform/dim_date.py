@@ -76,9 +76,11 @@ def dim_date(dataframe):
             date_series = pd.Series(data=date_row, index=output_columns)
             all_rows.append(date_series)
 
-    output_df = pd.DataFrame(
+    all_dates_df = pd.DataFrame(
         data=all_rows, 
         columns=output_columns
     )
+
+    output_df = all_dates_df.drop_duplicates()
 
     return output_df

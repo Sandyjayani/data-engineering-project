@@ -199,7 +199,29 @@ def test_returns_dataframe_with_expected_kind_of_values(test_dataframe):
         assert row[6] in months
         assert row[7] >= 1 and row[7] <= 4
 
+def test_returns_all_dates_passed_as_rows(test_dataframe):
+    result = dim_date(test_dataframe)
+    assert len(result.index) == 14
 
-# check for correct amount of rows for different amounts passed
+def test_returns_unique_date_rows(test_dataframe):
+    result = dim_date(test_dataframe)
+    assert len(result["date_id"]) == len(set(result["date_id"])) # same length
+    
+    string_list = [date_object.strftime("%Y-%m-%d") for date_object in result["date_id"]]   
 
-# check if we get double dates bc we obv only need unique rows
+    assert sorted(list(string_list)) == [
+        "2015-10-03",
+        "2015-10-07", 
+        "2015-10-08",
+        "2018-03-03",
+        "2018-03-06", 
+        "2018-03-07", 
+        "2021-06-03",
+        "2021-06-05", 
+        "2021-06-07",
+        "2022-11-03",
+        "2022-11-05", 
+        "2022-11-08", 
+        "2023-08-04", 
+        "2023-08-07", 
+    ] # expected values
