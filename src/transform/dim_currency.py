@@ -1,5 +1,10 @@
 import pandas as pd
-from src.extraction.setup_logger import setup_logger
+import os
+
+if os.environ.get("AWS_EXECUTION_ENV"):
+    from setup_logger import setup_logger
+else:
+    from src.extraction.setup_logger import setup_logger
 
 def transform_dim_currency(data_dict: dict[str, pd.DataFrame]) -> pd.DataFrame | None:
     """
