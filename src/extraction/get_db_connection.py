@@ -15,7 +15,7 @@ def create_connection(stage_name):
     # Retrieve the secret
     if stage_name == "extraction":
         secret = get_secret("DataSource_PostgresDB_Credentials")
-    elif stage_name == "transformation":
+    elif stage_name == "load":
         secret = get_secret("DataTarget_PostgresDB_Credentials")
     secret_dict = json.loads(secret)
 

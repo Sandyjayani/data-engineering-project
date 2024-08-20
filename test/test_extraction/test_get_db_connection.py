@@ -1,4 +1,4 @@
-from src.extraction.get_db_connection import get_secret, create_connection
+from src.extraction.get_secret import get_secret, create_connection
 import os
 import boto3
 import pytest
@@ -16,7 +16,7 @@ def aws_creds():
     os.environ["AWS_SESSION_TOKEN"] = "test"
     os.environ["AWS_DEAFULT_REGION"] = "eu-west-2"
 
-
+# Note from Ren: we don't seem to be using this secrets client fixture at all?
 @pytest.fixture(scope="function")
 def secrets_client(aws_creds):
     with mock_aws():
@@ -39,13 +39,13 @@ def test_get_secret_configuration(mock_session):
         "SecretString": '{"key": "mocked_value"}'
     }
 
-    result = get_secret()
+    result = get_secret("DataSource_PostgresDB_Credentials")
 
     mock_session.assert_called_once()
 
     assert json.loads(result) == {"key": "mocked_value"}
 
-
+# Note from Ren: this test doesn't use the function we're testing, what are we asserting with it?
 @patch("boto3.session.Session")
 def test_get_secret_exception(mock_session):
     # Configure the mock session
@@ -65,6 +65,16 @@ def test_get_secret_exception(mock_session):
         mock_client.get_secret_value(SecretId="nonexistent-secret")
 
     assert "ResourceNotFoundException" in str(excinfo.value)
+
+
+# things to test:
+
+# test returns secret as json string(?)
+# test secret, when decoded, is a dict
+# test said dict contains mocked data we'll pass it
+    # means I gotta mock a secret in our mock secrets manager
+
+
 
 
 # Test requires completion
