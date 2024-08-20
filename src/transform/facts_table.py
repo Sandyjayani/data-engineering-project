@@ -11,6 +11,21 @@ def facts_table(dataframe):
     the "sales_record_id" column will need to be populated when appending to the database, 
     as it is a serial primary key and it cannot be assumed beforehand
     """
+    if list(dataframe.columns) != [
+        "sales_order_id",
+        "created_at",
+        "last_updated",
+        "design_id",
+        "staff_id",
+        "counterparty_id",
+        "units_sold",
+        "unit_price",
+        "currency_id",
+        "agreed_delivery_date",
+        "agreed_payment_date",
+        "agreed_delivery_location_id",
+    ]:
+        raise ValueError
 
     facts_columns = [
         "sales_order_id",
