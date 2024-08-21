@@ -2,8 +2,13 @@ import boto3
 from datetime import datetime 
 import pandas as pd
 from io import BytesIO, StringIO
+import os
 from re import search
-from src.extraction.setup_logger import setup_logger
+
+if os.environ.get("AWS_EXECUTION_ENV"):
+    from setup_logger import setup_logger
+else:    
+    from src.extraction.setup_logger import setup_logger
 
 logger = setup_logger("Load and Combine files logger")
 
