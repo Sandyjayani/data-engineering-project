@@ -1,8 +1,14 @@
 import boto3
 import pandas as pd
-from src.extraction.setup_logger import setup_logger
-from src.extraction.get_timestamp import get_timestamp
 from io import StringIO
+import os
+
+if os.environ.get("AWS_EXECUTION_ENV") is not None:
+    from setup_logger import setup_logger
+    from get_timestamp import get_timestamp
+else:
+    from src.extraction.setup_logger import setup_logger
+    from src.extraction.get_timestamp import get_timestamp
 
 
 def ingestion_data_from_s3():
