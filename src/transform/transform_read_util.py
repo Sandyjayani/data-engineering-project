@@ -9,9 +9,9 @@ if os.environ.get("AWS_EXECUTION_ENV"):
     from get_transformation_timestamp import get_transformation_timestamp
 else:
     from src.transform.setup_logger import setup_logger
-    from src.extraction.get_timestamp import get_timestamp
+    from src.transform.get_ingestion_timestamp import get_ingestion_timestamp
     from src.transform.get_transformation_timestamp import get_transformation_timestamp
-    
+
 
 
 def ingestion_data_from_s3():
