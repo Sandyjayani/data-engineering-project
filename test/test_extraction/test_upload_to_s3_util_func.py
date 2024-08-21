@@ -7,7 +7,7 @@ from unittest.mock import patch, Mock
 import pandas as pd
 import os
 from datetime import datetime
-from io import StringIO
+from io import StringIO, BytesIO
 
 
 @pytest.fixture()
@@ -52,9 +52,9 @@ class TestUploadToS3:
         )
         assert upload_tables_to_s3(mock_df, test_table, test_bucket) == expected
 
-    @pytest.mark.it("Test if correct file being uploaded to the given bucket")
+    @pytest.mark.it("Test if it uploads files in the correct name to s3")
     @patch("src.extraction.upload_to_s3_util_func.datetime")
-    def test_correct_files_being_uploaded(self, mock_datetime, mock_client):
+    def test_csv_files_being_uploaded(self, mock_datetime, mock_client):
         test_table = "test_table"
         test_bucket = "test_bucket"
         test_key = "test_table/2024/8/13/16-57/test_table-2024-08-13_16.57.00.csv"
@@ -87,6 +87,69 @@ class TestUploadToS3:
         response2 = mock_client.list_objects_v2(Bucket=test_bucket)
         assert response2["KeyCount"] == 3
         assert response2["Contents"][1]["Key"] == test_key2
+
+    @pytest.mark.it("Test if the file uploaded is really a csv file")
+    @patch("src.extraction.upload_to_s3_util_func.datetime")
+    def test_csv_files_being_uploaded_correct_format(self, mock_datetime, mock_client):
+        test_table = "test_table"
+        test_bucket = "test_bucket"
+        test_key = "test_table/2024/8/13/16-57/test_table-2024-08-13_16.57.00.csv"
+
+        mock_client.create_bucket(
+            Bucket=test_bucket,
+            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
+        )
+
+        mock_now = datetime(2024, 8, 13, 16, 57, 00)
+        mock_datetime.now.return_value = mock_now
+
+        mock_df = pd.DataFrame({
+        'col1': [1, 2, 3],
+        'col2': ['a', 'b', 'c']
+        })
+
+        upload_tables_to_s3(mock_df, test_table, test_bucket)
+
+        response = mock_client.get_object(Bucket=test_bucket, Key=test_key)
+        csv_data = response['Body'].read().decode('utf-8')
+        df_from_csv = pd.read_csv(StringIO(csv_data))
+
+        pd.testing.assert_frame_equal(mock_df, df_from_csv)
+
+    @pytest.mark.it("Test if the file uploaded is really a parquet file")
+    @patch("src.extraction.upload_to_s3_util_func.datetime")
+    def test_parquet_files_being_uploaded_correct_format(self, mock_datetime, mock_client):
+        test_table = "test_table"
+        test_bucket = "transFormation_bucket"
+        test_key = "test_table/2024/8/13/16-57/test_table-2024-08-13_16.57.00.parquet"
+
+        mock_client.create_bucket(
+            Bucket=test_bucket,
+            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
+        )
+
+        mock_now = datetime(2024, 8, 13, 16, 57, 00)
+        mock_datetime.now.return_value = mock_now
+
+        mock_df = pd.DataFrame({
+        'col1': [1, 2, 3],
+        'col2': ['a', 'b', 'c']
+        })
+
+        upload_tables_to_s3(mock_df, test_table, test_bucket)
+
+        response = mock_client.get_object(Bucket=test_bucket, Key=test_key)
+        parquet_data = response['Body'].read()
+        df_from_parquet = pd.read_parquet(BytesIO(parquet_data))
+
+        pd.testing.assert_frame_equal(mock_df, df_from_parquet)
+
+        response = mock_client.list_objects_v2(Bucket=test_bucket)
+
+        assert response["KeyCount"] == 2
+        assert response["Contents"][0]["Key"] == test_key
+
+
 
     @pytest.mark.it("Excepts and raises client error if raised during execution")
     @patch("src.extraction.upload_to_s3_util_func.boto3")

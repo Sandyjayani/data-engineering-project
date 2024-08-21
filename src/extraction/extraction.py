@@ -41,7 +41,7 @@ def lambda_handler(event, context):
         logger = setup_logger("extraction_logger")
 
         logger.info("Creating connection.")
-        conn = create_connection()
+        conn = create_connection("extraction")
         logger.info("Connection has been created.")
 
         BUCKET_NAME = "smith-morra-ingestion-bucket"
