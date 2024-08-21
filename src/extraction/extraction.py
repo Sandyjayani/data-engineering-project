@@ -41,7 +41,7 @@ def lambda_handler(event, context):
         logger = setup_logger("extraction_logger")
 
         logger.info("Creating connection.")
-        conn = create_connection()
+        conn = create_connection("extraction")
         logger.info("Connection has been created.")
 
         BUCKET_NAME = "smith-morra-ingestion-bucket"
@@ -85,7 +85,9 @@ def lambda_handler(event, context):
             "statusCode": 200,
             "body": json.dumps("Extraction Lambda is executed successfully"),
         }
-
+    except Exception as e:
+        logger.critical(f"Critical error: {e}")
+        raise e
     finally:
         if "conn" in locals():
             logger.info("Closing connection.")
