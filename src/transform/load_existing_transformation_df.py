@@ -10,6 +10,8 @@ if os.environ.get("AWS_EXECUTION_ENV"):
 else:    
     from src.extraction.setup_logger import setup_logger
 
+    
+
 logger = setup_logger("Load and Combine files logger")
 
 '''

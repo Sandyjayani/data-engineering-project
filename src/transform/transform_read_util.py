@@ -1,8 +1,17 @@
 import boto3
 import pandas as pd
-from src.extraction.setup_logger import setup_logger
-from src.extraction.get_timestamp import get_timestamp
+import os
 from io import StringIO
+
+if os.environ.get("AWS_EXECUTION_ENV"):
+    from setup_logger import setup_logger
+    from get_ingestion_timestamp import get_ingestion_timestamp
+    from get_transformation_timestamp import get_transformation_timestamp
+else:
+    from src.transform.setup_logger import setup_logger
+    from src.extraction.get_timestamp import get_timestamp
+    from src.transform.get_transformation_timestamp import get_transformation_timestamp
+    
 
 
 def ingestion_data_from_s3():
@@ -44,24 +53,27 @@ def ingestion_data_from_s3():
     try:
         for table in TABLE_NAMES:
             logger.info(f"Load data from {table} from {BUCKET_NAME}")
-            timestamp_datetime = get_timestamp(table)
-            timestamp_str = timestamp_datetime.strftime("%Y-%m-%d_%H.%M.%S")
+            ingestion_timestamp_datetime = get_ingestion_timestamp(table)
+            transformation_timestamp_dt = get_transformation_timestamp(table)
+            timestamp_str = ingestion_timestamp_datetime.strftime("%Y-%m-%d_%H.%M.%S")
+            if ingestion_timestamp_datetime > transformation_timestamp_dt:
+                s3_key = (
+                    f"{table}/"
+                    f"{ingestion_timestamp_datetime.year}/"
+                    f"{ingestion_timestamp_datetime.month}/"
+                    f"{ingestion_timestamp_datetime.day}/"
+                    f"{ingestion_timestamp_datetime.hour}-{ingestion_timestamp_datetime.minute}/"
+                    f"{table}-{timestamp_str}.csv"
+                )
 
-            s3_key = (
-                f"{table}/"
-                f"{timestamp_datetime.year}/"
-                f"{timestamp_datetime.month}/"
-                f"{timestamp_datetime.day}/"
-                f"{timestamp_datetime.hour}-{timestamp_datetime.minute}/"
-                f"{table}-{timestamp_str}.csv"
-            )
+                obj = s3.get_object(Bucket=BUCKET_NAME, Key=s3_key)['Body']
 
-            obj = s3.get_object(Bucket=BUCKET_NAME, Key=s3_key)['Body']
+                df = pd.read_csv(StringIO(obj.read().decode('utf-8')))
+                data_dicts[table] = df
 
-            df = pd.read_csv(StringIO(obj.read().decode('utf-8')))
-            data_dicts[table] = df
-
-            logger.info(f"Data from {table} loaded successfully")
+                logger.info(f"Data from {table} loaded successfully")
+            else:
+                logger.info(f"No new data to transform for {table} table.")
         return data_dicts
     except Exception as e:
         logger.error(f"Error loading data: {str(e)}")
