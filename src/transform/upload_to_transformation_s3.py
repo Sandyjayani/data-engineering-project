@@ -15,8 +15,8 @@ else:
     from src.transform.setup_logger import setup_logger
 
 
-def upload_tables_to_s3(
-    table_data: pd.DataFrame | None, table_name: str, bucket_name: str
+def upload_to_transformation_s3(
+    table_data: pd.DataFrame | None, table_name: str
 ) -> str:
     """
     IMPORTANT: This function would only save and upload the dfas parquet 
@@ -42,16 +42,16 @@ def upload_tables_to_s3(
     # get the current timestamp
 
     logger = setup_logger("Upload table to s3 logger")
-
+    BUCKET_NAME = "smith-morra-transformation-bucket"
     timestamp_datetime = datetime.now()
     timestamp_str = timestamp_datetime.strftime("%Y-%m-%d_%H.%M.%S")
 
     logger.debug(
         f"Timestamp generated for the upload: {timestamp_str}",
-        extra={"table_name": table_name, "bucket_name": bucket_name},
+        extra={"table_name": table_name, "bucket_name": BUCKET_NAME},
     )
 
-    if 'transform' in bucket_name.lower():
+    if 'transform' in BUCKET_NAME.lower():
         file_type = 'parquet'
     else:
         file_type = 'csv'
@@ -93,31 +93,31 @@ def upload_tables_to_s3(
             s3_client = boto3.client("s3")
 
             s3_client.put_object(
-                Bucket=bucket_name, Key=s3_key, Body=buffer.getvalue()
+                Bucket=BUCKET_NAME, Key=s3_key, Body=buffer.getvalue()
             )
             logger.info(
-                f"Table {table_name} has been uploaded to {bucket_name} "
+                f"Table {table_name} has been uploaded to {BUCKET_NAME} "
                 f"with key {s3_key}.",
                 extra={
                     "table_name": f"{table_name}",
-                    "bucket_name": f"{bucket_name}",
+                    "bucket_name": f"{BUCKET_NAME}",
                     "s3_key": f"{s3_key}",
                 },
             )
-            save_timestamps(table_name, timestamp_str, bucket_name)
+            save_timestamps(table_name, timestamp_str, BUCKET_NAME)
             return (
                 f"Table {table_name} has been uploaded to "
-                + f"{bucket_name} with key {s3_key}."
+                + f"{BUCKET_NAME} with key {s3_key}."
             )
         return "No new data to upload"
 
     except ClientError as e:
         logger.error(
-            f"Failed to upload CSV file for table {table_name} "
+            f"Failed to upload parquet file for table {table_name} "
             + "to S3 bucket {bucket_name}: {e}",
             extra={
                 "table_name": f"{table_name}",
-                "bucket_name": f"{bucket_name}",
+                "bucket_name": f"{BUCKET_NAME}",
                 "s3_key": f"{s3_key}",
             },
         )
