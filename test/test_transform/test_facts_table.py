@@ -102,6 +102,202 @@ def test_dataframe():
     )
     return test_frame
 
+@pytest.fixture
+def test_missing_values():
+    test_columns = [
+        "sales_order_id",
+        "created_at",
+        "last_updated",
+        "design_id",
+        "staff_id",
+        "counterparty_id",
+        "units_sold",
+        "unit_price",
+        "currency_id",
+        "agreed_delivery_date",
+        "agreed_payment_date",
+        "agreed_delivery_location_id",
+    ]
+    test_row_1 = [
+        2, 
+        "2015-10-03 14:20:52.186", 
+        "2015-10-03 14:20:52.186", 
+        3, 
+        19, 
+        8, 
+        42972, 
+        3.94, 
+        2, 
+        "2015-10-07", 
+        "2015-10-08", 
+        8
+    ]
+    test_row_2 = [
+        3, 
+        "2018-03-03 14:20:52.188", 
+        "2018-03-03 14:20:52.188", 
+        4, 
+        10, 
+        4, 
+        65839, 
+        2.91, 
+        3, 
+        "2018-03-06", 
+        "2018-03-07", 
+        19
+    ]
+    test_row_3 = [
+        4, 
+        "2021-06-03 14:20:52.188", 
+        "2021-06-03 14:20:52.188", 
+        4, 
+        None, 
+        16, 
+        32069,
+        3.89, 
+        2, 
+        "2021-06-05", 
+        "2021-06-07", 
+        15
+    ]
+    test_row_4 = [
+        5, 
+        "2022-11-03 14:20:52.186", 
+        "2022-11-03 14:20:52.186", 
+        7, 
+        18, 
+        4, 
+        49659, 
+        2.41, 
+        3, 
+        "2022-11-05", 
+        "2022-11-08", 
+        25
+    ]
+    test_row_5 = [
+        6, 
+        "2023-08-04 11:37:10.341", 
+        "2023-08-04 11:37:10.341", 
+        3, 
+        13, 
+        18, 
+        83908, 
+        3.99, 
+        3, 
+        "2023-08-04", 
+        "2023-08-07", 
+        17
+    ]
+    test_frame = pd.DataFrame(
+        data=[
+            pd.Series(data=test_row_1, index=test_columns),
+            pd.Series(data=test_row_2, index=test_columns),
+            pd.Series(data=test_row_3, index=test_columns),
+            pd.Series(data=test_row_4, index=test_columns),
+            pd.Series(data=test_row_5, index=test_columns),
+        ], 
+        columns=test_columns
+    )
+    return test_frame
+
+@pytest.fixture
+def test_non_float():
+    test_columns = [
+        "sales_order_id",
+        "created_at",
+        "last_updated",
+        "design_id",
+        "staff_id",
+        "counterparty_id",
+        "units_sold",
+        "unit_price",
+        "currency_id",
+        "agreed_delivery_date",
+        "agreed_payment_date",
+        "agreed_delivery_location_id",
+    ]
+    test_row_1 = [
+        2, 
+        "2015-10-03 14:20:52.186", 
+        "2015-10-03 14:20:52.186", 
+        3, 
+        19, 
+        8, 
+        42972, 
+        3.94, 
+        2, 
+        "2015-10-07", 
+        "2015-10-08", 
+        8
+    ]
+    test_row_2 = [
+        3, 
+        "2018-03-03 14:20:52.188", 
+        "2018-03-03 14:20:52.188", 
+        4, 
+        10, 
+        4, 
+        65839, 
+        2.91, 
+        3, 
+        "2018-03-06", 
+        "2018-03-07", 
+        19
+    ]
+    test_row_3 = [
+        4, 
+        "2021-06-03 14:20:52.188", 
+        "2021-06-03 14:20:52.188", 
+        4, 
+        10, 
+        16, 
+        32069,
+        "hello", 
+        2, 
+        "2021-06-05", 
+        "2021-06-07", 
+        15
+    ]
+    test_row_4 = [
+        5, 
+        "2022-11-03 14:20:52.186", 
+        "2022-11-03 14:20:52.186", 
+        7, 
+        18, 
+        4, 
+        49659, 
+        2.41, 
+        3, 
+        "2022-11-05", 
+        "2022-11-08", 
+        25
+    ]
+    test_row_5 = [
+        6, 
+        "2023-08-04 11:37:10.341", 
+        "2023-08-04 11:37:10.341", 
+        3, 
+        13, 
+        18, 
+        83908, 
+        3.99, 
+        3, 
+        "2023-08-04", 
+        "2023-08-07", 
+        17
+    ]
+    test_frame = pd.DataFrame(
+        data=[
+            pd.Series(data=test_row_1, index=test_columns),
+            pd.Series(data=test_row_2, index=test_columns),
+            pd.Series(data=test_row_3, index=test_columns),
+            pd.Series(data=test_row_4, index=test_columns),
+            pd.Series(data=test_row_5, index=test_columns),
+        ], 
+        columns=test_columns
+    )
+    return test_frame
+
 
 def test_returns_dataframe(test_dataframe):
     rando_df = pd.DataFrame([1,2,3])
@@ -169,7 +365,17 @@ def test_returns_same_amount_of_rows_as_input(test_dataframe):
     result = facts_table(test_dataframe)
     assert len(result.index) == len(test_dataframe.index)
 
-def test_raises_error_for_invalid_input(test_dataframe):
+def test_raises_error_for_invalid_input():
     rando_df = pd.DataFrame([1,2,3])
     with pytest.raises(ValueError):
         assert facts_table(rando_df)
+
+def test_returns_none_for_missing_values(test_missing_values):
+    result = facts_table(test_missing_values)
+    assert result == None
+
+def test_returns_none_for_incorrect_value_type(test_non_float):
+    result = facts_table(test_non_float)
+    assert result == None
+
+# timestamp checks were already tested in dim_date test suite and should not work any differently here
