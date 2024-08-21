@@ -109,7 +109,6 @@ def upload_tables_to_s3(
                 f"Table {table_name} has been uploaded to "
                 + f"{bucket_name} with key {s3_key}."
             )
-        save_timestamps(table_name, timestamp_str, bucket_name)
         return "No new data to upload"
 
     except ClientError as e:
