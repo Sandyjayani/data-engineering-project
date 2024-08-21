@@ -67,7 +67,7 @@ def transform_staff(df_dict: dict) -> pd.DataFrame | None:
         if data_needed_from_bucket := not all(
             [dep_id in deps_in_df for dep_id in dept_ids]
         ):
-            dep_data_from_bucket = load_from_bucket("department")
+            dep_data_from_bucket = load_from_bucket("department", bucket_type='ingest')
             dep_data_from_bucket = dep_data_from_bucket.drop_duplicates(subset='department_id', keep='last')
             dep_data_from_bucket = dep_data_from_bucket[
                 ["department_id", "department_name", "location"]
