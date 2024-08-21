@@ -29,11 +29,13 @@ def extract_timestamp(filename):
 
 def load_and_combine_transformed_tables(table_name: str, bucket_type='transform') -> pd.DataFrame:
     '''
+    - if bucket_type = 'ingest' , it would read from the ingestion bucket and file type to be csv
+    - otherwise, would read from the transformation bucket and file type to be parquet
     - create a s3 client 
     - create an empty dict
     - create a variable storing a list of keys in the table_name folder
     - loop over the list
-    -   check if the file endswith 'parquet'
+    -   check if the file endswith the file type
     -   if so get the object from s3 and load as df
     -   append the df to the dict
     - sort the df by the timestamp
