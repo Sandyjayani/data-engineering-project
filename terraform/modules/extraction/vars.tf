@@ -25,8 +25,8 @@ variable "critical_error_topic_arn" {
   type = string
 }
 
-variable "secrets_arn" {
-  description = "ARN of the Secrets Manager secret that stores DB credentials"
+variable "raw_data_secrets_arn" {
+  description = "ARN of the Secrets Manager secret that stores DB credentials for raw data"
   type = string
   default = "arn:aws:secretsmanager:eu-west-2:637423603039:secret:DataSource_PostgresDB_Credentials-is1p1K"
 }
@@ -43,12 +43,25 @@ variable "lambda_schedule_expression" {
 }
 
 variable "extraction_lambda_name" {
-  description = "Cron expression for scheduling the Lambda function"
+  description = "The name of the lambda function for extraction"
   type = string
   default = "extraction_lambda_handler"
+}
+
+variable "s3_lambda_code_bucket_arn" {
+  description = "The ARN of the S3 ingestion bucket"
+  type = string
 }
 
 variable "python_runtime" {
   type    = string
   default = "python3.11"
+}
+
+variable "account_id" {
+  type = string
+}
+
+variable "region" {
+  type = string
 }

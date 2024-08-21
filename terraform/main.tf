@@ -36,25 +36,33 @@ module "permanent" {
   s3_ingestion_bucket = var.s3_ingestion_bucket
 }
 
-output "ingestion_bucket_arn" {
-  value = module.permanent.ingestion_bucket_arn
-}
-
 
 module "extraction" {
   source = "./modules/extraction"
   # secrets_arn = var.secrets_arn
   # lambda_schedule_expression = var.lambda_schedule_expression
   s3_ingestion_bucket_arn = module.permanent.ingestion_bucket_arn
+  s3_lambda_code_bucket_arn = module.permanent.lambda_code_bucket_arn
   critical_error_topic_arn = module.permanent.critical_error_topic_arn
   team_name = var.team_name
+  account_id = data.aws_caller_identity.current.account_id
+  region = data.aws_region.current.name
 }
 
 
-# placeholder for transformation and loadings
 module "transformation" {
   source = "./modules/transformation"
+  s3_transformation_bucket_arn = module.permanent.transformation_bucket_arn
+  s3_lambda_code_bucket_arn = module.permanent.lambda_code_bucket_arn
+  critical_error_topic_arn = module.permanent.critical_error_topic_arn
+  team_name = var.team_name
+  account_id = data.aws_caller_identity.current.account_id
+  region = data.aws_region.current.name
+
   depends_on = [ module.extraction ]
+  #ensure the extraction module is fully created (or updated) before 
+  #it begins creating or updating the transformation module.
+
 }
 
 # module "load" {

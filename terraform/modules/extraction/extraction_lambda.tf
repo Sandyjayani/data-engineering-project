@@ -13,13 +13,13 @@ data "archive_file" "layer" {
 resource "aws_lambda_layer_version" "layer" {
   layer_name          = "layer"
   compatible_runtimes = [var.python_runtime]
-  s3_bucket           = aws_s3_bucket.lambda_code_bucket.bucket
+  s3_bucket           = local.s3_bucket_name
   s3_key              = aws_s3_object.layer_code.key
 }
 
 resource "aws_lambda_function" "s3_file_reader" {
   function_name = var.extraction_lambda_name
-  s3_bucket     = aws_s3_bucket.lambda_code_bucket.bucket
+  s3_bucket     = local.s3_bucket_name
   s3_key        = aws_s3_object.lambda_code.key
   role          = aws_iam_role.extraction_lambda_role.arn
   handler       = "extraction.lambda_handler"
