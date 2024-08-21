@@ -43,19 +43,19 @@ output "ingestion_bucket_arn" {
 
 module "extraction" {
   source = "./modules/extraction"
-  secrets_arn = var.secrets_arn
-  lambda_schedule_expression = var.lambda_schedule_expression
+  # secrets_arn = var.secrets_arn
+  # lambda_schedule_expression = var.lambda_schedule_expression
   s3_ingestion_bucket_arn = module.permanent.ingestion_bucket_arn
-  critical_error_topic_extraction_arn = module.permanent.critical_error_topic_extraction_arn
+  critical_error_topic_arn = module.permanent.critical_error_topic_arn
   team_name = var.team_name
 }
 
 
-# # placeholder for transformation and loadings
-# module "transformation" {
-#   source = ".terraforms/modules/transformation"
-#   depends_on = [ module.extraction ]
-# }
+# placeholder for transformation and loadings
+module "transformation" {
+  source = "./modules/transformation"
+  depends_on = [ module.extraction ]
+}
 
 # module "load" {
 #   source = ".terraforms/modules/extraction"

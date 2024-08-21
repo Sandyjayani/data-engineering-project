@@ -1,8 +1,8 @@
-variable "aws_region" {
-  description = "The AWS region to deploy resources"
-  type = string
-  default     = "eu-west-2"
-}
+# variable "aws_region" {
+#   description = "The AWS region to deploy resources"
+#   type = string
+#   default     = "eu-west-2"
+# }
 
 variable "team_name" {
     type = string
@@ -20,7 +20,7 @@ variable "s3_ingestion_bucket_arn" {
   type = string
 }
 
-variable "critical_error_topic_extraction_arn" {
+variable "critical_error_topic_arn" {
   description = "The ARN of the sns topic for critical error for extraction"
   type = string
 }
