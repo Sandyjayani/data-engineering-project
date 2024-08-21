@@ -68,6 +68,7 @@ def transform_staff(df_dict: dict) -> pd.DataFrame | None:
             [dep_id in deps_in_df for dep_id in dept_ids]
         ):
             dep_data_from_bucket = load_from_bucket("department")
+            dep_data_from_bucket = dep_data_from_bucket.drop_duplicates(subset='department_id', keep='last')
             dep_data_from_bucket = dep_data_from_bucket[
                 ["department_id", "department_name", "location"]
             ]
@@ -93,9 +94,7 @@ def transform_staff(df_dict: dict) -> pd.DataFrame | None:
                 ]
             ]
 
-        # if data only required from transform bucket,
-        # join with staff data, tidy and return
-        if data_needed_from_bucket and not isinstance(new_depart_data, pd.DataFrame):
+        else:
             staff_df = pd.merge(
                 staff_df,
                 dep_data_from_bucket,
@@ -114,25 +113,46 @@ def transform_staff(df_dict: dict) -> pd.DataFrame | None:
                 ]
             ]
 
-        # if data required from transform bucket and passed data,
-        # concat dep data, join with staff data, tidy and return
-        if isinstance(new_depart_data, pd.DataFrame) and data_needed_from_bucket:
-            full_dep_data = pd.concat(
-                [dep_data_from_bucket, dep_data_from_df], ignore_index=True
-            )
-            staff_df = pd.merge(
-                staff_df, full_dep_data, how="left", on="department_id", validate="m:1"
-            )
-            dim_staff_df = staff_df[
-                [
-                    "staff_id",
-                    "first_name",
-                    "last_name",
-                    "department_name",
-                    "location",
-                    "email_address",
-                ]
-            ]
+        # # if data only required from transform bucket,
+        # # join with staff data, tidy and return
+        # if data_needed_from_bucket and not isinstance(new_depart_data, pd.DataFrame):
+        #     staff_df = pd.merge(
+        #         staff_df,
+        #         dep_data_from_bucket,
+        #         how="left",
+        #         on="department_id",
+        #         validate="m:1",
+        #     )
+        #     dim_staff_df = staff_df[
+        #         [
+        #             "staff_id",
+        #             "first_name",
+        #             "last_name",
+        #             "department_name",
+        #             "location",
+        #             "email_address",
+        #         ]
+        #     ]
+
+        # # if data required from transform bucket and passed data,
+        # # concat dep data, join with staff data, tidy and return
+        # if isinstance(new_depart_data, pd.DataFrame) and data_needed_from_bucket:
+        #     full_dep_data = pd.concat(
+        #         [dep_data_from_bucket, dep_data_from_df], ignore_index=True
+        #     )
+        #     staff_df = pd.merge(
+        #         staff_df, full_dep_data, how="left", on="department_id", validate="m:1"
+        #     )
+        #     dim_staff_df = staff_df[
+        #         [
+        #             "staff_id",
+        #             "first_name",
+        #             "last_name",
+        #             "department_name",
+        #             "location",
+        #             "email_address",
+        #         ]
+        #     ]
 
         logger.info("Transformation of staff table completed successfully.")
         validate_staff_data(dim_staff_df)
