@@ -4,7 +4,7 @@ import pytest
 from moto import mock_aws
 import boto3
 from unittest.mock import patch, Mock
-from io import BytesIO
+from io import BytesIO, StringIO
 import os
 import pandas as pd
 from datetime import datetime
@@ -39,8 +39,8 @@ class TestExtractTimestamp:
 
 
 class TestLoadCombinte:
-    @pytest.mark.it("Test if the function return the same table as df with one file")
-    def test_same_table_as_df_one_file(self,mock_client):
+    @pytest.mark.it("Test if the function return the same table as df with one parquet file")
+    def test_same_table_as_df_one_parquet_file(self,mock_client):
         bucket_name = "smith-morra-transformation-bucket"
         table_name = 'dim_staff'
 
@@ -61,6 +61,36 @@ class TestLoadCombinte:
         mock_client.put_object(Bucket=bucket_name, Key=test_key1, Body=buffer.getvalue())
 
         result = load_and_combine_transformed_tables(table_name)
+
+
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == 3
+        assert result['id'].tolist() == [1,2,3]
+        assert result['char'].tolist() == ['a','b','c']
+
+
+    @pytest.mark.it("Test if the function return the same table as df with one csv file")
+    def test_same_table_as_df_one_csv_file(self,mock_client):
+        bucket_name = "smith-morra-ingestion-bucket"
+        table_name = 'department'
+
+        mock_client.create_bucket(Bucket=bucket_name,
+                        CreateBucketConfiguration={"LocationConstraint": "eu-west-2"})
+
+        expected_df = pd.DataFrame({
+            'id' : [1,2,3],
+            'char' : ['a','b','c']
+        })
+
+        buffer = StringIO()
+        expected_df.to_csv(buffer, index=False)
+        buffer.seek(0)
+
+        test_key1 = "department/2024/8/13/16-57/department-2024-08-13_16.57.00.csv"
+
+        mock_client.put_object(Bucket=bucket_name, Key=test_key1, Body=buffer.getvalue())
+
+        result = load_and_combine_transformed_tables(table_name, bucket_type='ingest')
 
 
         assert isinstance(result, pd.DataFrame)
@@ -132,7 +162,53 @@ class TestLoadCombinte:
         assert result['id'].tolist() == [1,2,3,4,5,6,7,8,9]
         assert result['char'].tolist() == ['a','b','c','d','e','f','g','h','i']
 
+    @pytest.mark.it("Test if the function return the only load data from the specified table")
+    def test_same_table_as_df_only_read_from_specified_folder(self,mock_client):
+        bucket_name = "smith-morra-ingestion-bucket"
+        table_name = 'department'
+
+        mock_client.create_bucket(Bucket=bucket_name,
+                        CreateBucketConfiguration={"LocationConstraint": "eu-west-2"})
+
+        expected_df = pd.DataFrame({
+            'id' : [1,2,3],
+            'char' : ['a','b','c']
+        })
+
+        buffer = StringIO()
+        expected_df.to_csv(buffer, index=False)
+        buffer.seek(0)
+
+        test_key1 = "department/2024/8/13/16-57/department-2024-08-13_16.57.00.csv"
+
+        mock_client.put_object(Bucket=bucket_name, Key=test_key1, Body=buffer.getvalue())
+
+        expected_df2 = pd.DataFrame({
+            'id' : [4,5,6],
+            'char' : ['d','e','f']
+        })
+
+        test_key2 = "other/2024/8/13/16-57/departmet-2024-08-13_16.57.00.csv"
+
+        mock_client.put_object(Bucket=bucket_name, Key=test_key2, Body=buffer.getvalue())
+
+
+
+        result = load_and_combine_transformed_tables(table_name, bucket_type='ingest')
+
+
+        assert isinstance(result, pd.DataFrame)
+        assert len(result) == 3
+        assert result['id'].tolist() == [1,2,3]
+        assert result['char'].tolist() == ['a','b','c']
+
 
     @pytest.mark.it("Test if an empty dataframe is return when no files in the s3")
-    def test_no_files(self):
-        assert load_and_combine_transformed_tables('dim_staff') == pd.DataFrame()
+    def test_no_files(self, mock_client):
+        bucket_name = "smith-morra-transformation-bucket"
+        table_name = 'dim_staff'
+
+        mock_client.create_bucket(Bucket=bucket_name,
+                        CreateBucketConfiguration={"LocationConstraint": "eu-west-2"})
+                        
+        assert load_and_combine_transformed_tables('dim_staff').empty

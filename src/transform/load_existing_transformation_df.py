@@ -1,7 +1,7 @@
 import boto3 
 from datetime import datetime 
 import pandas as pd
-from io import BytesIO
+from io import BytesIO, StringIO
 from re import search
 from src.extraction.setup_logger import setup_logger
 
@@ -27,7 +27,7 @@ def extract_timestamp(filename):
         return datetime.strptime(timestamp_str, '%Y-%m-%d %H.%M.%S')
     return None
 
-def load_and_combine_transformed_tables(table_name: str) -> pd.DataFrame:
+def load_and_combine_transformed_tables(table_name: str, bucket_type='transform') -> pd.DataFrame:
     '''
     - create a s3 client 
     - create an empty dict
@@ -41,20 +41,30 @@ def load_and_combine_transformed_tables(table_name: str) -> pd.DataFrame:
     - return the df 
     - if there is nothing in the list, log a warning 
     '''
-    BUCKET_NAME =  "smith-morra-transformation-bucket"
+    if bucket_type == 'ingest':
+        BUCKET_NAME =  "smith-morra-ingestion-bucket"
+        file_type = 'csv'
+    else:
+        BUCKET_NAME =  "smith-morra-transformation-bucket"
+        file_type = 'parquet'
+
+    PREFIX = f"{table_name}/"
 
     s3_client = boto3.client('s3')
     df_dict ={}
 
-    s3_response = s3_client.list_objects_v2(Bucket=BUCKET_NAME)
+    s3_response = s3_client.list_objects_v2(Bucket=BUCKET_NAME, Prefix=PREFIX)
 
     for content in s3_response.get('Contents', []):
         key = content.get('Key','')
-        if key.endswith('.parquet'):
+        if key.endswith(file_type):
             logger.info(f"Processing file: {key}")
             try:
                 response = s3_client.get_object(Bucket=BUCKET_NAME, Key=key)
-                df = pd.read_parquet(BytesIO(response['Body'].read()))
+                if file_type == 'csv':
+                    df = pd.read_csv(StringIO(response['Body'].read().decode('utf-8')))
+                else:
+                    df = pd.read_parquet(BytesIO(response['Body'].read()))
                 df_dict[key] = df
                 logger.info(f"Loaded DataFrame from: {key}")
             except Exception as e:
