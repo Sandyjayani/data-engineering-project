@@ -13,7 +13,7 @@ def test_df_dict():
     return {
         "staff": pd.read_csv("test/test_transform/test_data/test_staff.csv"),
         "department": pd.read_csv(
-            "test/test_transform/test_data/test_full_department.csv"
+            "test/test_transform/test_data/test_department.csv"
         ),
     }
 
@@ -85,7 +85,7 @@ class TestTransformStaff:
     ):
         del test_df_dict["department"]
         mock_load_from_bucket.return_value = pd.read_csv(
-            "test/test_transform/test_data/test_full_department.csv"
+            "test/test_transform/test_data/test_department.csv"
         )
         output_df = ts(test_df_dict)
         expected_cols = [
