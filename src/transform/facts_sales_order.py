@@ -1,6 +1,12 @@
 import pandas as pd
 from copy import deepcopy
 from datetime import date, time, datetime
+import os
+
+if os.environ.get("AWS_EXECUTION_ENV"):
+    from setup_logger import setup_logger
+else:
+    from src.transform.setup_logger import setup_logger  
 
 def transform_sales_order(dataframe):
     """
@@ -11,6 +17,9 @@ def transform_sales_order(dataframe):
     the "sales_record_id" column will need to be populated when appending to the database, 
     as it is a serial primary key and it cannot be assumed beforehand
     """
+    logger = setup_logger('transform_staff')
+    logger.info('Starting transform_sales_order')
+
     if list(dataframe.columns) != [
         "sales_order_id",
         "created_at",
@@ -85,5 +94,5 @@ def transform_sales_order(dataframe):
         all_rows.append(new_series)
 
     new_df = pd.DataFrame(data=all_rows, columns=facts_columns)
-
+    logger.info('Transform_sales_order completed')
     return new_df
