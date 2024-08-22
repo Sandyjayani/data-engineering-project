@@ -1,5 +1,5 @@
 import pytest
-from transform.load_ingested_tables import ingestion_data_from_s3
+from src.transform.load_ingested_tables import load_ingested_tables
 import pandas as pd
 import os
 import boto3
@@ -25,8 +25,8 @@ def mock_client(aws_credentials):
     with mock_aws():
         yield boto3.client("s3")
 
-@patch("src.transform.transform_read_util.get_transformation_timestamp")
-@patch("src.transform.transform_read_util.get_ingestion_timestamp")
+@patch("src.transform.load_ingested_tables.get_transformation_timestamp")
+@patch("src.transform.load_ingested_tables.get_ingestion_timestamp")
 def test_load_multiple_tables_from_s3(mock_get_timestamp, mock_get_transformation_timestamp, mock_client):
     test_bucket = "smith-morra-ingestion-bucket"
     mock_get_transformation_timestamp.return_value = datetime(2003, 8, 13, 16, 57, 00)
@@ -62,7 +62,7 @@ def test_load_multiple_tables_from_s3(mock_get_timestamp, mock_get_transformatio
         csv_buffer.seek(0)
         mock_client.put_object(Bucket=test_bucket, Key=f'{table}/2024/8/13/16-57/{table}-2024-08-13_16.57.00.csv', Body=csv_buffer.getvalue())  # noqa: E501
 
-    response = ingestion_data_from_s3()
+    response = load_ingested_tables()
 
     assert isinstance(response, dict)
     for table in TABLE_NAMES:
@@ -74,8 +74,8 @@ def test_load_multiple_tables_from_s3(mock_get_timestamp, mock_get_transformatio
         assert df['value'].tolist() == ['A', 'B', 'C']
 
 
-@patch("src.transform.transform_read_util.get_transformation_timestamp")
-@patch("src.transform.transform_read_util.get_ingestion_timestamp")
+@patch("src.transform.load_ingested_tables.get_transformation_timestamp")
+@patch("src.transform.load_ingested_tables.get_ingestion_timestamp")
 def test_if_timestamp_are_same(mock_get_timestamp, mock_get_transformation_timestamp, mock_client, caplog):
     test_bucket = "smith-morra-ingestion-bucket"
     mock_get_transformation_timestamp.return_value = datetime(2024, 8, 13, 16, 57, 00)
@@ -96,7 +96,7 @@ def test_if_timestamp_are_same(mock_get_timestamp, mock_get_transformation_times
             'id':[1,2,3],
             'value':['A', 'B', 'C']
         })
-    data_dict = ingestion_data_from_s3()
+    data_dict = load_ingested_tables()
 
     assert data_dict == {}
     assert "No new data to transform" in caplog.text
@@ -104,4 +104,4 @@ def test_if_timestamp_are_same(mock_get_timestamp, mock_get_transformation_times
 
 def test_error():
     with pytest.raises(Exception):
-        ingestion_data_from_s3()
+        load_ingested_tables()

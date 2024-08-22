@@ -1,5 +1,5 @@
-from transform.load_combined_tables import (
-    load_and_combine_transformed_tables, extract_timestamp)
+from src.transform.load_combined_tables import (
+    load_combined_tables, extract_timestamp)
 import pytest
 from moto import mock_aws
 import boto3
@@ -60,7 +60,7 @@ class TestLoadCombinte:
 
         mock_client.put_object(Bucket=bucket_name, Key=test_key1, Body=buffer.getvalue())
 
-        result = load_and_combine_transformed_tables(table_name)
+        result = load_combined_tables(table_name)
 
 
         assert isinstance(result, pd.DataFrame)
@@ -90,7 +90,7 @@ class TestLoadCombinte:
 
         mock_client.put_object(Bucket=bucket_name, Key=test_key1, Body=buffer.getvalue())
 
-        result = load_and_combine_transformed_tables(table_name, bucket_type='ingest')
+        result = load_combined_tables(table_name, bucket_type='ingest')
 
 
         assert isinstance(result, pd.DataFrame)
@@ -135,7 +135,7 @@ class TestLoadCombinte:
 
         mock_client.put_object(Bucket=bucket_name, Key=test_key2, Body=buffer.getvalue())
 
-        result = load_and_combine_transformed_tables(table_name)
+        result = load_combined_tables(table_name)
 
         assert isinstance(result, pd.DataFrame)
         assert len(result) == 6
@@ -155,7 +155,7 @@ class TestLoadCombinte:
 
         mock_client.put_object(Bucket=bucket_name, Key=test_key3, Body=buffer.getvalue())
 
-        result = load_and_combine_transformed_tables(table_name)
+        result = load_combined_tables(table_name)
 
         assert isinstance(result, pd.DataFrame)
         assert len(result) == 9
@@ -194,7 +194,7 @@ class TestLoadCombinte:
 
 
 
-        result = load_and_combine_transformed_tables(table_name, bucket_type='ingest')
+        result = load_combined_tables(table_name, bucket_type='ingest')
 
 
         assert isinstance(result, pd.DataFrame)
@@ -211,4 +211,4 @@ class TestLoadCombinte:
         mock_client.create_bucket(Bucket=bucket_name,
                         CreateBucketConfiguration={"LocationConstraint": "eu-west-2"})
                         
-        assert load_and_combine_transformed_tables('dim_staff').empty
+        assert load_combined_tables('dim_staff').empty

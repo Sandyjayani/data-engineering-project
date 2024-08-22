@@ -8,7 +8,7 @@ import os
 if os.environ.get("AWS_EXECUTION_ENV") is not None:
     from setup_logger import setup_logger
 else:
-    from src.extraction.setup_logger import setup_logger
+    from src.transform.setup_logger import setup_logger
 
 
 logger = setup_logger("transformation")

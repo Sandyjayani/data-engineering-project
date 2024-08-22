@@ -4,10 +4,10 @@ import os
 if os.environ.get("AWS_EXECUTION_ENV"):
     from setup_logger import setup_logger # type: ignore
 else:
-    from src.extraction.setup_logger import setup_logger
+    from src.transform.setup_logger import setup_logger
 
 
-def transform_dim_design(data_dict: dict) -> pd.DataFrame | None:
+def transform_design(data_dict: dict) -> pd.DataFrame | None:
 
     """
     Transforms the 'design' data from a given dictionary into a pandas DataFrame with specific requirements.
