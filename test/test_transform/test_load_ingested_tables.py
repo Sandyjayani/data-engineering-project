@@ -1,5 +1,5 @@
 import pytest
-from src.transform.transform_read_util import ingestion_data_from_s3
+from src.transform.load_ingested_tables import load_ingested_tables
 import pandas as pd
 import os
 import boto3
@@ -24,10 +24,11 @@ def mock_client(aws_credentials):
     with mock_aws():
         yield boto3.client("s3")
 
-
-@patch("src.transform.transform_read_util.get_timestamp")
-def test_load_multiple_tables_from_s3(mock_get_timestamp, mock_client):
+@patch("src.transform.load_ingested_tables.get_transformation_timestamp")
+@patch("src.transform.load_ingested_tables.get_ingestion_timestamp")
+def test_load_multiple_tables_from_s3(mock_get_timestamp, mock_get_transformation_timestamp, mock_client):
     test_bucket = "smith-morra-ingestion-bucket"
+    mock_get_transformation_timestamp.return_value = datetime(2003, 8, 13, 16, 57, 00)
     mock_get_timestamp.return_value = datetime(2024, 8, 13, 16, 57, 00)
     mock_client.create_bucket(
         Bucket=test_bucket,
@@ -61,7 +62,7 @@ def test_load_multiple_tables_from_s3(mock_get_timestamp, mock_client):
             Body=csv_buffer.getvalue(),
         )  # noqa: E501
 
-    response = ingestion_data_from_s3()
+    response = load_ingested_tables()
 
     assert isinstance(response, dict)
     for table in TABLE_NAMES:
@@ -73,6 +74,34 @@ def test_load_multiple_tables_from_s3(mock_get_timestamp, mock_client):
         assert df["value"].tolist() == ["A", "B", "C"]
 
 
+@patch("src.transform.load_ingested_tables.get_transformation_timestamp")
+@patch("src.transform.load_ingested_tables.get_ingestion_timestamp")
+def test_if_timestamp_are_same(mock_get_timestamp, mock_get_transformation_timestamp, mock_client, caplog):
+    test_bucket = "smith-morra-ingestion-bucket"
+    mock_get_transformation_timestamp.return_value = datetime(2024, 8, 13, 16, 57, 00)
+    mock_get_timestamp.return_value = datetime(2024, 8, 13, 16, 57, 00)
+
+    mock_client.create_bucket(
+    Bucket=test_bucket,
+    CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
+    )
+
+    # test_key = "test_table/2024/8/13/16-57/test_table-2024-08-13_16.57.00.csv"
+    TABLE_NAMES = [
+        "payment"
+    ]
+
+    for table in TABLE_NAMES:
+        df = pd.DataFrame({
+            'id':[1,2,3],
+            'value':['A', 'B', 'C']
+        })
+    data_dict = load_ingested_tables()
+
+    assert data_dict == {}
+    assert "No new data to transform" in caplog.text
+
+
 def test_error():
     with pytest.raises(Exception):
-        ingestion_data_from_s3()
+        load_ingested_tables()

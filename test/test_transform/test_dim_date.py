@@ -1,4 +1,4 @@
-from src.transform.dim_date import dim_date
+from src.transform.dim_date import transform_date
 import pytest
 from datetime import date
 import pandas as pd
@@ -105,18 +105,18 @@ def test_dataframe():
 
 
 def test_returns_dataframe(test_dataframe):
-    result = dim_date(test_dataframe)
+    result = transform_date(test_dataframe)
     assert type(result) == type(test_dataframe)
 
 
 def test_does_not_mutate_input_df(test_dataframe):
     original_df = deepcopy(test_dataframe)
-    dim_date(test_dataframe)
+    transform_date(test_dataframe)
     assert test_dataframe.to_dict() == original_df.to_dict()
 
 
 def test_returns_new_df(test_dataframe):
-    result = dim_date(test_dataframe)
+    result = transform_date(test_dataframe)
     assert result is not test_dataframe
 
 
@@ -131,7 +131,7 @@ def test_returns_df_with_8_columns(test_dataframe):
         "month_name",
         "quarter",
     ]
-    result = dim_date(test_dataframe)
+    result = transform_date(test_dataframe)
     assert len(result.columns) == len(expected_columns)
 
 
@@ -146,12 +146,12 @@ def test_returns_df_with_expected_column_names(test_dataframe):
         "month_name",
         "quarter",
     ]
-    result = dim_date(test_dataframe)
+    result = transform_date(test_dataframe)
     assert list(result.columns) == expected_columns
 
 
 def test_returns_df_with_expected_column_value_types(test_dataframe):
-    result = dim_date(test_dataframe)
+    result = transform_date(test_dataframe)
     row = result.loc[0]
     assert type(row.iloc[0]) == date
     for int_index in [1, 2, 3, 4, 7]:
@@ -185,7 +185,7 @@ def test_returns_dataframe_with_expected_kind_of_values(test_dataframe):
         "November",
         "December",
     ]
-    result = dim_date(test_dataframe)
+    result = transform_date(test_dataframe)
     for index in range(4):
         row = result.loc[index]
 
@@ -213,17 +213,24 @@ def test_returns_dataframe_with_expected_kind_of_values(test_dataframe):
 
 
 def test_returns_all_dates_passed_as_rows(test_dataframe):
-    result = dim_date(test_dataframe)
+    result = transform_date(test_dataframe)
     assert len(result.index) == 14
 
 
 def test_returns_unique_date_rows(test_dataframe):
+<<<<<<< HEAD
     result = dim_date(test_dataframe)
     assert len(result["date_id"]) == len(set(result["date_id"]))  # same length
 
     string_list = [
         date_object.strftime("%Y-%m-%d") for date_object in result["date_id"]
     ]
+=======
+    result = transform_date(test_dataframe)
+    assert len(result["date_id"]) == len(set(result["date_id"])) # same length
+    
+    string_list = [date_object.strftime("%Y-%m-%d") for date_object in result["date_id"]]   
+>>>>>>> main
 
     assert sorted(list(string_list)) == [
         "2015-10-03",
@@ -246,4 +253,4 @@ def test_returns_unique_date_rows(test_dataframe):
 def test_raises_error_for_invalid_input():
     rando_df = pd.DataFrame([1, 2, 3])
     with pytest.raises(ValueError):
-        assert dim_date(rando_df)
+        assert transform_date(rando_df)

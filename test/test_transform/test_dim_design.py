@@ -1,7 +1,7 @@
 import pytest
 import pandas as pd
 import logging
-from src.transform.transform_dim_design import transform_dim_design
+from src.transform.dim_design import transform_design
 
 
 @pytest.fixture
@@ -62,7 +62,7 @@ def data_with_missing_design_id():
 @pytest.mark.it("should transform valid design data successfully")
 def test_transform_dim_design_success(valid_data, caplog):
     with caplog.at_level(logging.INFO):
-        result = transform_dim_design(valid_data)
+        result = transform_design(valid_data)
         assert isinstance(result, pd.DataFrame)
         assert list(result.columns) == [
             "design_id",
@@ -79,7 +79,7 @@ def test_transform_dim_design_missing_columns(missing_column_data, caplog):
     with caplog.at_level(logging.ERROR):
         result = None
         try:
-            result = transform_dim_design(missing_column_data)
+            result = transform_design(missing_column_data)
         except ValueError:
             pass
         assert result is None
@@ -89,7 +89,7 @@ def test_transform_dim_design_missing_columns(missing_column_data, caplog):
 @pytest.mark.it("should handle missing values by filling with 'Unknown'")
 def test_transform_dim_design_missing_values(data_with_missing_values, caplog):
     with caplog.at_level(logging.INFO):
-        result = transform_dim_design(data_with_missing_values)
+        result = transform_design(data_with_missing_values)
         assert isinstance(result, pd.DataFrame)
         assert len(result) == 3
 
@@ -106,7 +106,7 @@ def test_transform_dim_design_missing_values(data_with_missing_values, caplog):
 @pytest.mark.it("should handle missing values by dropping rows with missing 'design_id")
 def test_transform_dim_design_missing_design_id(data_with_missing_design_id, caplog):
     with caplog.at_level(logging.INFO):
-        result = transform_dim_design(data_with_missing_design_id)
+        result = transform_design(data_with_missing_design_id)
         assert isinstance(result, pd.DataFrame)
         assert len(result) == 2
 
@@ -119,5 +119,5 @@ def test_transform_dim_design_unexpected_error(caplog):
     data_dict = {"design": "This is not a DataFrame"}
     with caplog.at_level(logging.ERROR):
         with pytest.raises(Exception):
-            transform_dim_design(data_dict)
+            transform_design(data_dict)
         assert "Error in transform_dim_design" in caplog.text

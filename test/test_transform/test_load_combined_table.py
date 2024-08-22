@@ -1,7 +1,12 @@
+<<<<<<< HEAD:test/test_transform/test_load_existing_transformation_df.py
 from src.transform.load_existing_transformation_df import (
     load_and_combine_transformed_tables,
     extract_timestamp,
 )
+=======
+from src.transform.load_combined_tables import (
+    load_combined_tables, extract_timestamp)
+>>>>>>> main:test/test_transform/test_load_combined_table.py
 import pytest
 from moto import mock_aws
 import boto3
@@ -66,7 +71,7 @@ class TestLoadCombinte:
             Bucket=bucket_name, Key=test_key1, Body=buffer.getvalue()
         )
 
-        result = load_and_combine_transformed_tables(table_name)
+        result = load_combined_tables(table_name)
 
         assert isinstance(result, pd.DataFrame)
         assert len(result) == 3
@@ -93,9 +98,15 @@ class TestLoadCombinte:
 
         test_key1 = "department/2024/8/13/16-57/department-2024-08-13_16.57.00.csv"
 
+<<<<<<< HEAD:test/test_transform/test_load_existing_transformation_df.py
         mock_client.put_object(
             Bucket=bucket_name, Key=test_key1, Body=buffer.getvalue()
         )
+=======
+        mock_client.put_object(Bucket=bucket_name, Key=test_key1, Body=buffer.getvalue())
+
+        result = load_combined_tables(table_name, bucket_type='ingest')
+>>>>>>> main:test/test_transform/test_load_combined_table.py
 
         result = load_and_combine_transformed_tables(table_name, bucket_type="ingest")
 
@@ -138,7 +149,7 @@ class TestLoadCombinte:
             Bucket=bucket_name, Key=test_key2, Body=buffer.getvalue()
         )
 
-        result = load_and_combine_transformed_tables(table_name)
+        result = load_combined_tables(table_name)
 
         assert isinstance(result, pd.DataFrame)
         assert len(result) == 6
@@ -157,7 +168,7 @@ class TestLoadCombinte:
             Bucket=bucket_name, Key=test_key3, Body=buffer.getvalue()
         )
 
-        result = load_and_combine_transformed_tables(table_name)
+        result = load_combined_tables(table_name)
 
         assert isinstance(result, pd.DataFrame)
         assert len(result) == 9
@@ -192,9 +203,17 @@ class TestLoadCombinte:
 
         test_key2 = "other/2024/8/13/16-57/departmet-2024-08-13_16.57.00.csv"
 
+<<<<<<< HEAD:test/test_transform/test_load_existing_transformation_df.py
         mock_client.put_object(
             Bucket=bucket_name, Key=test_key2, Body=buffer.getvalue()
         )
+=======
+        mock_client.put_object(Bucket=bucket_name, Key=test_key2, Body=buffer.getvalue())
+
+
+
+        result = load_combined_tables(table_name, bucket_type='ingest')
+>>>>>>> main:test/test_transform/test_load_combined_table.py
 
         result = load_and_combine_transformed_tables(table_name, bucket_type="ingest")
 
@@ -208,9 +227,16 @@ class TestLoadCombinte:
         bucket_name = "smith-morra-transformation-bucket"
         table_name = "dim_staff"
 
+<<<<<<< HEAD:test/test_transform/test_load_existing_transformation_df.py
         mock_client.create_bucket(
             Bucket=bucket_name,
             CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
         )
 
         assert load_and_combine_transformed_tables("dim_staff").empty
+=======
+        mock_client.create_bucket(Bucket=bucket_name,
+                        CreateBucketConfiguration={"LocationConstraint": "eu-west-2"})
+                        
+        assert load_combined_tables('dim_staff').empty
+>>>>>>> main:test/test_transform/test_load_combined_table.py
