@@ -25,11 +25,16 @@ def transform_dim_location(data_dict: dict[str, pd.DataFrame]) -> pd.DataFrame |
     - Optional[pd.DataFrame]: A transformed DataFrame in the 'dim_location' format, or None if the transformation cannot be completed due to missing data or errors.
     """
 
-    logger = setup_logger("transform_dim_location")
+    logger = setup_logger("transform_location")
 
     try:
+<<<<<<< HEAD:src/transform/transform_dim_location.py
         logger.info("Starting transformation for dim_location.")
         df = data_dict.get("address")
+=======
+        logger.info("Starting transformation for transform_location.")
+        df = data_dict.get('address')
+>>>>>>> main:src/transform/dim_location.py
         if df is None:
             logger.error("Address data not found in the provided data dictionary.")
             return None
@@ -83,6 +88,6 @@ def transform_dim_location(data_dict: dict[str, pd.DataFrame]) -> pd.DataFrame |
         return df
 
     except Exception as e:
-        logger.error(f"Error in transform_dim_location: {str(e)}")
+        logger.error(f"Error in transform_location: {str(e)}")
         return None
 

@@ -1,55 +1,37 @@
 resource "aws_sfn_state_machine" "unified_state_machine" {
-  name     = "unified-state-machine"
+  name = "unified-state-machine"
   role_arn = aws_iam_role.unified_state_machine_role.arn
   definition = <<EOF
   {
-    "Comment": "A state machine for the entire ETL process",
-    "StartAt": "Lambda Invoke",
-    "States": {
-        "Extract": {
+  "Comment": "An unifiied state machine for the entire ETL process",
+  "StartAt" : "Extract",
+  "States": {
+    "Extract":{
         "Type": "Task",
         "Resource": "arn:aws:states:::lambda:invoke",
         "OutputPath": "$.Payload",
         "Parameters": {
             "Payload.$": "$",
-            "FunctionName": "arn:aws:lambda:eu-west-2:637423603039:function:extraction_lambda_handler:$LATEST"
-        },
-        "Retry": [
-            {
-            "ErrorEquals": [
-                "States.ALL"
-            ],
-            "MaxAttempts": 3,
-            "BackoffRate": 1.5,
-            "IntervalSeconds": 1
-            }
-        ],
-        "End": true,
-        "Catch": [
-            {
-            "ErrorEquals": [
-                "States.ALL"
-            ],
-            "Next": "SNS Publish",
-            "ResultPath": null
-            }
-        ]
-        },
-        "SNS Publish": {
-        "Type": "Task",
-        "Resource": "arn:aws:states:::sns:publish",
-        "Parameters": {
-            "TopicArn": "arn:aws:sns:eu-west-2:637423603039:ExtractLambdaFailure",
-            "Message.$": "$"
-        },
-        "End": true
+            "FunctionName": "${module.extraction.lambda_extraction_role_arn}"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "MaxAttempts": 3,
+          "BackoffRate": 1.5,
+          "IntervalSeconds": 1
         }
+      ],
+      "End": true
+    }
     }
   }
   EOF
 }
 
-# placeholder
+# # placeholder
 # resource "aws_sfn_state_machine" "extraction_state_machine" {
 #   name     = "my-state-machine"
 #   role_arn = aws_iam_role.lambda_role.arn
@@ -131,3 +113,50 @@ resource "aws_sfn_state_machine" "unified_state_machine" {
 # }
 # EOF
 # }
+
+
+
+# # {
+# #   "Comment": "A description of my state machine",
+# #   "StartAt": "Lambda Invoke",
+# #   "States": {
+# #     "Lambda Invoke": {
+# #       "Type": "Task",
+# #       "Resource": "arn:aws:states:::lambda:invoke",
+# #       "OutputPath": "$.Payload",
+# #       "Parameters": {
+# #         "Payload.$": "$",
+# #         "FunctionName": "arn:aws:lambda:eu-west-2:637423603039:function:extraction_lambda_handler:$LATEST"
+# #       },
+# #       "Retry": [
+# #         {
+# #           "ErrorEquals": [
+# #             "States.ALL"
+# #           ],
+# #           "MaxAttempts": 3,
+# #           "BackoffRate": 1.5,
+# #           "IntervalSeconds": 1
+# #         }
+# #       ],
+# #       "End": true,
+# #       "Catch": [
+# #         {
+# #           "ErrorEquals": [
+# #             "States.ALL"
+# #           ],
+# #           "Next": "SNS Publish",
+# #           "ResultPath": null
+# #         }
+# #       ]
+# #     },
+# #     "SNS Publish": {
+# #       "Type": "Task",
+# #       "Resource": "arn:aws:states:::sns:publish",
+# #       "Parameters": {
+# #         "TopicArn": "arn:aws:sns:eu-west-2:637423603039:ExtractLambdaFailure",
+# #         "Message.$": "$"
+# #       },
+# #       "End": true
+# #     }
+# #   }
+# # }

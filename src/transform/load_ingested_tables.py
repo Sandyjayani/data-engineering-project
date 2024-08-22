@@ -52,7 +52,7 @@ def load_ingested_tables():
 
     try:
         for table in TABLE_NAMES:
-            logger.info(f"Load data from {table} from {BUCKET_NAME}")
+            logger.info(f"Loading data from {table} from {BUCKET_NAME}")
             ingestion_timestamp_datetime = get_ingestion_timestamp(table)
             transformation_timestamp_dt = get_transformation_timestamp(table)
             timestamp_str = ingestion_timestamp_datetime.strftime("%Y-%m-%d_%H.%M.%S")
