@@ -2,8 +2,12 @@ import pandas as pd
 from copy import deepcopy
 from datetime import date, time, datetime
 
+<<<<<<< HEAD:src/transform/facts_table.py
 
 def facts_table(dataframe):
+=======
+def transform_sales_order(dataframe):
+>>>>>>> main:src/transform/facts_sales_order.py
     """
     takes a sales_order OLTP dataframe
 

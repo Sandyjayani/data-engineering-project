@@ -4,10 +4,14 @@ import os
 if os.environ.get("AWS_EXECUTION_ENV"):
     from setup_logger import setup_logger  # type: ignore
 else:
-    from src.extraction.setup_logger import setup_logger
+    from src.transform.setup_logger import setup_logger
 
+<<<<<<< HEAD:src/transform/transform_dim_location.py
 
 def transform_dim_location(data_dict: dict[str, pd.DataFrame]) -> pd.DataFrame | None:
+=======
+def transform_location(data_dict: dict[str, pd.DataFrame]) -> pd.DataFrame | None:
+>>>>>>> main:src/transform/dim_location.py
     """
     Transforms the 'address' DataFrame from the input dictionary into the 'dim_location' format.
 

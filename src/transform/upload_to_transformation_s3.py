@@ -12,14 +12,14 @@ import os
 if os.environ.get("AWS_EXECUTION_ENV") is not None:
     from setup_logger import setup_logger
 else:
-    from src.extraction.setup_logger import setup_logger
+    from src.transform.setup_logger import setup_logger
 
 
-def upload_tables_to_s3(
-    table_data: pd.DataFrame | None, table_name: str, bucket_name: str
+def upload_to_transformation_s3(
+    table_data: pd.DataFrame | None, table_name: str
 ) -> str:
     """
-    IMPORTANT: This function would only save and upload the dfas parquet
+    IMPORTANT: This function would only save and upload the dfas parquet 
     if thebucket name contains the word "transform", case insensitive
     csv otherwise
 
@@ -42,20 +42,20 @@ def upload_tables_to_s3(
     # get the current timestamp
 
     logger = setup_logger("Upload table to s3 logger")
-
+    BUCKET_NAME = "smith-morra-transformation-bucket"
     timestamp_datetime = datetime.now()
     timestamp_str = timestamp_datetime.strftime("%Y-%m-%d_%H.%M.%S")
 
     logger.debug(
         f"Timestamp generated for the upload: {timestamp_str}",
-        extra={"table_name": table_name, "bucket_name": bucket_name},
+        extra={"table_name": table_name, "bucket_name": BUCKET_NAME},
     )
 
-    if "transform" in bucket_name.lower():
-        file_type = "parquet"
+    if 'transform' in BUCKET_NAME.lower():
+        file_type = 'parquet'
     else:
-        file_type = "csv"
-
+        file_type = 'csv'
+    
     # create a var for the file key in
     # "[Table Name]/Year/Month/Day/hh-mm/[tablename]-[timestamp].csv"
 
@@ -80,46 +80,49 @@ def upload_tables_to_s3(
             # convert the given dataframe to csv
             # reposition stream to the beginning
 
-            if file_type == "parquet":
+            if file_type == 'parquet':
                 buffer = BytesIO()
                 table_data.to_parquet(buffer, index=False)
             else:
                 buffer = StringIO()
                 table_data.to_csv(buffer, index=False)
-
+                
             buffer.seek(0)
 
             # upload the csv from the buffer to the s3
             s3_client = boto3.client("s3")
 
-            s3_client.put_object(Bucket=bucket_name, Key=s3_key, Body=buffer.getvalue())
+            s3_client.put_object(
+                Bucket=BUCKET_NAME, Key=s3_key, Body=buffer.getvalue()
+            )
             logger.info(
-                f"Table {table_name} has been uploaded to {bucket_name} "
+                f"Table {table_name} has been uploaded to {BUCKET_NAME} "
                 f"with key {s3_key}.",
                 extra={
                     "table_name": f"{table_name}",
-                    "bucket_name": f"{bucket_name}",
+                    "bucket_name": f"{BUCKET_NAME}",
                     "s3_key": f"{s3_key}",
                 },
             )
-            save_timestamps(table_name, timestamp_str, bucket_name)
+            save_timestamps(table_name, timestamp_str, BUCKET_NAME)
             return (
                 f"Table {table_name} has been uploaded to "
-                + f"{bucket_name} with key {s3_key}."
+                + f"{BUCKET_NAME} with key {s3_key}."
             )
         return "No new data to upload"
 
     except ClientError as e:
         logger.error(
-            f"Failed to upload CSV file for table {table_name} "
+            f"Failed to upload parquet file for table {table_name} "
             + "to S3 bucket {bucket_name}: {e}",
             extra={
                 "table_name": f"{table_name}",
-                "bucket_name": f"{bucket_name}",
+                "bucket_name": f"{BUCKET_NAME}",
                 "s3_key": f"{s3_key}",
             },
         )
         raise e
+
 
 
 def save_timestamps(table_name: str, timestamp: str, bucket_name: str):

@@ -7,8 +7,15 @@ from re import search
 
 if os.environ.get("AWS_EXECUTION_ENV"):
     from setup_logger import setup_logger
+<<<<<<< HEAD:src/transform/load_existing_transformation_df.py
 else:
     from src.transform.setup_logger import setup_logger
+=======
+else:    
+    from src.transform.setup_logger import setup_logger
+
+    
+>>>>>>> main:src/transform/load_combined_tables.py
 
 logger = setup_logger("Load and Combine files logger")
 
@@ -34,11 +41,16 @@ def extract_timestamp(filename):
         return datetime.strptime(timestamp_str, "%Y-%m-%d %H.%M.%S")
     return None
 
+<<<<<<< HEAD:src/transform/load_existing_transformation_df.py
 
 def load_and_combine_transformed_tables(
     table_name: str, bucket_type="transform"
 ) -> pd.DataFrame:
     """
+=======
+def load_combined_tables(table_name: str, bucket_type='transform') -> pd.DataFrame:
+    '''
+>>>>>>> main:src/transform/load_combined_tables.py
     - if bucket_type = 'ingest' , it would read from the ingestion bucket and file type to be csv
     - otherwise, would read from the transformation bucket and file type to be parquet
     - create a s3 client

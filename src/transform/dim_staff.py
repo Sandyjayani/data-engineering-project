@@ -2,13 +2,13 @@ import pandas as pd
 import os
 
 if os.environ.get("AWS_EXECUTION_ENV"):
-    from load_existing_transformation_df import (
-        load_and_combine_transformed_tables as load_from_bucket,
+    from transform.load_combined_tables import (
+        load_combined_tables as load_from_bucket,
     )
     from setup_logger import setup_logger
 else:
-    from src.transform.load_existing_transformation_df import (
-        load_and_combine_transformed_tables as load_from_bucket,
+    from src.transform.load_combined_tables import (
+        load_combined_tables as load_from_bucket,
     )
     from src.transform.setup_logger import setup_logger
 

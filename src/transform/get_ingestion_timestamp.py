@@ -8,13 +8,13 @@ import os
 if os.environ.get("AWS_EXECUTION_ENV") is not None:
     from setup_logger import setup_logger
 else:
-    from src.extraction.setup_logger import setup_logger
+    from src.transform.setup_logger import setup_logger
 
 
 logger = setup_logger("extraction")
 
 
-def get_timestamp(table_name: str):
+def get_ingestion_timestamp(table_name: str):
     """Function takes name of table and searches for latest timestamp
     in csv file for that table. If no timestamp CSV exist, it will return
     timestamp of "0001-01-01_01.01.01".
@@ -24,7 +24,7 @@ def get_timestamp(table_name: str):
 
     return value:
         - timestamp: str (e.g., '2024-08-14_14-09.01')"""
-
+    
     bucket_name = "smith-morra-ingestion-bucket"
     key = f"{table_name}/timestamps.csv"
     s3_client = boto3.client("s3")

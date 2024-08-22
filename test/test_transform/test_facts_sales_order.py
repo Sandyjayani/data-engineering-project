@@ -1,4 +1,4 @@
-from src.transform.facts_table import facts_table
+from src.transform.facts_sales_order import transform_sales_order
 import pytest
 import pandas as pd
 from copy import deepcopy
@@ -105,25 +105,30 @@ def test_dataframe():
 
 
 def test_returns_dataframe(test_dataframe):
+<<<<<<< HEAD:test/test_transform/test_facts_table.py
     rando_df = pd.DataFrame([1, 2, 3])
     result = facts_table(test_dataframe)
+=======
+    rando_df = pd.DataFrame([1,2,3])
+    result = transform_sales_order(test_dataframe)
+>>>>>>> main:test/test_transform/test_facts_sales_order.py
     assert type(result) == type(rando_df)
 
 
 def test_does_not_mutate_input(test_dataframe):
     expected = deepcopy(test_dataframe)
-    facts_table(test_dataframe)
+    transform_sales_order(test_dataframe)
     assert test_dataframe.to_dict() == expected.to_dict()
 
 
 def test_returns_new_dataframe(test_dataframe):
-    result = facts_table(test_dataframe)
+    result = transform_sales_order(test_dataframe)
     assert result is not test_dataframe
     assert test_dataframe.to_dict() != result.to_dict()
 
 
 def test_df_has_expected_amount_of_columns(test_dataframe):
-    result = facts_table(test_dataframe)
+    result = transform_sales_order(test_dataframe)
     assert len(result.columns) == 14
 
 
@@ -144,12 +149,12 @@ def test_df_has_expected_column_names(test_dataframe):
         "agreed_delivery_date",
         "agreed_delivery_location_id",
     ]
-    result = facts_table(test_dataframe)
+    result = transform_sales_order(test_dataframe)
     assert list(result.columns) == expected
 
 
 def test_df_values_are_expected_types(test_dataframe):
-    result = facts_table(test_dataframe)
+    result = transform_sales_order(test_dataframe)
     for index in range(5):
         row = result.loc[index]
         for int_i in [0, 5, 6, 7, 9, 10, 13]:
@@ -162,7 +167,7 @@ def test_df_values_are_expected_types(test_dataframe):
 
 
 def test_df_values_are_within_expected_range(test_dataframe):
-    result = facts_table(test_dataframe)
+    result = transform_sales_order(test_dataframe)
     for index in range(5):
         row = result.loc[index]
         for id_index in [0, 5, 6, 9, 10, 13]:
@@ -174,11 +179,15 @@ def test_df_values_are_within_expected_range(test_dataframe):
 
 
 def test_returns_same_amount_of_rows_as_input(test_dataframe):
-    result = facts_table(test_dataframe)
+    result = transform_sales_order(test_dataframe)
     assert len(result.index) == len(test_dataframe.index)
 
 
 def test_raises_error_for_invalid_input(test_dataframe):
     rando_df = pd.DataFrame([1, 2, 3])
     with pytest.raises(ValueError):
+<<<<<<< HEAD:test/test_transform/test_facts_table.py
         assert facts_table(rando_df)
+=======
+        assert transform_sales_order(rando_df)
+>>>>>>> main:test/test_transform/test_facts_sales_order.py
