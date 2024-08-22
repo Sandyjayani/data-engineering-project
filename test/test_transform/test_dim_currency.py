@@ -1,7 +1,7 @@
 import pytest
 import pandas as pd
 import logging
-from src.transform.dim_currency import transform_dim_currency
+from src.transform.dim_currency import transform_currency
 
 @pytest.fixture
 def mock_data():
@@ -32,7 +32,7 @@ def mock_data_missing_dataframe():
 
 @pytest.mark.it("should transform currency data and add currency_name")
 def test_transform_dim_currency(mock_data):
-    df = transform_dim_currency(mock_data)
+    df = transform_currency(mock_data)
 
     assert isinstance(df, pd.DataFrame)
     assert not df.empty
@@ -44,7 +44,7 @@ def test_transform_dim_currency(mock_data):
 def test_transform_dim_currency_missing_dataframe(caplog, mock_data_missing_dataframe):
     caplog.set_level(logging.INFO)
 
-    df = transform_dim_currency(mock_data_missing_dataframe)
+    df = transform_currency(mock_data_missing_dataframe)
 
     assert df is None
     assert "Currency data not found in the provided data dictionary." in caplog.text
@@ -55,7 +55,7 @@ def test_transform_dim_currency_missing_columns(caplog, mock_data_missing_column
     caplog.set_level(logging.INFO)
 
 
-    df = transform_dim_currency(mock_data_missing_columns)
+    df = transform_currency(mock_data_missing_columns)
     assert df is None
     assert "One or more required columns are missing" in caplog.text
 
@@ -67,7 +67,7 @@ def test_transform_dim_currency_missing_mapping(caplog, mock_data):
     new_row = pd.DataFrame({'currency_id': [4], 'currency_code': ['XYZ']})
     mock_data['currency'] = pd.concat([mock_data['currency'], new_row], ignore_index=True)
 
-    df = transform_dim_currency(mock_data)
+    df = transform_currency(mock_data)
 
     assert "Currency codes with missing names: ['XYZ']" in caplog.text
 
