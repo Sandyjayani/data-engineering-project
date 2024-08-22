@@ -47,25 +47,31 @@ def expected_output():
         "counterparty_legal_country": ["USA", "Canada"],
         "counterparty_legal_phone_number": ["000000000000", "000000000000"]
     })
+    
+
 
 
 @pytest.mark.it("transforms valid counterparty data successfully")
-def test_transform_dim_counterparty_successfully(valid_df_dict,expected_output):
-    transformed_df = transform_counterparty_table(valid_df_dict)
-    
-    assert isinstance(transformed_df, pd.DataFrame) # transformed df is a dataframe
-    assert transformed_df.equals(expected_output)   # transformed df has correct column layout
-    assert not transformed_df.isnull().values.any() # transformed data has no null values
+def test_transform_dim_counterparty_successfully(valid_df_dict,expected_output, caplog):
+    with caplog.at_level(logging.INFO):
+        transformed_df = transform_counterparty_table(valid_df_dict)
+        
+        assert isinstance(transformed_df, pd.DataFrame) # transformed df is a dataframe
+        assert transformed_df.equals(expected_output)   # transformed df has correct column layout
+        assert not transformed_df.isnull().values.any() # transformed data has no null values
+        assert "dim_design transformation completed successfully" in caplog.text
 
 
 
 @pytest.mark.it("transforms valid counterparty data successfully without affecting original data")
-def test_transform_dim_counterparty_changes_do_not_affect_original_data(valid_df_dict,valid_counterparty_data):
-    transformed_df = transform_counterparty_table(valid_df_dict)
-    transformed_df["counterparty_legal_name"] = ["X", "Y"]
-    
-    assert transformed_df['counterparty_id'] is not valid_counterparty_data['counterparty_id']
-    assert not transformed_df['counterparty_legal_name'][0] == valid_counterparty_data['counterparty_legal_name'][0]
-    
+def test_transform_dim_counterparty_changes_do_not_affect_original_data(valid_df_dict,valid_counterparty_data,caplog):
+    with caplog.at_level(logging.INFO):
+        transformed_df = transform_counterparty_table(valid_df_dict)
+        transformed_df["counterparty_legal_name"] = ["X", "Y"]
+        
+        assert transformed_df['counterparty_id'] is not valid_counterparty_data['counterparty_id']
+        assert not transformed_df['counterparty_legal_name'][0] == valid_counterparty_data['counterparty_legal_name'][0]
+        assert "dim_design transformation completed successfully" in caplog.text
 
+    
 
