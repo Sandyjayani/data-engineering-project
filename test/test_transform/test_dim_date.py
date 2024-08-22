@@ -4,7 +4,6 @@ from datetime import date
 import pandas as pd
 from copy import deepcopy
 
-
 @pytest.fixture
 def test_dataframe():
     test_columns = [
@@ -220,17 +219,9 @@ def test_returns_all_dates_passed_as_rows(test_dataframe):
 def test_returns_unique_date_rows(test_dataframe):
 <<<<<<< HEAD
     result = dim_date(test_dataframe)
-    assert len(result["date_id"]) == len(set(result["date_id"]))  # same length
-
-    string_list = [
-        date_object.strftime("%Y-%m-%d") for date_object in result["date_id"]
-    ]
-=======
-    result = transform_date(test_dataframe)
     assert len(result["date_id"]) == len(set(result["date_id"])) # same length
     
     string_list = [date_object.strftime("%Y-%m-%d") for date_object in result["date_id"]]   
->>>>>>> main
 
     assert sorted(list(string_list)) == [
         "2015-10-03",

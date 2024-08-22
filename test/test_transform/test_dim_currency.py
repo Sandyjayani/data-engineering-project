@@ -57,7 +57,7 @@ def test_transform_dim_currency_missing_dataframe(caplog, mock_data_missing_data
 def test_transform_dim_currency_missing_columns(caplog, mock_data_missing_columns):
     caplog.set_level(logging.INFO)
 
-<<<<<<< HEAD
+
     df = transform_dim_currency(mock_data_missing_columns)
 =======
 
