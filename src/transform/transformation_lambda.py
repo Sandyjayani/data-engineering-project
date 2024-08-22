@@ -1,5 +1,6 @@
 import os
 import json
+import pandas as pd
 
 if os.environ.get("AWS_EXECUTION_ENV"):
     from upload_to_transformation_s3 import upload_to_transformation_s3
@@ -65,13 +66,14 @@ def lambda_handler(event, context):
             upload_to_transformation_s3(transformed_design_data, 'design')
 
         transformed_location_data = transform_location(new_data_dict)
+        print('transformed_location_data: ', type(transformed_location_data))
         if transformed_location_data is not None:
             upload_to_transformation_s3(transformed_location_data, 'location')
 
-        if new_data_dict.get('sales_order'):
+        if new_data_dict.get('sales_order') is not None:
             transformed_sales_order_data = transform_sales_order(new_data_dict['sales_order'])
             if transformed_sales_order_data is not None:
-                upload_to_transformation_s3(transformed_sales_order_data, 'sales')
+                upload_to_transformation_s3(transformed_sales_order_data, 'sales_order')
 
 
         # transformed_date_data = transform_date() # might rely on the transformed staff data.
