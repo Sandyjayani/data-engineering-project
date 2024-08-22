@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 import logging
-from src.transform.transform_dim_location import transform_dim_location
+from src.transform.dim_location import transform_dim_location
 
 
 

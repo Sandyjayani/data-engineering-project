@@ -1,7 +1,7 @@
 import pytest
 import pandas as pd
 import logging
-from src.transform.transform_dim_design import transform_dim_design
+from src.transform.dim_design import transform_dim_design
 
 
 @pytest.fixture

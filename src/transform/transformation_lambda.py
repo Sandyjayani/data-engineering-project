@@ -6,20 +6,19 @@ if os.environ.get("AWS_EXECUTION_ENV"):
     from setup_logger import setup_logger
     from dim_currency import transform_dim_currency
     from dim_date import dim_date
-    from facts_table import facts_table
-    from transform_dim_design import transform_dim_design
-    from transform_dim_location import transform_dim_location
-    from transform_read_util import ingestion_data_from_s3 as load_ingestion_data
+    from transform.facts_sales_order import facts_table
+    from transform.dim_design import transform_dim_design
+    from transform.dim_location import transform_dim_location
+    from transform.load_ingested_tables import ingestion_data_from_s3 as load_ingestion_data
 else:
     from src.transform.upload_to_transformation_s3 import upload_to_transformation_s3
     from src.transform.setup_logger import setup_logger
     from src.transform.dim_currency import transform_dim_currency
     from src.transform.dim_date import dim_date
-    from src.transform.facts_table import facts_table
-    from src.transform.transform_dim_design import transform_dim_design
-    from src.transform.transform_dim_location import transform_dim_location
-    from src.transform.transform_read_util import ingestion_data_from_s3 as load_ingestion_data
-
+    from transform.facts_sales_order import facts_table
+    from transform.dim_design import transform_dim_design
+    from transform.dim_location import transform_dim_location
+    from transform.load_ingested_tables import ingestion_data_from_s3 as load_ingestion_data
 
 
 def lambda_handler(event, context):
@@ -47,11 +46,20 @@ def lambda_handler(event, context):
     try:
         logger = setup_logger("transformation_logger")
         logger.info('Starting transformation process')
+        
+        # loads any newly ingested data as dictionary of dataframes per table
         new_data_dict = load_ingestion_data()
+
+        # passes dict to transform_currency, if there is new currency data
+        # it will be passed to the upload_to_transformation_s3 
         transformed_currency_data = transform_dim_currency(new_data_dict)
         if transformed_currency_data:
             upload_to_transformation_s3(transformed_currency_data, 'currency')
 
+        # transformed_counterparty_data = transform_counterparty(new_data_dict)
+        # if transformed_currency_data:
+        #     upload_to_transformation_s3(transformed_currency_data, 'counterparty')
+        
         transformed_design_data = transform_dim_design(new_data_dict)
         if transformed_design_data:
             upload_to_transformation_s3(transformed_design_data, 'design')
@@ -64,8 +72,10 @@ def lambda_handler(event, context):
         if transformed_sales_order_data:
             upload_to_transformation_s3(transformed_sales_order_data, 'sales')
 
+
         # transformed_date_data = dim_date() # might rely on the transformed staff data.
-        # transformed_counterparty_data = transform_counterparty(new_data_dict)
+        
+
 
 
 

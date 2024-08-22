@@ -34,7 +34,7 @@ def extract_timestamp(filename):
         return datetime.strptime(timestamp_str, '%Y-%m-%d %H.%M.%S')
     return None
 
-def load_and_combine_transformed_tables(table_name: str, bucket_type='transform') -> pd.DataFrame:
+def load_combined_tables(table_name: str, bucket_type='transform') -> pd.DataFrame:
     '''
     - if bucket_type = 'ingest' , it would read from the ingestion bucket and file type to be csv
     - otherwise, would read from the transformation bucket and file type to be parquet

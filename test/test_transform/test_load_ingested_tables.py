@@ -1,5 +1,5 @@
 import pytest
-from src.transform.transform_read_util import ingestion_data_from_s3
+from transform.load_ingested_tables import ingestion_data_from_s3
 import pandas as pd
 import os
 import boto3
