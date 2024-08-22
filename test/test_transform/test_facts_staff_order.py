@@ -1,4 +1,4 @@
-from src.transform.facts_table import facts_table
+from transform.facts_sales_order import facts_table
 import pytest
 import pandas as pd
 from copy import deepcopy

@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from unittest.mock import patch
 import pytest
-from src.transform.transform_staff import (
+from src.transform.dim_staff import (
     transform_staff as ts,
     validate_staff_data as vs,
 )
@@ -35,7 +35,7 @@ def part_B_dep_data():
 
 class TestTransformStaff:
     @pytest.mark.it("Returns dataframe if passed staff data")
-    @patch("src.transform.load_existing_transformation_df")
+    @patch("src.transform.dim_staff.load_from_bucket")
     def test_returns_df(self, mock_load_existing_transformation_df, test_df_dict):
         output = ts(test_df_dict)
         assert isinstance(output, pd.DataFrame)
@@ -60,7 +60,7 @@ class TestTransformStaff:
         assert expected_cols == output_cols
 
     @pytest.mark.it("Returns new dataframe")
-    @patch("src.transform.load_existing_transformation_df")
+    @patch("src.transform.dim_staff.load_from_bucket")
     def test_returns_new_df(self, test_df_dict):
         orig_df = test_df_dict["staff"]
         output_df = ts(test_df_dict)
@@ -69,7 +69,7 @@ class TestTransformStaff:
     @pytest.mark.it(
         "Calls load_from_bucket if all required departments not in passed department data"
     )
-    @patch("src.transform.transform_staff.load_from_bucket")
+    @patch("src.transform.dim_staff.load_from_bucket")
     def test_calls_load_from_bucket(
         self, mock_load_from_bucket, part_A_dep_data, part_B_dep_data, test_df_dict
     ):
@@ -79,7 +79,7 @@ class TestTransformStaff:
         mock_load_from_bucket.assert_called_once()
 
     @pytest.mark.it("Returns transformed df if no department data is passed in")
-    @patch("src.transform.transform_staff.load_from_bucket")
+    @patch("src.transform.dim_staff.load_from_bucket")
     def test_returns_df_if_not_passed_dep_data(
         self, mock_load_from_bucket, test_df_dict
     ):

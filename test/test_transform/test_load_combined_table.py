@@ -1,4 +1,4 @@
-from src.transform.load_existing_transformation_df import (
+from transform.load_combined_tables import (
     load_and_combine_transformed_tables, extract_timestamp)
 import pytest
 from moto import mock_aws
