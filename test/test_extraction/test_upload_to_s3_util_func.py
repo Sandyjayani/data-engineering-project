@@ -152,10 +152,11 @@ class TestUploadToS3:
             error_response={"Error": {"Code": "DecryptionFailureException"}},
             operation_name="Test",
         )
+        mock_df = pd.DataFrame({"col1": [1, 2, 3], "col2": ["a", "b", "c"]})
         test_table = "test_table"
-        test_bucket = "test_bucket"
+        test_bucket = "test_bucket_2"
         with pytest.raises(ClientError):
-            upload_tables_to_s3(None, test_table, test_bucket)
+            upload_tables_to_s3(mock_df, test_table, test_bucket)
 
 
 class TestSaveTimestamps:
