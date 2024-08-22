@@ -2,13 +2,12 @@ import pandas as pd
 import os
 
 if os.environ.get("AWS_EXECUTION_ENV"):
-    from setup_logger import setup_logger # type: ignore
+    from setup_logger import setup_logger  # type: ignore
 else:
     from src.transform.setup_logger import setup_logger
 
 
 def transform_design(data_dict: dict) -> pd.DataFrame | None:
-
     """
     Transforms the 'design' data from a given dictionary into a pandas DataFrame with specific requirements.
 
@@ -31,17 +30,16 @@ def transform_design(data_dict: dict) -> pd.DataFrame | None:
     - Logs an error if the 'design' data is missing or if any other exception occurs.
     """
 
-
     logger = setup_logger("transform_dim_location")
 
     try:
         logger.info("Starting transformation for dim_location.")
-        df = data_dict.get('design')
+        df = data_dict.get("design")
         if df is None:
             logger.error("Design data not found in the provided data dictionary.")
             return None
 
-        required_columns = ['design_id', 'design_name', 'file_location', 'file_name']
+        required_columns = ["design_id", "design_name", "file_location", "file_name"]
 
         missing_columns = set(required_columns) - set(df.columns)
         if missing_columns:
@@ -51,11 +49,11 @@ def transform_design(data_dict: dict) -> pd.DataFrame | None:
         # Drop rows with missing 'design_id' and fill other missing values with 'Unknown' to ensure data integrity.
         for column in required_columns:
             if df[column].isnull().any():
-                if column == 'design_id':
+                if column == "design_id":
                     df = df.dropna(subset=[column])
                 else:
                     # df[column].fillna('Unknown', inplace=True)
-                    df.fillna({column: 'Unknown'}, inplace=True)
+                    df.fillna({column: "Unknown"}, inplace=True)
 
         df = df[required_columns]
 

@@ -19,6 +19,7 @@ def aws_creds():
     os.environ["AWS_SESSION_TOKEN"] = "test"
     os.environ["AWS_DEAFULT_REGION"] = "eu-west-2"
 
+
 @pytest.fixture
 def mock_aws_client(aws_creds):
     """
@@ -38,6 +39,7 @@ def mock_connection():
     with patch("src.extraction.extraction.create_connection") as conn:
         yield conn
 
+
 @pytest.fixture
 def mock_table():
     with patch("src.extraction.extraction.get_table") as table:
@@ -46,15 +48,18 @@ def mock_table():
         table.return_value = test_dataframe
         yield table
 
+
 @pytest.fixture
 def mock_upload():
     with patch("src.extraction.extraction.upload_tables_to_s3") as upload:
         yield upload
 
+
 @pytest.fixture
 def mock_timestamp():
     with patch("src.extraction.extraction.get_timestamp") as timestamp:
         yield timestamp
+
 
 @pytest.fixture
 def mock_logger():
@@ -86,8 +91,9 @@ class TestOutput:
         mock_timestamp,
         mock_logger,
     ):
-        response = lambda_handler({},{})
-        assert loads(response["body"]) == 'Extraction Lambda is executed successfully'
+        response = lambda_handler({}, {})
+        assert loads(response["body"]) == "Extraction Lambda is executed successfully"
+
 
 # mock util functions to check they are running
 class TestCallUtils:
@@ -151,14 +157,11 @@ class TestCallUtils:
         lambda_handler({}, {})
         mock_logger.assert_called()
 
+
 # mock s3 bucket to check that it is uploading data
 class TestLambdaResult:
     def test_uploads_to_s3_bucket(
-        self, mock_aws_client, 
-        mock_connection, 
-        mock_table, 
-        mock_timestamp, 
-        mock_logger
+        self, mock_aws_client, mock_connection, mock_table, mock_timestamp, mock_logger
     ):
         lambda_handler({}, {})
         bucket_content = mock_aws_client.list_objects(
@@ -166,50 +169,52 @@ class TestLambdaResult:
         )
         assert len(bucket_content["Contents"]) > 0
 
+
 # mock errors & logger to check that errors are raised & logged
 class TestSadPath:
     def test_raises_error_for_error(
-        self, 
-        mock_aws_client, 
+        self,
+        mock_aws_client,
         mock_connection,
-        mock_logger, 
-        mock_table, 
-        mock_timestamp, 
-        mock_upload
+        mock_logger,
+        mock_table,
+        mock_timestamp,
+        mock_upload,
     ):
         mock_table.side_effect = DatabaseError()
         with pytest.raises(DatabaseError):
-            assert lambda_handler({},{})
-    
+            assert lambda_handler({}, {})
+
     def test_logs_errors(
-        self, 
-        mock_aws_client, 
+        self,
+        mock_aws_client,
         mock_connection,
-        mock_logger, 
-        mock_table, 
-        mock_timestamp, 
-        mock_upload
+        mock_logger,
+        mock_table,
+        mock_timestamp,
+        mock_upload,
     ):
-        
+
         class LogStorage:
             info_logs = []
             warning_logs = []
             critical_logs = []
+
             def info(self, message):
                 self.info_logs.append(message)
+
             def warning(self, message):
                 print("this is being called")
                 self.warning_logs.append(message)
+
             def critical(self, message):
                 self.critical_logs.append(message)
-        
+
         log_storage = LogStorage()
         mock_logger.return_value = log_storage
 
-
         mock_table.side_effect = DatabaseError()
         with pytest.raises(DatabaseError):
-            lambda_handler({},{})
+            lambda_handler({}, {})
 
         assert "Critical error: " in log_storage.critical_logs[0]
-

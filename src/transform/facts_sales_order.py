@@ -6,7 +6,8 @@ import os
 if os.environ.get("AWS_EXECUTION_ENV"):
     from setup_logger import setup_logger
 else:
-    from src.transform.setup_logger import setup_logger  
+    from src.transform.setup_logger import setup_logger
+
 
 def transform_sales_order(dataframe):
     """
@@ -14,11 +15,11 @@ def transform_sales_order(dataframe):
 
     returns a dataframe formatted for the facts_sales_orders OLAP table (minus its primary key)
 
-    the "sales_record_id" column will need to be populated when appending to the database, 
+    the "sales_record_id" column will need to be populated when appending to the database,
     as it is a serial primary key and it cannot be assumed beforehand
     """
-    logger = setup_logger('transform_staff')
-    logger.info('Starting transform_sales_order')
+    logger = setup_logger("transform_staff")
+    logger.info("Starting transform_sales_order")
 
     if list(dataframe.columns) != [
         "sales_order_id",
@@ -60,8 +61,12 @@ def transform_sales_order(dataframe):
         order_id = row.iloc[0]
         created_date = datetime.strptime(row.iloc[1], "%Y-%m-%d %H:%M:%S.%f").date()
         created_time = datetime.strptime(row.iloc[1], "%Y-%m-%d %H:%M:%S.%f").time()
-        last_updated_date = datetime.strptime(row.iloc[2], "%Y-%m-%d %H:%M:%S.%f").date()
-        last_updated_time = datetime.strptime(row.iloc[2], "%Y-%m-%d %H:%M:%S.%f").time()
+        last_updated_date = datetime.strptime(
+            row.iloc[2], "%Y-%m-%d %H:%M:%S.%f"
+        ).date()
+        last_updated_time = datetime.strptime(
+            row.iloc[2], "%Y-%m-%d %H:%M:%S.%f"
+        ).time()
         sales_staff_id = row.iloc[4]
         counterparty_id = row.iloc[5]
         units_sold = row.iloc[6]
@@ -94,5 +99,5 @@ def transform_sales_order(dataframe):
         all_rows.append(new_series)
 
     new_df = pd.DataFrame(data=all_rows, columns=facts_columns)
-    logger.info('Transform_sales_order completed')
+    logger.info("Transform_sales_order completed")
     return new_df

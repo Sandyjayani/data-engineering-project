@@ -48,40 +48,41 @@ def lambda_handler(event, context):
     """
     try:
         logger = setup_logger("transformation_logger")
-        logger.info('Starting transformation process')
-        
+        logger.info("Starting transformation process")
+
         # loads any newly ingested data as dictionary of dataframes per table
         new_data_dict = load_ingested_tables()
 
         # passes dict to transform_currency, if there is new currency data
-        # it will be passed to the upload_to_transformation_s3 
+        # it will be passed to the upload_to_transformation_s3
         transformed_currency_data = transform_currency(new_data_dict)
         if transformed_currency_data is not None:
-            upload_to_transformation_s3(transformed_currency_data, 'currency')
+            upload_to_transformation_s3(transformed_currency_data, "currency")
 
         # transformed_counterparty_data = transform_counterparty(new_data_dict)
         # if transformed_currency_data:
         #     upload_to_transformation_s3(transformed_currency_data, 'counterparty')
-        
+
         transformed_design_data = transform_design(new_data_dict)
         if transformed_design_data is not None:
-            upload_to_transformation_s3(transformed_design_data, 'design')
+            upload_to_transformation_s3(transformed_design_data, "design")
 
         transformed_location_data = transform_location(new_data_dict)
-        print('transformed_location_data: ', type(transformed_location_data))
+        print("transformed_location_data: ", type(transformed_location_data))
         if transformed_location_data is not None:
-            upload_to_transformation_s3(transformed_location_data, 'location')
+            upload_to_transformation_s3(transformed_location_data, "location")
 
-        if new_data_dict.get('sales_order') is not None:
-            transformed_sales_order_data = transform_sales_order(new_data_dict['sales_order'])
+        if new_data_dict.get("sales_order") is not None:
+            transformed_sales_order_data = transform_sales_order(
+                new_data_dict["sales_order"]
+            )
             if transformed_sales_order_data is not None:
-                upload_to_transformation_s3(transformed_sales_order_data, 'sales_order')
-
+                upload_to_transformation_s3(transformed_sales_order_data, "sales_order")
 
         # transformed_date_data = transform_date() # might rely on the transformed staff data.
-        
-        logger.info('Transformation process complete')        
-        
+
+        logger.info("Transformation process complete")
+
         return {
             "statusCode": 200,
             "body": json.dumps("Transformation Lambda executed successfully"),

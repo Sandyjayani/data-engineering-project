@@ -1,5 +1,4 @@
-from src.transform.load_combined_tables import (
-    load_combined_tables, extract_timestamp)
+from src.transform.load_combined_tables import load_combined_tables, extract_timestamp
 import pytest
 from moto import mock_aws
 import boto3
@@ -29,28 +28,30 @@ def mock_client(aws_credentials):
 class TestExtractTimestamp:
     @pytest.mark.it("Test if extract_timestamp return correct timestamp when valid")
     def test_valid_timestamp(self):
-        assert extract_timestamp('dim_staff-2024-08-13_15.57.00.parquet') == datetime(2024, 8, 13, 15, 57, 0)
-    
+        assert extract_timestamp("dim_staff-2024-08-13_15.57.00.parquet") == datetime(
+            2024, 8, 13, 15, 57, 0
+        )
+
     @pytest.mark.it("Test if extract_timestamp return None when invalid")
     def test_invalid_timestamp(self):
-        assert not extract_timestamp('dim_staff-2024-08-13_15.57.parquet') 
-        assert not extract_timestamp('dim_staff-2024-08-13_15.57.00.csv') 
-
+        assert not extract_timestamp("dim_staff-2024-08-13_15.57.parquet")
+        assert not extract_timestamp("dim_staff-2024-08-13_15.57.00.csv")
 
 
 class TestLoadCombinte:
-    @pytest.mark.it("Test if the function return the same table as df with one parquet file")
-    def test_same_table_as_df_one_parquet_file(self,mock_client):
+    @pytest.mark.it(
+        "Test if the function return the same table as df with one parquet file"
+    )
+    def test_same_table_as_df_one_parquet_file(self, mock_client):
         bucket_name = "smith-morra-transformation-bucket"
-        table_name = 'dim_staff'
+        table_name = "dim_staff"
 
-        mock_client.create_bucket(Bucket=bucket_name,
-                        CreateBucketConfiguration={"LocationConstraint": "eu-west-2"})
+        mock_client.create_bucket(
+            Bucket=bucket_name,
+            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
+        )
 
-        expected_df = pd.DataFrame({
-            'id' : [1,2,3],
-            'char' : ['a','b','c']
-        })
+        expected_df = pd.DataFrame({"id": [1, 2, 3], "char": ["a", "b", "c"]})
 
         buffer = BytesIO()
         expected_df.to_parquet(buffer, index=False)
@@ -58,29 +59,30 @@ class TestLoadCombinte:
 
         test_key1 = "dim_staff/2024/8/13/16-57/dim_staff-2024-08-13_16.57.00.parquet"
 
-        mock_client.put_object(Bucket=bucket_name, Key=test_key1, Body=buffer.getvalue())
+        mock_client.put_object(
+            Bucket=bucket_name, Key=test_key1, Body=buffer.getvalue()
+        )
 
         result = load_combined_tables(table_name)
 
-
         assert isinstance(result, pd.DataFrame)
         assert len(result) == 3
-        assert result['id'].tolist() == [1,2,3]
-        assert result['char'].tolist() == ['a','b','c']
+        assert result["id"].tolist() == [1, 2, 3]
+        assert result["char"].tolist() == ["a", "b", "c"]
 
-
-    @pytest.mark.it("Test if the function return the same table as df with one csv file")
-    def test_same_table_as_df_one_csv_file(self,mock_client):
+    @pytest.mark.it(
+        "Test if the function return the same table as df with one csv file"
+    )
+    def test_same_table_as_df_one_csv_file(self, mock_client):
         bucket_name = "smith-morra-ingestion-bucket"
-        table_name = 'department'
+        table_name = "department"
 
-        mock_client.create_bucket(Bucket=bucket_name,
-                        CreateBucketConfiguration={"LocationConstraint": "eu-west-2"})
+        mock_client.create_bucket(
+            Bucket=bucket_name,
+            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
+        )
 
-        expected_df = pd.DataFrame({
-            'id' : [1,2,3],
-            'char' : ['a','b','c']
-        })
+        expected_df = pd.DataFrame({"id": [1, 2, 3], "char": ["a", "b", "c"]})
 
         buffer = StringIO()
         expected_df.to_csv(buffer, index=False)
@@ -88,30 +90,28 @@ class TestLoadCombinte:
 
         test_key1 = "department/2024/8/13/16-57/department-2024-08-13_16.57.00.csv"
 
-        mock_client.put_object(Bucket=bucket_name, Key=test_key1, Body=buffer.getvalue())
+        mock_client.put_object(
+            Bucket=bucket_name, Key=test_key1, Body=buffer.getvalue()
+        )
 
-        result = load_combined_tables(table_name, bucket_type='ingest')
-
+        result = load_combined_tables(table_name, bucket_type="ingest")
 
         assert isinstance(result, pd.DataFrame)
         assert len(result) == 3
-        assert result['id'].tolist() == [1,2,3]
-        assert result['char'].tolist() == ['a','b','c']
-
-
+        assert result["id"].tolist() == [1, 2, 3]
+        assert result["char"].tolist() == ["a", "b", "c"]
 
     @pytest.mark.it("Test if the function return the same table as df with mulit files")
-    def test_same_table_as_df_multi_files(self,mock_client):
+    def test_same_table_as_df_multi_files(self, mock_client):
         bucket_name = "smith-morra-transformation-bucket"
-        table_name = 'dim_staff'
+        table_name = "dim_staff"
 
-        mock_client.create_bucket(Bucket=bucket_name,
-                        CreateBucketConfiguration={"LocationConstraint": "eu-west-2"})
+        mock_client.create_bucket(
+            Bucket=bucket_name,
+            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
+        )
 
-        expected_df = pd.DataFrame({
-            'id' : [1,2,3],
-            'char' : ['a','b','c']
-        })
+        expected_df = pd.DataFrame({"id": [1, 2, 3], "char": ["a", "b", "c"]})
 
         buffer = BytesIO()
         expected_df.to_parquet(buffer, index=False)
@@ -119,13 +119,11 @@ class TestLoadCombinte:
 
         test_key1 = "dim_staff/2024/8/13/16-57/dim_staff-2024-08-13_16.57.00.parquet"
 
-        mock_client.put_object(Bucket=bucket_name, Key=test_key1, Body=buffer.getvalue())
+        mock_client.put_object(
+            Bucket=bucket_name, Key=test_key1, Body=buffer.getvalue()
+        )
 
-
-        expected_df = pd.DataFrame({
-            'id' : [4,5,6],
-            'char' : ['d','e','f']
-        })
+        expected_df = pd.DataFrame({"id": [4, 5, 6], "char": ["d", "e", "f"]})
 
         buffer = BytesIO()
         expected_df.to_parquet(buffer, index=False)
@@ -133,19 +131,18 @@ class TestLoadCombinte:
 
         test_key2 = "dim_staff/2024/8/13/16-57/dim_staff-2024-08-13_17.27.00.parquet"
 
-        mock_client.put_object(Bucket=bucket_name, Key=test_key2, Body=buffer.getvalue())
+        mock_client.put_object(
+            Bucket=bucket_name, Key=test_key2, Body=buffer.getvalue()
+        )
 
         result = load_combined_tables(table_name)
 
         assert isinstance(result, pd.DataFrame)
         assert len(result) == 6
-        assert result['id'].tolist() == [1,2,3,4,5,6]
-        assert result['char'].tolist() == ['a','b','c','d','e','f']
+        assert result["id"].tolist() == [1, 2, 3, 4, 5, 6]
+        assert result["char"].tolist() == ["a", "b", "c", "d", "e", "f"]
 
-        expected_df = pd.DataFrame({
-            'id' : [7,8,9],
-            'char' : ['g','h','i']
-        })
+        expected_df = pd.DataFrame({"id": [7, 8, 9], "char": ["g", "h", "i"]})
 
         buffer = BytesIO()
         expected_df.to_parquet(buffer, index=False)
@@ -153,27 +150,30 @@ class TestLoadCombinte:
 
         test_key3 = "dim_staff/2024/8/13/16-57/dim_staff-2024-08-13_17.57.00.parquet"
 
-        mock_client.put_object(Bucket=bucket_name, Key=test_key3, Body=buffer.getvalue())
+        mock_client.put_object(
+            Bucket=bucket_name, Key=test_key3, Body=buffer.getvalue()
+        )
 
         result = load_combined_tables(table_name)
 
         assert isinstance(result, pd.DataFrame)
         assert len(result) == 9
-        assert result['id'].tolist() == [1,2,3,4,5,6,7,8,9]
-        assert result['char'].tolist() == ['a','b','c','d','e','f','g','h','i']
+        assert result["id"].tolist() == [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        assert result["char"].tolist() == ["a", "b", "c", "d", "e", "f", "g", "h", "i"]
 
-    @pytest.mark.it("Test if the function return the only load data from the specified table")
-    def test_same_table_as_df_only_read_from_specified_folder(self,mock_client):
+    @pytest.mark.it(
+        "Test if the function return the only load data from the specified table"
+    )
+    def test_same_table_as_df_only_read_from_specified_folder(self, mock_client):
         bucket_name = "smith-morra-ingestion-bucket"
-        table_name = 'department'
+        table_name = "department"
 
-        mock_client.create_bucket(Bucket=bucket_name,
-                        CreateBucketConfiguration={"LocationConstraint": "eu-west-2"})
+        mock_client.create_bucket(
+            Bucket=bucket_name,
+            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
+        )
 
-        expected_df = pd.DataFrame({
-            'id' : [1,2,3],
-            'char' : ['a','b','c']
-        })
+        expected_df = pd.DataFrame({"id": [1, 2, 3], "char": ["a", "b", "c"]})
 
         buffer = StringIO()
         expected_df.to_csv(buffer, index=False)
@@ -181,34 +181,33 @@ class TestLoadCombinte:
 
         test_key1 = "department/2024/8/13/16-57/department-2024-08-13_16.57.00.csv"
 
-        mock_client.put_object(Bucket=bucket_name, Key=test_key1, Body=buffer.getvalue())
+        mock_client.put_object(
+            Bucket=bucket_name, Key=test_key1, Body=buffer.getvalue()
+        )
 
-        expected_df2 = pd.DataFrame({
-            'id' : [4,5,6],
-            'char' : ['d','e','f']
-        })
+        expected_df2 = pd.DataFrame({"id": [4, 5, 6], "char": ["d", "e", "f"]})
 
         test_key2 = "other/2024/8/13/16-57/departmet-2024-08-13_16.57.00.csv"
 
-        mock_client.put_object(Bucket=bucket_name, Key=test_key2, Body=buffer.getvalue())
+        mock_client.put_object(
+            Bucket=bucket_name, Key=test_key2, Body=buffer.getvalue()
+        )
 
-
-
-        result = load_combined_tables(table_name, bucket_type='ingest')
-
+        result = load_combined_tables(table_name, bucket_type="ingest")
 
         assert isinstance(result, pd.DataFrame)
         assert len(result) == 3
-        assert result['id'].tolist() == [1,2,3]
-        assert result['char'].tolist() == ['a','b','c']
-
+        assert result["id"].tolist() == [1, 2, 3]
+        assert result["char"].tolist() == ["a", "b", "c"]
 
     @pytest.mark.it("Test if an empty dataframe is return when no files in the s3")
     def test_no_files(self, mock_client):
         bucket_name = "smith-morra-transformation-bucket"
-        table_name = 'dim_staff'
+        table_name = "dim_staff"
 
-        mock_client.create_bucket(Bucket=bucket_name,
-                        CreateBucketConfiguration={"LocationConstraint": "eu-west-2"})
-                        
-        assert load_combined_tables('dim_staff').empty
+        mock_client.create_bucket(
+            Bucket=bucket_name,
+            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
+        )
+
+        assert load_combined_tables("dim_staff").empty
