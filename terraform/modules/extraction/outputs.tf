@@ -5,3 +5,12 @@
 output "lambda_extraction_role_arn" {
   value = aws_iam_role.extraction_lambda_role.arn
 }
+
+output "lambda_function_extraction_arn" {
+  value = aws_lambda_function.s3_file_reader.arn
+}
+
+
+output "lambda_layer_arn" {
+  value = aws_lambda_layer_version.layer.arn
+}
