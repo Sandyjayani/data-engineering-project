@@ -9,7 +9,7 @@ resource "aws_cloudwatch_log_metric_filter" "extraction_critial_error_filter" {
 
   metric_transformation {
     name      = "CriticalErrorCount"
-    namespace = "CriticalErrorCount-namespace"
+    namespace = "CriticalErrorCount-Extraction"
     value     = "1"
   }
 }

@@ -68,7 +68,7 @@ module "transformation" {
 }
 
 # module "load" {
-#   source = ".terraforms/modules/extraction"
+#   source = "./modules/load"
 #   depends_on = [ module.transformation ]
 # }
 
