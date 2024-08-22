@@ -6,7 +6,7 @@ if os.environ.get("AWS_EXECUTION_ENV"):
     from setup_logger import setup_logger
     from dim_currency import transform_currency
     from dim_date import transform_date
-    from transform.facts_sales_order import facts_table
+    from transform.facts_sales_order import transform_sales_order
     from transform.dim_design import transform_design
     from transform.dim_location import transform_location
     from transform.load_ingested_tables import load_ingested_tables
@@ -15,7 +15,7 @@ else:
     from src.transform.setup_logger import setup_logger
     from src.transform.dim_currency import transform_currency
     from src.transform.dim_date import transform_date
-    from src.transform.facts_sales_order import facts_table
+    from src.transform.facts_sales_order import transform_sales_order
     from src.transform.dim_design import transform_design
     from src.transform.dim_location import transform_location
     from src.transform.load_ingested_tables import load_ingested_tables
@@ -69,7 +69,7 @@ def lambda_handler(event, context):
             upload_to_transformation_s3(transformed_location_data, 'location')
 
         if new_data_dict.get('sales_order'):
-            transformed_sales_order_data = facts_table(new_data_dict['sales_order'])
+            transformed_sales_order_data = transform_sales_order(new_data_dict['sales_order'])
             if transformed_sales_order_data is not None:
                 upload_to_transformation_s3(transformed_sales_order_data, 'sales')
 
