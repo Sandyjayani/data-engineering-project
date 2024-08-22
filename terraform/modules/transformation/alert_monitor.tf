@@ -1,5 +1,5 @@
 resource "aws_cloudwatch_log_metric_filter" "transformation_critial_error_filter" {
-  name           = "CriticalErrorFilter-Extraction"
+  name           = "CriticalErrorFilter-Transformation"
   pattern        = "CRITICAL"
   log_group_name = "/aws/lambda/${var.transformation_lambda_name}"
 

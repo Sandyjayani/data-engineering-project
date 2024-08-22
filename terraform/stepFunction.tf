@@ -12,7 +12,7 @@ resource "aws_sfn_state_machine" "unified_state_machine" {
         "OutputPath": "$.Payload",
         "Parameters": {
             "Payload.$": "$",
-            "FunctionName": "${module.extraction.lambda_extraction_role_arn}"
+            "FunctionName": "${module.extraction.lambda_function_extraction_arn}"
       },
       "Retry": [
         {
