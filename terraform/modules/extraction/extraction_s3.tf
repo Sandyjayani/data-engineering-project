@@ -13,3 +13,4 @@ resource "aws_s3_object" "layer_code" {
     key = "layer.zip"
     source = "${path.module}/../../../layer.zip"
     }
+

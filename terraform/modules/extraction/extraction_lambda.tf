@@ -1,15 +1,3 @@
-data "archive_file" "lambda" {
-    type        = "zip"
-    source_dir  = "${path.module}/../../../src/extraction"
-    output_path = "${path.module}/../../../extraction_functions.zip"
-}
-
-data "archive_file" "layer" {
-  type = "zip"
-  source_dir =  "${path.module}/../../../layer" 
-  output_path =  "${path.module}/../../../layer.zip"
-}
-
 resource "aws_lambda_layer_version" "layer" {
   layer_name          = "layer"
   compatible_runtimes = [var.python_runtime]
