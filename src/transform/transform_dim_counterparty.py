@@ -1,4 +1,11 @@
 import pandas as pd
+import os
+
+
+if os.environ.get("AWS_EXECUTION_ENV"):
+    from setup_logger import setup_logger # type: ignore
+else:
+    from src.extraction.setup_logger import setup_logger
 
 """
     Transforms the 'counterparty' data from a given dictionary into a pandas DataFrame with specific requirements.
@@ -26,41 +33,84 @@ import pandas as pd
 
 def transform_counterparty_table(df_dict : dict):
     
-    ad_df = df_dict.get('address')
-    address_df = ad_df.copy(deep=True)
+    logger = setup_logger("transform_dim_counterparty")
     
+    try:
+        logger.info("Starting transformation for dim_counterparty")
+        ad_df = df_dict.get('address')
+        if ad_df is None:
+            logger.error("address data not found in the provided data dictionary" )
+            return None
+        
+        address_df = ad_df.copy(deep=True)
+        
+        
+        cp_df = df_dict.get('counterparty')
+        if cp_df is None:
+            logger.error("counterparty data not found in the provided data dictionary" )
+            return None
+        
+        counterparty_df = cp_df.copy(deep=True)
     
-    cp_df = df_dict.get('counterparty')
-    counterparty_df = cp_df.copy(deep=True)
-    
-    combined_df = pd.merge(counterparty_df, address_df, left_on='legal_address_id', right_on='address_id', how='left')
-    
-    removed_columns = ['legal_address_id', 'commercial_contact', 'delivery_contact', 'created_at', 'last_updated', 'address_id']
-    existing_columns_to_drop = [col for col in removed_columns if col in combined_df.columns]
-    combined_df.drop(existing_columns_to_drop, axis=1, inplace=True)
-    
-    column_order = [
-        'counterparty_id',
-        'counterparty_legal_name',
-        'address_line_1',
-        'address_line_2',
-        'district',
-        'city',
-        'postal_code',
-        'country',
-        'phone']
-    
-    transformed_df = combined_df[column_order]
-    transformed_df.columns = [
-        'counterparty_id', 
-        'counterparty_legal_name', 
-        'counterparty_legal_address_line_1', 
-        'counterparty_legal_address_line2', 
-        'counterparty_legal_district', 
-        'counterparty_legal_city', 
-        'counterparty_legal_postal_code', 
-        'counterparty_legal_country', 
-        'counterparty_legal_phone_number']
-    
-   
-    return transformed_df
+        combined_df = pd.merge(counterparty_df, address_df, left_on='legal_address_id', right_on='address_id', how='left')
+        print('combined_df 1>>>>>>>>',combined_df.to_string())
+
+        
+        removed_columns = ['created_at_x','last_updated_x','legal_address_id', 'commercial_contact', 'delivery_contact', 'created_at_y', 'last_updated_y', 'address_id']
+        existing_columns_to_drop = [col for col in removed_columns if col in combined_df.columns]
+        combined_df.drop(existing_columns_to_drop, axis=1, inplace=True)
+        
+        columns = [
+            'counterparty_id',
+            'counterparty_legal_name',
+            'address_line_1',
+            'address_line_2',
+            'district',
+            'city',
+            'postal_code',
+            'country',
+            'phone']
+        
+        print('combined_df 2>>>>>>>>',combined_df.to_string())
+        
+        
+        
+        missing_columns = [col for col in columns if col not in combined_df.columns]
+        if missing_columns:
+            raise ValueError(f"Missing required columns: {missing_columns})")
+            return None
+       
+        transformed_df = combined_df[columns]
+        print('transformed_df >>>>>>>>', transformed_df.to_string())
+
+
+        for column in transformed_df.columns:
+            if transformed_df[column].isnull().any():
+                if column == 'counterparty_id':
+                    transformed_df = transformed_df.dropna(subset=[column])
+                else:
+                    transformed_df.fillna({column: 'Unknown'}, inplace=True)
+                    
+        transformed_df = transformed_df[columns]
+        
+         
+        transformed_df.columns = [
+            'counterparty_id', 
+            'counterparty_legal_name', 
+            'counterparty_legal_address_line_1', 
+            'counterparty_legal_address_line2', 
+            'counterparty_legal_district', 
+            'counterparty_legal_city', 
+            'counterparty_legal_postal_code', 
+            'counterparty_legal_country', 
+            'counterparty_legal_phone_number']
+        
+        logger.info("dim_counterparty transformation completed successfully")
+        print('transformed_df >>>>>>>>', transformed_df.to_string())
+
+        return transformed_df
+        
+
+    except Exception as e:
+        logger.error(f"Error in transform_dim_counterparty: {str(e)}")
+        raise

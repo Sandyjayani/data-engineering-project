@@ -13,7 +13,7 @@ def valid_address_data():
         "city": ["City A", "City B"],
         "postal_code": ["12345", "67890"],
         "country": ["USA", "Canada"],
-        "phone": ["000000000000", "000000000000"],
+        "phone": ["123456789", "987654321"],
         "created_at": ["2020-01-01", "2020-01-02"],
         "last_updated": ["2020-01-01", "2020-01-02"]
     })
@@ -45,8 +45,29 @@ def expected_output():
         "counterparty_legal_city": ["City A", "City B"],
         "counterparty_legal_postal_code": ["12345", "67890"],
         "counterparty_legal_country": ["USA", "Canada"],
-        "counterparty_legal_phone_number": ["000000000000", "000000000000"]
+        "counterparty_legal_phone_number": ["123456789", "987654321"]
     })
+    
+@pytest.fixture
+def missing_column_df_dict():
+    return {'counterparty': pd.DataFrame({
+        "counterparty_id": [1, 2],
+        "counterparty_legal_name": ["A", "B"],
+        "legal_address_id": [1, 2],
+        "commercial_contact": ["A", "B"],
+        "delivery_contact": ["A", "B"],
+        "created_at": ["2020-01-01", "2020-01-02"],
+        "last_updated": ["2020-01-01", "2020-01-02"]
+    }), 'address': pd.DataFrame({
+        "address_id": [1, 2],
+        # "address_line_1": ["123 Main St", "456 Oak Ave"], address_line_1 missing
+        "address_line_2": ["Suite 100", "Suite 200"],
+        "district": ["District A", "District B"],
+        "city": ["City A", "City B"],
+        "postal_code": ["12345", "67890"],
+        "country": ["USA", "Canada"],
+        "phone": ["123456789", "987654321"]
+    })}
     
 
 
@@ -59,7 +80,7 @@ def test_transform_dim_counterparty_successfully(valid_df_dict,expected_output, 
         assert isinstance(transformed_df, pd.DataFrame) # transformed df is a dataframe
         assert transformed_df.equals(expected_output)   # transformed df has correct column layout
         assert not transformed_df.isnull().values.any() # transformed data has no null values
-        assert "dim_design transformation completed successfully" in caplog.text
+        assert "dim_counterparty transformation completed successfully" in caplog.text
 
 
 
@@ -71,7 +92,19 @@ def test_transform_dim_counterparty_changes_do_not_affect_original_data(valid_df
         
         assert transformed_df['counterparty_id'] is not valid_counterparty_data['counterparty_id']
         assert not transformed_df['counterparty_legal_name'][0] == valid_counterparty_data['counterparty_legal_name'][0]
-        assert "dim_design transformation completed successfully" in caplog.text
+        assert "dim_counterparty transformation completed successfully" in caplog.text
+        
 
     
-
+@pytest.mark.it("should log an error and return None when required columns are missing")
+def test_transform_dim_counterparty_missing_columns(missing_column_df_dict, caplog):
+    with caplog.at_level(logging.ERROR):
+        transformed_df = None
+        try:
+            transformed_df = transform_counterparty_table(missing_column_df_dict)
+        except ValueError:
+            pass
+        assert transformed_df is None
+        assert "Missing required columns" in caplog.text
+        
+       
