@@ -41,6 +41,8 @@ def lambda_handler(event, context):
         and capturing the output transformed dataframes.
     - calls the upload_tables_to_s3 function, passing in
         the transformed dataframes to be saved as parquet tables.
+    - catches any exceptions raised during execution, logs them and raises
+        the exception again to be handled by the step function.
 
 
     """
@@ -77,6 +79,8 @@ def lambda_handler(event, context):
 
 
         # transformed_date_data = transform_date() # might rely on the transformed staff data.
+        
+        logger.info('Transformation process complete')        
         
         return {
             "statusCode": 200,
