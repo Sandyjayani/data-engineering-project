@@ -1,7 +1,7 @@
 import pandas as pd
 from datetime import datetime, date
 
-def dim_date(dataframe):
+def transform_date(dataframe):
     """
     takes a dataframe formatted according to the sales_order table of the ToteSys OLTP database
 

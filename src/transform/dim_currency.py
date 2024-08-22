@@ -4,9 +4,9 @@ import os
 if os.environ.get("AWS_EXECUTION_ENV"):
     from setup_logger import setup_logger
 else:
-    from src.extraction.setup_logger import setup_logger
+    from src.transform.setup_logger import setup_logger
 
-def transform_dim_currency(data_dict: dict[str, pd.DataFrame]) -> pd.DataFrame | None:
+def transform_currency(data_dict: dict[str, pd.DataFrame]) -> pd.DataFrame | None:
     """
     Transform the currency data from the input dictionary into a structured DataFrame.
 

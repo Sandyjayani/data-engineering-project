@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 import logging
-from src.transform.transform_dim_location import transform_dim_location
+from src.transform.dim_location import transform_location
 
 
 
@@ -25,7 +25,7 @@ def mock_data():
 def test_transform_dim_location_success(mock_data, caplog):
     caplog.set_level(logging.INFO)
 
-    result = transform_dim_location(mock_data)
+    result = transform_location(mock_data)
     assert isinstance(result, pd.DataFrame)
     assert 'location_id' in result.columns
     assert 'address_id' not in result.columns
@@ -40,7 +40,7 @@ def test_transform_dim_location_missing_columns(mock_data, caplog):
 
     del mock_data['address']['address_line_1']
 
-    result = transform_dim_location(mock_data)
+    result = transform_location(mock_data)
 
     assert result is None
     assert "Missing required columns" in caplog.text
@@ -62,7 +62,7 @@ def test_missing_non_critical_data(caplog):
     }
     caplog.set_level(logging.INFO)
 
-    result = transform_dim_location(data)
+    result = transform_location(data)
     assert result is not None
     assert result['address_line_2'].iloc[0] == 'Unknown'
     assert result['district'].iloc[0] == 'Unknown'
@@ -85,7 +85,7 @@ def test_null_values_in_critical_columns(caplog):
     }
     caplog.set_level(logging.INFO)
 
-    result = transform_dim_location(data)
+    result = transform_location(data)
     assert result is not None
     assert len(result) == 1
     assert "dim_location transformation completed successfully" in caplog.text
@@ -96,7 +96,7 @@ def test_no_address_data(caplog):
     data = {}
     caplog.set_level(logging.INFO)
 
-    result = transform_dim_location(data)
+    result = transform_location(data)
     assert result is None
     assert "Address data not found in the provided data dictionary" in caplog.text
 
@@ -106,7 +106,7 @@ def test_empty_dataframe(caplog):
     data = {'address': pd.DataFrame(columns=['address_id', 'address_line_1', 'address_line_2', 'district', 'city', 'postal_code', 'country', 'phone'])}
     caplog.set_level(logging.INFO)
 
-    result = transform_dim_location(data)
+    result = transform_location(data)
     assert result is not None
     assert result.empty
     assert "dim_location transformation completed successfully" in caplog.text

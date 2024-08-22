@@ -2,7 +2,7 @@ import pandas as pd
 from copy import deepcopy
 from datetime import date, time, datetime
 
-def facts_table(dataframe):
+def transform_sales_order(dataframe):
     """
     takes a sales_order OLTP dataframe
 
