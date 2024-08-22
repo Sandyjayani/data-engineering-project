@@ -38,6 +38,10 @@ def transform_counterparty_table(df_dict : dict):
     try:
         logger.info("Starting transformation for dim_counterparty")
         ad_df = df_dict.get('address')
+        if not isinstance(ad_df, pd.DataFrame):
+            logger.error("address data is missing or is not a DataFrame")
+            raise ValueError("Address data must be a DataFrame")
+        
         if ad_df is None:
             logger.error("address data not found in the provided data dictionary" )
             return None
@@ -98,7 +102,7 @@ def transform_counterparty_table(df_dict : dict):
             'counterparty_id', 
             'counterparty_legal_name', 
             'counterparty_legal_address_line_1', 
-            'counterparty_legal_address_line2', 
+            'counterparty_legal_address_line_2', 
             'counterparty_legal_district', 
             'counterparty_legal_city', 
             'counterparty_legal_postal_code', 
