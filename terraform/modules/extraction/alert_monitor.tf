@@ -9,7 +9,7 @@ resource "aws_cloudwatch_log_metric_filter" "extraction_critial_error_filter" {
 
   metric_transformation {
     name      = "CriticalErrorCount"
-    namespace = "CriticalErrorCount-namespace"
+    namespace = "CriticalErrorCount-Extraction"
     value     = "1"
   }
 }
@@ -35,8 +35,8 @@ resource "aws_cloudwatch_metric_alarm" "critical_error_alarm" {
   statistic                 = "Sum"
   threshold                 = 1
   alarm_description         = "Trigger alarm when a [CRITICAL] is logged"
-  alarm_actions             = [var.critical_error_topic_extraction_arn]
-  ok_actions                = [var.critical_error_topic_extraction_arn]
-  insufficient_data_actions = [var.critical_error_topic_extraction_arn]
+  alarm_actions             = [var.critical_error_topic_arn]
+  ok_actions                = [var.critical_error_topic_arn]
+  insufficient_data_actions = [var.critical_error_topic_arn]
 }
   
