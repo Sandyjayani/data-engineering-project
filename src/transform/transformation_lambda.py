@@ -6,10 +6,10 @@ if os.environ.get("AWS_EXECUTION_ENV"):
     from setup_logger import setup_logger
     from dim_currency import transform_currency
     from dim_date import transform_date
-    from transform.facts_sales_order import transform_sales_order
-    from transform.dim_design import transform_design
-    from transform.dim_location import transform_location
-    from transform.load_ingested_tables import load_ingested_tables
+    from facts_sales_order import transform_sales_order
+    from dim_design import transform_design
+    from dim_location import transform_location
+    from load_ingested_tables import load_ingested_tables
 else:
     from src.transform.upload_to_transformation_s3 import upload_to_transformation_s3
     from src.transform.setup_logger import setup_logger
