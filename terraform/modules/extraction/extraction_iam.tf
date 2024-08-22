@@ -12,7 +12,9 @@ resource "aws_iam_role" "extraction_lambda_role" {
                 ],
                 "Principal": {
                     "Service": [
-                        "lambda.amazonaws.com"
+                        "lambda.amazonaws.com",
+                        "states.amazonaws.com",
+                        "events.amazonaws.com"
                     ]
                 }
             }

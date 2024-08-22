@@ -7,15 +7,10 @@ from re import search
 
 if os.environ.get("AWS_EXECUTION_ENV"):
     from setup_logger import setup_logger
-<<<<<<< HEAD:src/transform/load_existing_transformation_df.py
-else:
-    from src.transform.setup_logger import setup_logger
-=======
 else:    
     from src.transform.setup_logger import setup_logger
 
     
->>>>>>> main:src/transform/load_combined_tables.py
 
 logger = setup_logger("Load and Combine files logger")
 
