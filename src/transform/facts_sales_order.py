@@ -2,7 +2,7 @@ import pandas as pd
 from copy import deepcopy
 from datetime import date, time, datetime
 
-def facts_table(dataframe_dict):
+def transform_sales_order(dataframe):
     """
     takes a sales_order OLTP dataframe
 
@@ -11,9 +11,6 @@ def facts_table(dataframe_dict):
     the "sales_record_id" column will need to be populated when appending to the database, 
     as it is a serial primary key and it cannot be assumed beforehand
     """
-    dataframe = dataframe_dict.get('sales_order')
-    if not dataframe:
-        return None
     if list(dataframe.columns) != [
         "sales_order_id",
         "created_at",

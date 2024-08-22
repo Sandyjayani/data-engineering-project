@@ -14,7 +14,7 @@ else:
 
 
 
-def ingestion_data_from_s3():
+def load_ingested_tables():
     """
     This function reads latest file from s3 ingestion bucket and returns dict of DataFrames.
     This function connects to the "smith-morra-ingestion-bucket" s3 bucket and retrieves the latest csv files from each table and reads the CSV files into pandas DataFrames. the DataFrames are stored in a dictionary with the table names as keys.
