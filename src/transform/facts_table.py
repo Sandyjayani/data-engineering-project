@@ -2,13 +2,14 @@ import pandas as pd
 from copy import deepcopy
 from datetime import date, time, datetime
 
+
 def facts_table(dataframe):
     """
     takes a sales_order OLTP dataframe
 
     returns a dataframe formatted for the facts_sales_orders OLAP table (minus its primary key)
 
-    the "sales_record_id" column will need to be populated when appending to the database, 
+    the "sales_record_id" column will need to be populated when appending to the database,
     as it is a serial primary key and it cannot be assumed beforehand
     """
     if list(dataframe.columns) != [
@@ -51,8 +52,12 @@ def facts_table(dataframe):
         order_id = row.iloc[0]
         created_date = datetime.strptime(row.iloc[1], "%Y-%m-%d %H:%M:%S.%f").date()
         created_time = datetime.strptime(row.iloc[1], "%Y-%m-%d %H:%M:%S.%f").time()
-        last_updated_date = datetime.strptime(row.iloc[2], "%Y-%m-%d %H:%M:%S.%f").date()
-        last_updated_time = datetime.strptime(row.iloc[2], "%Y-%m-%d %H:%M:%S.%f").time()
+        last_updated_date = datetime.strptime(
+            row.iloc[2], "%Y-%m-%d %H:%M:%S.%f"
+        ).date()
+        last_updated_time = datetime.strptime(
+            row.iloc[2], "%Y-%m-%d %H:%M:%S.%f"
+        ).time()
         sales_staff_id = row.iloc[4]
         counterparty_id = row.iloc[5]
         units_sold = row.iloc[6]

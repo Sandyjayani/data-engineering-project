@@ -5,7 +5,7 @@ resource "aws_s3_bucket" "ingestion_bucket" {
       Name = "Permanent Ingestion Bucket"
     }
 
-    # force_destroy =  false
+    force_destroy =  true
 
     # lifecycle {
     #   prevent_destroy = true
@@ -19,7 +19,7 @@ resource "aws_s3_bucket" "transformation_bucket" {
       Name = "Permanent Ingestion Bucket"
     }
 
-    # force_destroy =  false
+    force_destroy =  true
 
     # lifecycle {
     #   prevent_destroy = true
@@ -33,7 +33,7 @@ resource "aws_s3_bucket" "lambda_code_bucket" {
       Name = "Permanent Ingestion Bucket"
     }
 
-    # force_destroy =  false
+    force_destroy =  true
 
     # lifecycle {
     #   prevent_destroy = true

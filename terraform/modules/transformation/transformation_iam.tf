@@ -36,6 +36,9 @@ data "aws_iam_policy_document" "s3_document" {
             "${var.s3_lambda_code_bucket_arn}/*",
             "${var.s3_transformation_bucket_arn}",
             "${var.s3_lambda_code_bucket_arn}",
+            "${var.s3_ingestion_bucket_arn}/*",
+            "${var.s3_ingestion_bucket_arn}"
+
         ]
     }
 }

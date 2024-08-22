@@ -19,7 +19,7 @@ def upload_tables_to_s3(
     table_data: pd.DataFrame | None, table_name: str, bucket_name: str
 ) -> str:
     """
-    IMPORTANT: This function would only save and upload the dfas parquet 
+    IMPORTANT: This function would only save and upload the dfas parquet
     if thebucket name contains the word "transform", case insensitive
     csv otherwise
 
@@ -51,11 +51,11 @@ def upload_tables_to_s3(
         extra={"table_name": table_name, "bucket_name": bucket_name},
     )
 
-    if 'transform' in bucket_name.lower():
-        file_type = 'parquet'
+    if "transform" in bucket_name.lower():
+        file_type = "parquet"
     else:
-        file_type = 'csv'
-    
+        file_type = "csv"
+
     # create a var for the file key in
     # "[Table Name]/Year/Month/Day/hh-mm/[tablename]-[timestamp].csv"
 
@@ -80,21 +80,19 @@ def upload_tables_to_s3(
             # convert the given dataframe to csv
             # reposition stream to the beginning
 
-            if file_type == 'parquet':
+            if file_type == "parquet":
                 buffer = BytesIO()
                 table_data.to_parquet(buffer, index=False)
             else:
                 buffer = StringIO()
                 table_data.to_csv(buffer, index=False)
-                
+
             buffer.seek(0)
 
             # upload the csv from the buffer to the s3
             s3_client = boto3.client("s3")
 
-            s3_client.put_object(
-                Bucket=bucket_name, Key=s3_key, Body=buffer.getvalue()
-            )
+            s3_client.put_object(Bucket=bucket_name, Key=s3_key, Body=buffer.getvalue())
             logger.info(
                 f"Table {table_name} has been uploaded to {bucket_name} "
                 f"with key {s3_key}.",
@@ -122,7 +120,6 @@ def upload_tables_to_s3(
             },
         )
         raise e
-
 
 
 def save_timestamps(table_name: str, timestamp: str, bucket_name: str):

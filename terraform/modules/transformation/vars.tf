@@ -8,6 +8,11 @@ variable "s3_transformation_bucket_arn" {
   type = string
 }
 
+variable "s3_ingestion_bucket_arn" {
+  description = "The ARN of the S3 ingestion bucket"
+  type = string
+}
+
 variable "s3_lambda_code_bucket_arn" {
   description = "The ARN of the S3 ingestion bucket"
   type = string
@@ -21,7 +26,7 @@ variable "critical_error_topic_arn" {
 variable "transformation_lambda_name" {
   description = "The name of the lambda function for extraction"
   type = string
-  default = "extraction_lambda_handler"
+  default = "transformation_lambda_handler"
 }
 
 variable "python_runtime" {
@@ -40,5 +45,9 @@ variable "account_id" {
 }
 
 variable "region" {
+  type = string
+}
+
+variable "lambda_layer_arn" {
   type = string
 }

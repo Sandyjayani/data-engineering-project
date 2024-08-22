@@ -13,6 +13,7 @@ else:
     from src.transform.transform_staff import transform_staff
     from src.transform.transform_read_util import ingestion_data_from_s3
 
+
 def lambda_handler(event, context):
     BUCKET_NAME = "smith-morra-transformation-bucket"
     try:

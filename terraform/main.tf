@@ -52,8 +52,10 @@ module "extraction" {
 
 module "transformation" {
   source = "./modules/transformation"
+  s3_ingestion_bucket_arn = module.permanent.ingestion_bucket_arn
   s3_transformation_bucket_arn = module.permanent.transformation_bucket_arn
   s3_lambda_code_bucket_arn = module.permanent.lambda_code_bucket_arn
+  lambda_layer_arn = module.extraction.lambda_layer_arn
   critical_error_topic_arn = module.permanent.critical_error_topic_arn
   team_name = var.team_name
   account_id = data.aws_caller_identity.current.account_id

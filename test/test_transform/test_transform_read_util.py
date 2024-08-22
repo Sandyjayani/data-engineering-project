@@ -9,7 +9,6 @@ from unittest.mock import patch
 from datetime import datetime
 
 
-
 @pytest.fixture()
 def aws_credentials():
     """Mocked AWS Credentials for moto."""
@@ -33,7 +32,7 @@ def test_load_multiple_tables_from_s3(mock_get_timestamp, mock_client):
     mock_client.create_bucket(
         Bucket=test_bucket,
         CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
-        )
+    )
 
     # test_key = "test_table/2024/8/13/16-57/test_table-2024-08-13_16.57.00.csv"
     TABLE_NAMES = [
@@ -51,15 +50,16 @@ def test_load_multiple_tables_from_s3(mock_get_timestamp, mock_client):
     ]
 
     for table in TABLE_NAMES:
-        df = pd.DataFrame({
-            'id':[1,2,3],
-            'value':['A', 'B', 'C']
-        })
+        df = pd.DataFrame({"id": [1, 2, 3], "value": ["A", "B", "C"]})
 
         csv_buffer = BytesIO()
         df.to_csv(csv_buffer, index=False)
         csv_buffer.seek(0)
-        mock_client.put_object(Bucket=test_bucket, Key=f'{table}/2024/8/13/16-57/{table}-2024-08-13_16.57.00.csv', Body=csv_buffer.getvalue())  # noqa: E501
+        mock_client.put_object(
+            Bucket=test_bucket,
+            Key=f"{table}/2024/8/13/16-57/{table}-2024-08-13_16.57.00.csv",
+            Body=csv_buffer.getvalue(),
+        )  # noqa: E501
 
     response = ingestion_data_from_s3()
 
@@ -68,9 +68,9 @@ def test_load_multiple_tables_from_s3(mock_get_timestamp, mock_client):
         df = response[table]
         assert isinstance(df, pd.DataFrame)
         assert not df.empty
-        assert list(df.columns) == ['id', 'value']
-        assert df['id'].to_list() == [1,2,3]
-        assert df['value'].tolist() == ['A', 'B', 'C']
+        assert list(df.columns) == ["id", "value"]
+        assert df["id"].to_list() == [1, 2, 3]
+        assert df["value"].tolist() == ["A", "B", "C"]
 
 
 def test_error():

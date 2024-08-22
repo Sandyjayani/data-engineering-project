@@ -26,7 +26,6 @@ def ingestion_data_from_s3():
         Logs at the start and successful completion for each table. logs error if data loading fails.
     """
 
-
     logger = setup_logger("read_from_ingestion_s3_bucket_logger")
     BUCKET_NAME = "smith-morra-ingestion-bucket"
     TABLE_NAMES = [
@@ -43,8 +42,7 @@ def ingestion_data_from_s3():
         "counterparty",
     ]
 
-
-    s3 = boto3.client('s3')
+    s3 = boto3.client("s3")
     data_dicts = {}
 
     try:
@@ -62,9 +60,9 @@ def ingestion_data_from_s3():
                 f"{table}-{timestamp_str}.csv"
             )
 
-            obj = s3.get_object(Bucket=BUCKET_NAME, Key=s3_key)['Body']
+            obj = s3.get_object(Bucket=BUCKET_NAME, Key=s3_key)["Body"]
 
-            df = pd.read_csv(StringIO(obj.read().decode('utf-8')))
+            df = pd.read_csv(StringIO(obj.read().decode("utf-8")))
             data_dicts[table] = df
 
             logger.info(f"Data from {table} loaded successfully")

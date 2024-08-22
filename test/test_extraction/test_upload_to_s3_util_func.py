@@ -103,22 +103,21 @@ class TestUploadToS3:
         mock_now = datetime(2024, 8, 13, 16, 57, 00)
         mock_datetime.now.return_value = mock_now
 
-        mock_df = pd.DataFrame({
-        'col1': [1, 2, 3],
-        'col2': ['a', 'b', 'c']
-        })
+        mock_df = pd.DataFrame({"col1": [1, 2, 3], "col2": ["a", "b", "c"]})
 
         upload_tables_to_s3(mock_df, test_table, test_bucket)
 
         response = mock_client.get_object(Bucket=test_bucket, Key=test_key)
-        csv_data = response['Body'].read().decode('utf-8')
+        csv_data = response["Body"].read().decode("utf-8")
         df_from_csv = pd.read_csv(StringIO(csv_data))
 
         pd.testing.assert_frame_equal(mock_df, df_from_csv)
 
     @pytest.mark.it("Test if the file uploaded is really a parquet file")
     @patch("src.extraction.upload_to_s3_util_func.datetime")
-    def test_parquet_files_being_uploaded_correct_format(self, mock_datetime, mock_client):
+    def test_parquet_files_being_uploaded_correct_format(
+        self, mock_datetime, mock_client
+    ):
         test_table = "test_table"
         test_bucket = "transFormation_bucket"
         test_key = "test_table/2024/8/13/16-57/test_table-2024-08-13_16.57.00.parquet"
@@ -131,15 +130,12 @@ class TestUploadToS3:
         mock_now = datetime(2024, 8, 13, 16, 57, 00)
         mock_datetime.now.return_value = mock_now
 
-        mock_df = pd.DataFrame({
-        'col1': [1, 2, 3],
-        'col2': ['a', 'b', 'c']
-        })
+        mock_df = pd.DataFrame({"col1": [1, 2, 3], "col2": ["a", "b", "c"]})
 
         upload_tables_to_s3(mock_df, test_table, test_bucket)
 
         response = mock_client.get_object(Bucket=test_bucket, Key=test_key)
-        parquet_data = response['Body'].read()
+        parquet_data = response["Body"].read()
         df_from_parquet = pd.read_parquet(BytesIO(parquet_data))
 
         pd.testing.assert_frame_equal(mock_df, df_from_parquet)
@@ -148,8 +144,6 @@ class TestUploadToS3:
 
         assert response["KeyCount"] == 2
         assert response["Contents"][0]["Key"] == test_key
-
-
 
     @pytest.mark.it("Excepts and raises client error if raised during execution")
     @patch("src.extraction.upload_to_s3_util_func.boto3")
