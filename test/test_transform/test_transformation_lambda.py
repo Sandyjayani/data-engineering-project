@@ -83,3 +83,14 @@ def test_calls_upload_function_if_new_data(mock_load_ingested_tables, upload_to_
 
 
 
+@patch("src.transform.transformation_lambda.upload_to_transformation_s3")
+@patch("src.transform.transformation_lambda.load_ingested_tables")
+def test_logs_start_and_completion_of_execution(mock_load_ingested_tables, 
+                                                upload_to_transformation_s3, 
+                                                test_new_data_dict,
+                                                caplog):
+    mock_load_ingested_tables.return_value = test_new_data_dict
+    response = lambda_handler({},{})
+
+    assert 'Starting transformation process' in caplog.text
+    assert 'Transformation process complete' in caplog.text
