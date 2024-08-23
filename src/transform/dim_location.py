@@ -47,7 +47,7 @@ def transform_location(data_dict: dict[str, pd.DataFrame]) -> pd.DataFrame | Non
                 if column in ['address_id', 'address_line_1', 'city', 'postal_code', 'country', 'phone']:
                     df = df.dropna(subset=[column])
                 else:
-                    df[column].fillna('Unknown', inplace=True)
+                    df.loc[:, column] = df[column].fillna('Unknown')
 
         df = df.rename(columns={'address_id': 'location_id' })
         dim_location_columns = ['location_id', 'address_line_1', 'address_line_2', 'district', 'city', 'postal_code', 'country', 'phone']

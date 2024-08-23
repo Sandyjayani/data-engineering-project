@@ -78,7 +78,8 @@ def test_calls_upload_function_if_new_data(mock_load_ingested_tables, upload_to_
     response = lambda_handler({},{})
     upload_call_args = upload_to_transformation_s3.call_args_list
     table_call_args = [call.args[1] for call in upload_call_args]
-    expected_calls = ['currency', 'design', 'location', 'sales_order', 'staff']
+    print(table_call_args)
+    expected_calls = ['dim_currency', 'dim_design', 'dim_location', 'fact_sales_order', 'dim_staff', 'dim_counterparty']
     assert all(call in table_call_args for call in expected_calls)
 
 
