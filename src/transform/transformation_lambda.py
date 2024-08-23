@@ -68,7 +68,7 @@ def lambda_handler(event, context):
         if transformed_counterparty_data is not None:
             upload_to_transformation_s3(transformed_counterparty_data, 'dim_counterparty')
         
-        transformed_design_data = transform_design(new_data_dict)
+        transformed_design_data = tr, ansform_design(new_data_dict)
         if transformed_design_data is not None:
             upload_to_transformation_s3(transformed_design_data, 'dim_design')
 
