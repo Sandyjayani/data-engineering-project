@@ -32,7 +32,7 @@ def extract_timestamp(filename):
         timestamp_str = f'{date_str} {hour}.{minute}.{second}'
 
         return datetime.strptime(timestamp_str, '%Y-%m-%d %H.%M.%S')
-    return None
+    return datetime.min
 
 def load_combined_tables(table_name: str, bucket_type='transform') -> pd.DataFrame:
     '''
@@ -66,7 +66,7 @@ def load_combined_tables(table_name: str, bucket_type='transform') -> pd.DataFra
 
     for content in s3_response.get('Contents', []):
         key = content.get('Key','')
-        if key.endswith(file_type):
+        if key.endswith(file_type) and 'timestamp' not in key:
             logger.info(f"Processing file: {key}")
             try:
                 response = s3_client.get_object(Bucket=BUCKET_NAME, Key=key)

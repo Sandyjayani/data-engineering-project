@@ -8,7 +8,6 @@ if os.environ.get("AWS_EXECUTION_ENV") is not None:
     from upload_to_s3_util_func import upload_tables_to_s3
     from setup_logger import setup_logger
     from get_timestamp import get_timestamp
-    from datetime import datetime
 else:
     from src.extraction.get_db_connection import create_connection
     from src.extraction.get_table import get_table

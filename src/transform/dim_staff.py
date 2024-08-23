@@ -2,7 +2,7 @@ import pandas as pd
 import os
 
 if os.environ.get("AWS_EXECUTION_ENV"):
-    from transform.load_combined_tables import (
+    from load_combined_tables import (
         load_combined_tables as load_from_bucket,
     )
     from setup_logger import setup_logger
