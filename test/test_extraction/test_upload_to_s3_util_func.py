@@ -160,8 +160,12 @@ class TestUploadToS3:
         )
         test_table = "test_table"
         test_bucket = "test_bucket"
+        mock_df = pd.DataFrame({
+                                'col1': [1, 2, 3],
+                                'col2': ['a', 'b', 'c']
+                                })
         with pytest.raises(ClientError):
-            upload_tables_to_s3(None, test_table, test_bucket)
+            upload_tables_to_s3(mock_df, test_table, test_bucket)
 
 
 class TestSaveTimestamps:
