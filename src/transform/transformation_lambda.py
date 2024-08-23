@@ -12,6 +12,7 @@ if os.environ.get("AWS_EXECUTION_ENV"):
     from dim_staff import transform_staff
     from dim_location import transform_location
     from load_ingested_tables import load_ingested_tables
+    from dim_counterparty import transform_counterparty
 else:
     from src.transform.upload_to_transformation_s3 import upload_to_transformation_s3
     from src.transform.setup_logger import setup_logger
@@ -22,6 +23,7 @@ else:
     from src.transform.dim_location import transform_location
     from src.transform.dim_staff import transform_staff
     from src.transform.load_ingested_tables import load_ingested_tables
+    from src.transform.dim_counterparty import transform_counterparty
 
 
 def lambda_handler(event, context):
@@ -59,30 +61,33 @@ def lambda_handler(event, context):
         # it will be passed to the upload_to_transformation_s3 
         transformed_currency_data = transform_currency(new_data_dict)
         if transformed_currency_data is not None:
-            upload_to_transformation_s3(transformed_currency_data, 'currency')
+            upload_to_transformation_s3(transformed_currency_data, 'dim_currency')
 
         transformed_counterparty_data = transform_counterparty(new_data_dict)
-        if transformed_currency_data:
-            upload_to_transformation_s3(transformed_currency_data, 'counterparty')
+        if transformed_counterparty_data is not None:
+            upload_to_transformation_s3(transformed_currency_data, 'dim_counterparty')
         
-        transformed_design_data = tr, ansform_design(new_data_dict)
+        transformed_design_data = transform_design(new_data_dict)
         if transformed_design_data is not None:
-            upload_to_transformation_s3(transformed_design_data, 'design')
+            upload_to_transformation_s3(transformed_design_data, 'dim_design')
 
         transformed_location_data = transform_location(new_data_dict)
         if transformed_location_data is not None:
-            upload_to_transformation_s3(transformed_location_data, 'location')
+            upload_to_transformation_s3(transformed_location_data, 'dim_location')
 
         if new_data_dict.get('sales_order') is not None:
             transformed_sales_order_data = transform_sales_order(new_data_dict['sales_order'])
             if transformed_sales_order_data is not None:
-                upload_to_transformation_s3(transformed_sales_order_data, 'sales_order')
+                upload_to_transformation_s3(transformed_sales_order_data, 'fact_sales_order')
 
         transformed_staff_data = transform_staff(new_data_dict)
         if transformed_staff_data is not None:
-            upload_to_transformation_s3(transformed_staff_data, 'staff')
+            upload_to_transformation_s3(transformed_staff_data, 'dim_staff')
         
         transformed_date_data = transform_date() 
+        if transformed_date_data is not None:
+            upload_to_transformation_s3(transformed_date_data, 'dim_date')
+
         
         logger.info('Transformation process complete')        
         

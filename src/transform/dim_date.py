@@ -1,5 +1,7 @@
 import pandas as pd
 import os
+import boto3
+
 
 if os.environ.get("AWS_EXECUTION_ENV"):
     from setup_logger import setup_logger # type: ignore
@@ -7,14 +9,7 @@ else:
     from src.extraction.setup_logger import setup_logger
 
 
-def dim_date() -> pd.DataFrame:
-    """
-    Creates a date dimension DataFrame and returns it.
-
-    Returns:
-        pd.DataFrame: DataFrame containing the date dimension.
-    """
-
+def generate_date_table() -> pd.DataFrame:
     logger = setup_logger("transform_dim_date")
 
 
@@ -45,3 +40,25 @@ def dim_date() -> pd.DataFrame:
 
 
 
+def transform_date() -> pd.DataFrame:
+    """
+    Creates a date dimension DataFrame and returns it.
+
+    Returns:
+        pd.DataFrame: DataFrame containing the date dimension.
+    """
+
+    logger = setup_logger("transform_dim_date")
+
+    s3_client = boto3.client('s3')
+    BUCKET_NAME = "smith-morra-transformation-bucket"
+    FOLDER_PREFIX = "dim_date"
+
+    try:
+        response = s3_client.list_objects_v2(Bucket=BUCKET_NAME, Prefix=FOLDER_PREFIX)
+        if "Contents" in response:
+                    return None
+        return generate_date_table()
+                    
+    except Exception as e:
+        raise e
