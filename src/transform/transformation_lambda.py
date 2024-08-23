@@ -56,6 +56,7 @@ def lambda_handler(event, context):
         
         # loads any newly ingested data as dictionary of dataframes per table
         new_data_dict = load_ingested_tables()
+        print(new_data_dict)
 
         # passes dict to transform_currency, if there is new currency data
         # it will be passed to the upload_to_transformation_s3 
@@ -65,7 +66,7 @@ def lambda_handler(event, context):
 
         transformed_counterparty_data = transform_counterparty(new_data_dict)
         if transformed_counterparty_data is not None:
-            upload_to_transformation_s3(transformed_currency_data, 'dim_counterparty')
+            upload_to_transformation_s3(transformed_counterparty_data, 'dim_counterparty')
         
         transformed_design_data = transform_design(new_data_dict)
         if transformed_design_data is not None:
