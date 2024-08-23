@@ -61,11 +61,11 @@ def lambda_handler(event, context):
         if transformed_currency_data is not None:
             upload_to_transformation_s3(transformed_currency_data, 'currency')
 
-        # transformed_counterparty_data = transform_counterparty(new_data_dict)
-        # if transformed_currency_data:
-        #     upload_to_transformation_s3(transformed_currency_data, 'counterparty')
+        transformed_counterparty_data = transform_counterparty(new_data_dict)
+        if transformed_currency_data:
+            upload_to_transformation_s3(transformed_currency_data, 'counterparty')
         
-        transformed_design_data = transform_design(new_data_dict)
+        transformed_design_data = tr, ansform_design(new_data_dict)
         if transformed_design_data is not None:
             upload_to_transformation_s3(transformed_design_data, 'design')
 
@@ -82,7 +82,7 @@ def lambda_handler(event, context):
         if transformed_staff_data is not None:
             upload_to_transformation_s3(transformed_staff_data, 'staff')
         
-        # transformed_date_data = transform_date() # might rely on the transformed staff data.
+        transformed_date_data = transform_date() 
         
         logger.info('Transformation process complete')        
         
