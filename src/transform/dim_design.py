@@ -55,7 +55,9 @@ def transform_design(data_dict: dict) -> pd.DataFrame | None:
                     df = df.dropna(subset=[column])
                 else:
                     # df[column].fillna('Unknown', inplace=True)
-                    df.fillna({column: 'Unknown'}, inplace=True)
+                    #df.loc({column: 'Unknown'}, inplace=True)
+                    df.loc[:, column] = df[column].fillna('Unknown')
+                    
 
         df = df[required_columns]
 

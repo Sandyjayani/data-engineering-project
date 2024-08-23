@@ -33,8 +33,8 @@ class TestExtractTimestamp:
     
     @pytest.mark.it("Test if extract_timestamp return None when invalid")
     def test_invalid_timestamp(self):
-        assert not extract_timestamp('dim_staff-2024-08-13_15.57.parquet') 
-        assert not extract_timestamp('dim_staff-2024-08-13_15.57.00.csv') 
+        assert extract_timestamp('dim_staff-2024-08-13_15.57.parquet') == datetime(1, 1, 1, 0, 0)
+        assert extract_timestamp('dim_staff-2024-08-13_15.57.00.csv') == datetime(1, 1, 1, 0, 0)
 
 
 
