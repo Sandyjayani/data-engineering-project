@@ -32,7 +32,7 @@ def extract_timestamp(filename):
         timestamp_str = f'{date_str} {hour}.{minute}.{second}'
 
         return datetime.strptime(timestamp_str, '%Y-%m-%d %H.%M.%S')
-    return None
+    return datetime.min
 
 def load_combined_tables(table_name: str, bucket_type='transform') -> pd.DataFrame:
     '''
