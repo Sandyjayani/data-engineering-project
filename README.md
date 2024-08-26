@@ -1,70 +1,102 @@
-# Data Engineering Project
 
-## Project Overview
+# Team Smith-Mora 
+# Data Lake/Warehouse Project
 
-This project implements an end-to-end data engineering solution for extracting data from the Totesys operational database, transforming it, and loading it into a data warehouse. The solution is built using AWS services and follows best practices for data engineering, including maintaining historical data, implementing ETL processes, and using infrastructure as code.
+A data platform that extracts data from an operational OLTP database, transforms it into denormalized structures, and then loads it as a star schema format into an OLAP database. 
 
-## Architecture
 
-The project consists of three main components:
 
-1. Data Ingestion
-2. Data Processing
-3. Data Loading
 
-Each component is implemented as an AWS Lambda function, with data stored in S3 buckets between stages.
 
-## Components
 
-### Data Ingestion
 
-- Lambda function: `ingestion_lambda.py`
-- S3 bucket: `totesys-ingestion-bucket`
+## Objective
 
-This component extracts data from the Totesys PostgreSQL database and stores it in Parquet format in the ingestion S3 bucket.
+This final project for the Northcoders Data Engineering Bootcamp aims to showcase our team’s ability to collaborate effectively, adhering to best operational practices and Agile methodologies. Throughout this project, we have consolidated our learning in Python, SQL, database modeling, AWS, and infrastructure as code (IaC) . The solution is architected using AWS with Terraform, ensuring the maintenance of historical data and the implementation of a robust ETL process.  We decided to concentrate on providing a robust minimum viable product (MVP), meeting the requirements for a subset of the data.
+## The Data
 
-### Data Processing
+The primary data source for the project is a database called totesys which simulates the backend data of a ficticious commercial application.  [The full ERD for the OLTP database](https://dbdiagram.io/d/SampleDB-6332fecf7b3d2034ffcaaa92) consists of 11 tables in a normalised structure comprising of Sales_order, design, purchase_order, transaction, payment, payment_type, counterparty, address, staff, department and currency The complete OLTP system would encompass three overlapping star schemas: Sales, Purchases, and Payments. Each schema organizes data into separate tables for facts and dimensions.
 
-- Lambda function: `processing_lambda.py`
-- S3 bucket: `totesys-processed-bucket`
+To satisfy the requirements of the MVP we focused on the Sales star schema.
 
-This component transforms the ingested data, implementing historical tracking for fact tables and preparing the data for the warehouse schema.
 
-### Data Loading
 
-- Lambda function: `loading_lambda.py`
 
-This component loads the processed data into the data warehouse, maintaining historical records for fact tables.
 
-## Technologies Used
 
-- AWS (S3, Lambda, EventBridge, CloudWatch)
+ - ["Sales" schema](https://dbdiagram.io/d/637a423fc9abfc611173f637)
+    - fact_sales_order, dim_counterparty, dim_date, dim_location, dim_staff, dim_currency, dim_design
+
+
+
+
+## Specification
+
+1. **Extract** 
+A python application scheduled to ingest all data from the totesys database every 15 minutes into a .CSV file in an S3 'ingestion' bucket.
+
+2. **Transform** 
+A python application triggured automatically when it detects the completion of ingested data into the first bucket.  This application remodels the sales data into the sales star schema. The data is stored in Parquet format in an S3 'processed' bucket.  
+
+3. **Load** 
+A Python application that loads the data from the second S3 bucket into the OLAP data warehouse at defined intervals.  Maintaining full history of history to the facts table.
+
+4. **Visualise**
+A visualisation of the data is made in real-time as the application is running 
+
+
+**Requirements**
+- All processes are logged and monitered in **AWS Cloudwatch** with SMS triggures in the event of failures
+
+- good security practices are maintained , preventing SQL injection and maintaining password security.
+
+- All Python code is thoroughly tested for security vulnerabilities with the **safety** and **bandit** packages and are **PEP8** compliant. Test coverage exceeds 90%.
+
+- the project is deployed automatically using **Terraform** **IaC** and **GitHub Actions** CI/CD pipeline.
+
+- Changes to the source database are reflected in the data warehouse within 30 minutes.
+
+
+**Record Update History**
+
+A full history of all updates to facts is maintained in the OLTP warehouse. Records are kept for each change in the facts data and it is possible to querry the database for its current state and for full history of changes to the fact data. 
+
+
+## Tech Stack
+
 - Python
 - PostgreSQL
+- AWS (S3, Lambda, EventBridge, CloudWatch)
 - Terraform
-- Github(CI/CD)
+- Github Actions (CI/CD)
 
-## Project Structure
 
-## Setup and Installation
+## Further Development
 
-1. Clone the repository
-2. Install dependencies: `pip install -r requirements.txt`
-3. Set up AWS credentials
-4. Run Terraform: `terraform init && terraform apply`
+ The next stage of the project would be to apply the structure we have created for the Sales Schema, to create all three of the overlaping schemas that comprise the OLAP database with the following table schemas.
 
-## Testing
 
-Run the tests using pytest:
+ - ["Sales" schema](https://dbdiagram.io/d/637a423fc9abfc611173f637)
+    - fact_sales_order, dim_counterparty, dim_date, dim_location, dim_staff, dim_currency, dim_design
 
-pytest tests/
 
-## Contributing
+ - ["Purchases" schema](https://dbdiagram.io/d/637b3e8bc9abfc61117419ee)
+    - fact_purchase_order, dim_counterparty, dim_date, dim_location, dim_staff, dim_currency
 
-Please follow these steps to contribute to the project:
+ - ["Payments" schema](https://dbdiagram.io/d/637b41a5c9abfc6111741ae8)
+    - fact_payments dim_counterparty dim_transaction dim_date dim_currency dim_payment_type
 
-1. Create a new branch for your feature or bug fix.
-2. Write tests for your changes.
-3. Implement your changes, ensuring they pass all tests.
-4. Update documentation as necessary.
-5. Submit a pull request for review.
+
+  
+## Team Smith-Mora
+
+
+- Sandy Jayani [@Sandyjayani](https://www.github.com/sandyjayani)
+
+- Martin [@FloatingBrioche](https://www.github.com/@FloatingBrioche)
+
+- Erica [@EricaC2401](https://www.github.com/@EricaC2401)
+
+- Ren [@dkettchen](https://www.github.com/@dkettchen)
+
+- Ed [@edcopeland](https://www.github.com/@edcopeland)
