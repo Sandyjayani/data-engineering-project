@@ -12,7 +12,7 @@ A configuration for deploying AWS infrastructure, structured using modules.  Org
 
 	•	required_providers: Specifies the provider (aws) used in the configuration, pulling from the official HashiCorp registry with version constraints.
 	•	backend “s3”: Configures Terraform to store the state file in an S3 bucket (smith-morra-terraform-state-bucket) in the eu-west-2 region. The state file (extraction_terraform.tfstate) keeps track of the infrastructure managed by Terraform. 
-    
+
 2. AWS Provider Configuration
 
 3. Modules
@@ -90,3 +90,8 @@ Sets up the necessary iam permissions for the extraction lambda
 **alarm_monitor** 
 
 sets up monitoring and alerting for critical errors logged by an AWS Lambda function. CloudWatch Log Metric Filter for Critical Errors and CloudWatch Metric Alarm for Critical Errors.
+
+
+![img](./ETLPipeline.png)
+![img](./step_function.png)
+

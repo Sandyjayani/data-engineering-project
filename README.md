@@ -61,6 +61,9 @@ A visualisation of the data is made in real-time as the application is running
 
 A full history of all updates to facts is maintained in the OLTP warehouse. Records are kept for each change in the facts data and it is possible to querry the database for its current state and for full history of changes to the fact data. 
 
+![img](./ETLPipeline.png)
+
+
 
 ## Tech Stack
 
