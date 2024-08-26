@@ -85,6 +85,7 @@ def lambda_handler(event, context):
             output_text += "no new data ingested"
 
         return {"statusCode": 200, "body": output_text}
+    
     except Exception as e:
         logger.critical(f"Critical error: {e}")
         raise e
