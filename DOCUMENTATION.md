@@ -11,8 +11,8 @@ A configuration for deploying AWS infrastructure, structured using modules.  Org
 1. Terraform Configuration Block
 
 	•	required_providers: Specifies the provider (aws) used in the configuration, pulling from the official HashiCorp registry with version constraints.
-	•	backend “s3”: Configures Terraform to store the state file in an S3 bucket (smith-morra-terraform-state-bucket) in the eu-west-2 region. The state file (extraction_terraform.tfstate) keeps track of the infrastructure managed by Terraform. This block is marked as a TODO, indicating that it might need to be completed or verified.
-
+	•	backend “s3”: Configures Terraform to store the state file in an S3 bucket (smith-morra-terraform-state-bucket) in the eu-west-2 region. The state file (extraction_terraform.tfstate) keeps track of the infrastructure managed by Terraform. 
+    
 2. AWS Provider Configuration
 
 3. Modules
