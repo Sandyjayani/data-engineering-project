@@ -16,27 +16,7 @@ else:
 
 def read_parquet_from_s3() -> dict:
 
-    """
-    Aim: 
-    Read the most recent parquet file for a given table from an S3 bucket.
 
-    Parameters:
-    table_name (str): The name of the table corresponding to the parquet file.
-
-    Returns:
-    pd.DataFrame: A pandas DataFrame containing the data from the parquet file.
-
-    Description:
-    This function connects to an S3 bucket, identifies the most recent parquet file
-    for the specified table, downloads its content, and returns it as a DataFrame.
-    It uses boto3 for S3 operations and pandas for parquet file handling.
-
-    The function lists objects in the S3 bucket, filters for parquet files,
-    selects the most recent one, downloads its content, and reads it into a DataFrame.
-    If any error occurs, it logs a critical error and raises an exception.
-
-    Note: The S3 bucket name is hardcoded as "smith-morra-transformation-bucket".
-    """
 
     logger = setup_logger("load_logger")
     s3_client = boto3.client("s3")
@@ -45,7 +25,7 @@ def read_parquet_from_s3() -> dict:
     try:
         data_dicts = {}
 
-        table_list = ["dim_date", "dim_location", "dim_design", "fact_sales_order", "dim_currency", "dim_counterparty", "dim_staff"]  # noqa: E501
+        table_list = ["dim_date", "dim_location", "dim_design", "dim_currency", "dim_counterparty", "dim_staff", "fact_sales_order"]  # noqa: E501
         for table_name in table_list:
 
             logger.info(f"Reading parquet file from S3 for table: {table_name}")
@@ -79,6 +59,6 @@ def read_parquet_from_s3() -> dict:
         logger.critical(f"Error reading parquet file from S3: {e}")
         raise e
 
-result = read_parquet_from_s3()
-print(result.keys())
-print(type(result))
+# result = read_parquet_from_s3()
+# print(result.keys())
+# print(type(result))

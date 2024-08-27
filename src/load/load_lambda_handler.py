@@ -32,20 +32,20 @@ def lambda_handler(event, context):
     Note:
     Assumes database connection is available. Handles errors by logging and re-raising.
     """
+    logger = setup_logger("load_logger")
     try:
-        logger = setup_logger("load_logger")
         logger.info('Starting load process')
 
 
         dict_df = read_parquet_from_s3()
         for table,df in dict_df.items():
 
-            insert_data_into_tables(df, table)
+            insert_dim(df, table)
 
         logger.info('Load process complete')
         return {
             'statusCode': 200,
-            'body': f"Data inserted into table '{table}' successfully"
+            'body': f"Load process completed  successfully"
         }
     except Exception as e:
         logger.critical(f"Critical error: {str(e)}")
