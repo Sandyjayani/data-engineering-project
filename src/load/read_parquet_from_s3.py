@@ -17,7 +17,6 @@ else:
 def read_parquet_from_s3() -> dict:
 
 
-
     logger = setup_logger("load_logger")
     s3_client = boto3.client("s3")
     bucket_name = "smith-morra-transformation-bucket"

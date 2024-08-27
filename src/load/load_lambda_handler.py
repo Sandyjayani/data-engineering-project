@@ -42,6 +42,7 @@ def lambda_handler(event, context):
         logger.info("Starting load process")
 
         dict_df = read_parquet_from_s3()
+        
         for table, df in dict_df.items():
             if "dim" in table:
                 insert_dim(df, table)
@@ -54,7 +55,8 @@ def lambda_handler(event, context):
 
         logger.info("Load process complete")
 
-        return {"statusCode": 200, "body": f"Load process completed  successfully"}
+        return {"statusCode": 200, "body": "Load process completed successfully"}
+    
     except Exception as e:
         logger.critical(f"Critical error: {str(e)}")
         raise e

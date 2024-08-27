@@ -19,7 +19,6 @@ def insert_dim(df: pd.DataFrame, table_name: str):
         conn = create_connection("load")
 
         # Convert timestamp to date string
-        # if 'date_id' in df.columns:
         if table_name == "dim_date":
             df["date_id"] = df["date_id"].dt.strftime("%Y-%m-%d")
 
@@ -104,9 +103,6 @@ def insert_dim(df: pd.DataFrame, table_name: str):
                 insert_query = f"INSERT INTO {identifier(table_name)} ({columns}) VALUES {tuple(row.values)} ON CONFLICT ({identifier(primary_key)}) DO UPDATE SET {update_query}"
                 conn.run(insert_query)
                 row_count += 1
-
-
-
 
         logger.info(f"{row_count} rows inserted into table {table_name} successfully")
 
