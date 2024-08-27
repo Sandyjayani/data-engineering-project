@@ -24,5 +24,5 @@ data "archive_file" "transform_lambda" {
 data "archive_file" "load_lambda" {
     type        = "zip"
     source_dir  = "${path.module}/../src/load"
-    output_path = "${path.module}/../load"
+    output_path = "${path.module}/../load_functions.zip"
 }

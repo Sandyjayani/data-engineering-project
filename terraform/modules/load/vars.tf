@@ -41,3 +41,8 @@ variable "python_runtime" {
   type    = string
   default = "python3.11"
 }
+
+variable "critical_error_topic_arn" {
+  description = "The ARN of the sns topic for critical error for extraction"
+  type = string
+}
