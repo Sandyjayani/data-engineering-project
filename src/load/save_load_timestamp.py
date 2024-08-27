@@ -2,6 +2,7 @@ import boto3
 from io import StringIO
 import pandas as pd
 import os
+from datetime import datetime
 
 if os.environ.get("AWS_EXECUTION_ENV") is not None:
     from setup_logger import setup_logger

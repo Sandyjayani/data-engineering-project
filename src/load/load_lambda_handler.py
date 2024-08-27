@@ -1,13 +1,18 @@
 import os
+from datetime import datetime
 
 if os.environ.get("AWS_EXECUTION_ENV"):
     from read_parquet_from_s3 import read_parquet_from_s3
-    from insert_data_into_tables import insert_data_into_tables
+    from insert_dim import insert_dim
+    from insert_fact import insert_fact
     from setup_logger import setup_logger
+    from save_load_timestamp import save_timestamps
 else:
     from src.load.read_parquet_from_s3 import read_parquet_from_s3
-    from src.load.insert_data_into_tables import insert_data_into_tables
+    from src.load.insert_dim import insert_dim
+    from src.load.insert_fact import insert_fact
     from src.load.setup_logger import setup_logger
+    from src.load.save_load_timestamp import save_timestamps
 
 
 def lambda_handler(event, context):
@@ -34,20 +39,22 @@ def lambda_handler(event, context):
     """
     logger = setup_logger("load_logger")
     try:
-        logger.info('Starting load process')
-
+        logger.info("Starting load process")
 
         dict_df = read_parquet_from_s3()
-        for table,df in dict_df.items():
+        for table, df in dict_df.items():
+            if "dim" in table:
+                insert_dim(df, table)
+                timestamp = datetime.now().strftime("%Y-%m-%d_%H.%M.%S")
+                save_timestamps(table, timestamp)
+            else:
+                insert_fact(df, table)
+                timestamp = datetime.now().strftime("%Y-%m-%d_%H.%M.%S")
+                save_timestamps(table, timestamp)
 
-            insert_dim(df, table)
+        logger.info("Load process complete")
 
-        logger.info('Load process complete')
-        return {
-            'statusCode': 200,
-            'body': f"Load process completed  successfully"
-        }
+        return {"statusCode": 200, "body": f"Load process completed  successfully"}
     except Exception as e:
         logger.critical(f"Critical error: {str(e)}")
         raise e
-
