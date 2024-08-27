@@ -150,7 +150,7 @@ imports:
     from the result and the columns. If result is empty, returns None. Otherwise, returns dataframe.
 
 - upload_tables_to_s3
-    -   get the current timestamp
+    - get the current timestamp
     - call save_timestamps to save the current timestamp in a csv file (for the get_timestamp func
     which generate the timestamp as an input for get_table to input)
     - create a var for the file key in
@@ -168,8 +168,6 @@ imports:
 
 The function will be triggered within the step function after the successful execution of the extraction lambda.
 
-It:
-
 - instantiates a logger using the setup_logger util func
 - logs:
     - the completion of steps within its execution
@@ -185,4 +183,44 @@ It:
 - catches any exceptions raised during execution, logs them and raises
     - the exception again to be handled by the step function.
 
+imports : 
 
+- load_ingested_tables
+    reads latest file from s3 ingestion bucket and returns dict of DataFrames.
+    This function connects to the "smith-morra-ingestion-bucket" s3 bucket and retrieves the latest csv files from each table and reads the CSV files into pandas DataFrames. the DataFrames are stored in a dictionary with the table names as keys.
+
+    Returns:
+        Dict: key-table_name, value-df
+
+    Raises:
+        Exception: if there is an error loading data from s3, an exception is raised.
+
+    Logging:
+        Logs at the start and successful completion for each table. logs error if data loading fails.
+
+
+
+```    
+transformations = [
+    (transform_currency, 'dim_currency'),
+    (transform_counterparty, 'dim_counterparty'),
+    (transform_design, 'dim_design'),
+    (transform_location, 'dim_location'),
+    (transform_sales_order, 'sales_order', 'fact_sales_order'),
+    (transform_staff, 'dim_staff'),
+    (transform_date, 'dim_date')
+] 
+```
+
+- upload_to_transformation
+
+
+    - get the current timestamp
+    - call save_timestamps to save the current timestamp in a csv file (for the get_timestamp func
+    which generate the timestamp as an input for get_table to input)
+    - create a var for the file key in
+    "[Table Name]/Year/Month/Day/hh-mm/[tablename]-[timestamp].csv"
+    - convert the given dataframe to csv (should be written to an in-memory buffer, not via local file and delete)
+    - upload the csv from the buffer to the s3
+    - return a confirmation message with the upload details
+   
