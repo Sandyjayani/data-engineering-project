@@ -20,3 +20,9 @@ data "archive_file" "transform_lambda" {
     source_dir  = "${path.module}/../src/transform"
     output_path = "${path.module}/../transform_functions.zip"
 }
+
+data "archive_file" "load_lambda" {
+    type        = "zip"
+    source_dir  = "${path.module}/../src/load"
+    output_path = "${path.module}/../load"
+}

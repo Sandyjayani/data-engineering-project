@@ -67,10 +67,13 @@ module "transformation" {
 
 }
 
-# module "load" {
-#   source = "./modules/load"
-#   depends_on = [ module.transformation ]
-# }
+module "load" {
+  source = "./modules/load"
+  s3_ingestion_bucket_arn = module.permanent.ingestion_bucket_arn
+  s3_transformation_bucket_arn = module.permanent.transformation_bucket_arn
+  s3_lambda_code_bucket_arn = module.permanent.lambda_code_bucket_arn
+  depends_on = [ module.transformation ]
+}
 
 
 
