@@ -32,48 +32,52 @@ def load_ingested_tables():
 
     logger = setup_logger("read_from_ingestion_s3_bucket_logger")
     BUCKET_NAME = "smith-morra-ingestion-bucket"
-    TABLE_NAMES = [
-        "payment",
-        "payment_type",
+    INGESTED_TABLES = [
         "currency",
         "staff",
         "department",
-        "purchase_order",
-        "transaction",
-        "sales_order",
         "design",
         "address",
         "counterparty",
     ]
+    DIM_TABLES = { # look up dict
+        "dim_counterparty": ["counterparty","address"],
+        "dim_currency": ['currency'],
+        "dim_design": ['design'],
+        "dim_location": ['address'],
+        "dim_staff": ["staff","department"]
+    }
 
 
     s3 = boto3.client('s3')
     data_dicts = {}
 
     try:
-        for table in TABLE_NAMES:
-            logger.info(f"Loading data from {table} from {BUCKET_NAME}")
-            ingestion_timestamp_datetime = get_ingestion_timestamp(table)
-            transformation_timestamp_dt = get_transformation_timestamp(table)
-            timestamp_str = ingestion_timestamp_datetime.strftime("%Y-%m-%d_%H.%M.%S")
-            if ingestion_timestamp_datetime > transformation_timestamp_dt:
-                s3_key = (
-                    f"{table}/"
-                    f"{ingestion_timestamp_datetime.year}/"
-                    f"{ingestion_timestamp_datetime.month}/"
-                    f"{ingestion_timestamp_datetime.day}/"
-                    f"{ingestion_timestamp_datetime.hour}-{ingestion_timestamp_datetime.minute}/"
-                    f"{table}-{timestamp_str}.csv"
-                )
+        for dim_table in DIM_TABLES:
+            for table in DIM_TABLES[dim_table]: # getting relevant ingestion tables for each dim_table
+                logger.info(f"Loading data from {table} from {BUCKET_NAME}")
+                ingestion_timestamp_datetime = get_ingestion_timestamp(table)
+                transformation_timestamp_dt = get_transformation_timestamp(dim_table)
+                timestamp_str = ingestion_timestamp_datetime.strftime("%Y-%m-%d_%H.%M.%S")
+                if ingestion_timestamp_datetime > transformation_timestamp_dt \
+                and table not in data_dicts.keys(): # avoiding unnecessary double-runs for address
+                    s3_key = (
+                        f"{table}/"
+                        f"{ingestion_timestamp_datetime.year}/"
+                        f"{ingestion_timestamp_datetime.month}/"
+                        f"{ingestion_timestamp_datetime.day}/"
+                        f"{ingestion_timestamp_datetime.hour}-{ingestion_timestamp_datetime.minute}/"
+                        f"{table}-{timestamp_str}.csv"
+                    )
 
-                obj = s3.get_object(Bucket=BUCKET_NAME, Key=s3_key)['Body']
+                    obj = s3.get_object(Bucket=BUCKET_NAME, Key=s3_key)['Body']
 
-                df = pd.read_csv(StringIO(obj.read().decode('utf-8')))
-                data_dicts[table] = df
+                    df = pd.read_csv(StringIO(obj.read().decode('utf-8')))
+                    data_dicts[table] = df
 
-                logger.info(f"Data from {table} loaded successfully")
-            else:
-                logger.info(f"No new data to transform for {table} table.")
+                    logger.info(f"Data from {table} loaded successfully")
+                else:
+                    logger.info(f"No new data to transform for {table} table.")
         return data_dicts
     except Exception as e:
         logger.error(f"Error loading data: {str(e)}")
