@@ -1,11 +1,8 @@
-import boto3
-from botocore.exceptions import ClientError
-from pg8000.native import Connection, Error
-import pandas as pd
+from pg8000.native import Connection
 import json
 import os
 
-if os.environ.get("AWS_EXECUTION_ENV") is not None:
+if os.environ.get("AWS_EXECUTION_ENV"):
     from get_secret import get_secret
 else:
     from src.extraction.get_secret import get_secret

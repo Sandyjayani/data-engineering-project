@@ -1,6 +1,5 @@
 import pandas as pd
 from copy import deepcopy
-from datetime import datetime
 import os
 
 if os.environ.get("AWS_EXECUTION_ENV"):

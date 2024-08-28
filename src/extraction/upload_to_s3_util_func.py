@@ -5,7 +5,7 @@ import pandas as pd
 from botocore.exceptions import ClientError
 import os
 
-if os.environ.get("AWS_EXECUTION_ENV") is not None:
+if os.environ.get("AWS_EXECUTION_ENV"):
     from setup_logger import setup_logger
 else:
     from src.extraction.setup_logger import setup_logger
@@ -181,21 +181,3 @@ def save_timestamps(table_name: str, timestamp: str, bucket_name: str):
             extra={"table_name": table_name, "bucket_name": bucket_name},
         )
         raise e
-
-
-# A test to see the demo
-# data = {
-#     'Column1': [1, 2, 3],
-#     'Column2': ['A', 'B', 'C'],
-#     'Column3': [10.5, 20.75, 30.25]
-# }
-# test_data = pd.DataFrame(data)
-# upload_tables_to_s3(test_data,'test_table', 'test-ingestion-s3-test-nc-9')
-
-# data = {
-#     'Column1': [4, 5, 6],
-#     'Column2': ['D', 'E', 'F'],
-#     'Column3': [11.5, 21.75, 31.25]
-# }
-# test_data = pd.DataFrame(data)
-# upload_tables_to_s3(test_data,'test_table', 'test-ingestion-s3-test-nc-9')

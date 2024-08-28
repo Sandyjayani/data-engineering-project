@@ -13,7 +13,7 @@ else:
     from src.transform.get_transformation_timestamp import get_transformation_timestamp
 
 
-def load_ingested_tables():
+def load_ingested_tables() -> dict[str, pd.DataFrame]:
     """
     This function reads latest file from s3 ingestion bucket and returns dict of DataFrames.
     This function connects to the "smith-morra-ingestion-bucket" s3 bucket and retrieves the latest csv files from each table and reads the CSV files into pandas DataFrames. the DataFrames are stored in a dictionary with the table names as keys.
