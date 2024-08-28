@@ -13,7 +13,8 @@ resource "aws_iam_role" "unified_state_machine_role" {
                     "Service": [
                         "lambda.amazonaws.com",
                         "states.amazonaws.com",
-                        "events.amazonaws.com"
+                        "events.amazonaws.com",
+                        "sns.amazonaws.com"
                     ]
                 }
             }
@@ -27,12 +28,13 @@ data "aws_iam_policy_document" "sf_document" {
   statement {
     actions = [
       "lambda:InvokeFunction",
-      "states:StartExecution"
+      "states:StartExecution",
+      "sns:*"
       ]
 
     resources =  [
       aws_iam_role.unified_state_machine_role.arn,
-      "arn:aws:states:*:*:stateMachine:*"
+      "arn:aws:states:*:*:stateMachine:*",
     ]
   }
 }
@@ -69,4 +71,9 @@ resource "aws_iam_policy" "lm_policy" {
 resource "aws_iam_role_policy_attachment" "lambda_lm_policy_attachment" {
   role       = aws_iam_role.unified_state_machine_role.name
   policy_arn = aws_iam_policy.lm_policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "sns_policy_attachment" {
+  role       = aws_iam_role.unified_state_machine_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSNSFullAccess"
 }
