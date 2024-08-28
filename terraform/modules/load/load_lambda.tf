@@ -16,5 +16,5 @@ resource "aws_lambda_function" "s3_files_load" {
   handler       = "load_lambda_handler.lambda_handler"
   layers        = [var.lambda_layer_arn, "arn:aws:lambda:eu-west-2:336392948345:layer:AWSSDKPandas-Python311:16"]
   runtime       = var.python_runtime
-  timeout       = 180
+  timeout       = 600
 }
