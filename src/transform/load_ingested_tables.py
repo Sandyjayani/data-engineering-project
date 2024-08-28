@@ -39,13 +39,15 @@ def load_ingested_tables():
         "design",
         "address",
         "counterparty",
+        "sales_order"
     ]
-    DIM_TABLES = { # look up dict
+    TRANSFORMED_TABLES = { # look up dict
         "dim_counterparty": ["counterparty","address"],
         "dim_currency": ['currency'],
         "dim_design": ['design'],
         "dim_location": ['address'],
-        "dim_staff": ["staff","department"]
+        "dim_staff": ["staff","department"],
+        "fact_sales_order": ["sales_order"]
     }
 
 
@@ -53,11 +55,11 @@ def load_ingested_tables():
     data_dicts = {}
 
     try:
-        for dim_table in DIM_TABLES:
-            for table in DIM_TABLES[dim_table]: # getting relevant ingestion tables for each dim_table
+        for transformed_table in TRANSFORMED_TABLES:
+            for table in TRANSFORMED_TABLES[transformed_table]: # getting relevant ingestion tables for each dim_table
                 logger.info(f"Loading data from {table} from {BUCKET_NAME}")
                 ingestion_timestamp_datetime = get_ingestion_timestamp(table)
-                transformation_timestamp_dt = get_transformation_timestamp(dim_table)
+                transformation_timestamp_dt = get_transformation_timestamp(transformed_table)
                 timestamp_str = ingestion_timestamp_datetime.strftime("%Y-%m-%d_%H.%M.%S")
                 if ingestion_timestamp_datetime > transformation_timestamp_dt \
                 and table not in data_dicts.keys(): # avoiding unnecessary double-runs for address
