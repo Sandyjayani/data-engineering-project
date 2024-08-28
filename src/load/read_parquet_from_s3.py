@@ -15,8 +15,22 @@ else:
 
 
 def read_parquet_from_s3() -> dict:
+    """
+    Read Parquet files from S3 for multiple tables with recent transformations.
 
+    Checks for new data by comparing transformation and load timestamps.
+    Only reads data for tables with new transformations.
 
+    Returns:
+        dict: A dictionary of DataFrames, keyed by table names.
+
+    Raises:
+        Exception: If there's an error reading from S3.
+
+    Logs:
+        Info: Reading progress and skipped tables.
+        Critical: Any errors encountered.
+    """
 
     logger = setup_logger("load_logger")
     s3_client = boto3.client("s3")
@@ -45,6 +59,7 @@ def read_parquet_from_s3() -> dict:
                     f"{table_name}-{timestamp_str}.parquet"
                 )
 
+
                 obj = s3_client.get_object(Bucket=bucket_name, Key=s3_key)['Body']
 
                 df = pd.read_parquet(BytesIO(obj.read()))
@@ -58,7 +73,3 @@ def read_parquet_from_s3() -> dict:
     except Exception as e:
         logger.critical(f"Error reading parquet file from S3: {e}")
         raise e
-
-# result = read_parquet_from_s3()
-# print(result.keys())
-# print(type(result))

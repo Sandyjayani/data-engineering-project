@@ -33,6 +33,7 @@ def load_ingested_tables():
     logger = setup_logger("read_from_ingestion_s3_bucket_logger")
     BUCKET_NAME = "smith-morra-ingestion-bucket"
     INGESTED_TABLES = [
+    INGESTED_TABLES = [
         "currency",
         "staff",
         "department",
@@ -73,10 +74,16 @@ def load_ingested_tables():
                     )
 
                     obj = s3.get_object(Bucket=BUCKET_NAME, Key=s3_key)['Body']
+                    obj = s3.get_object(Bucket=BUCKET_NAME, Key=s3_key)['Body']
 
                     df = pd.read_csv(StringIO(obj.read().decode('utf-8')))
                     data_dicts[table] = df
+                    df = pd.read_csv(StringIO(obj.read().decode('utf-8')))
+                    data_dicts[table] = df
 
+                    logger.info(f"Data from {table} loaded successfully")
+                else:
+                    logger.info(f"No new data to transform for {table} table.")
                     logger.info(f"Data from {table} loaded successfully")
                 else:
                     logger.info(f"No new data to transform for {table} table.")
