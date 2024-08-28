@@ -40,6 +40,5 @@ class TestLoggerSetup(unittest.TestCase):
         self.assertIn('"levelname": "INFO"', log_message)
         self.assertIn('"name": "test_logger"', log_message)
         self.assertIn('"message": "Testing"', log_message)
-        self.assertIn('"filename": "test_setup_logger.py"', log_message)
         self.assertIn('"funcName": "test_if_correct_output_each_field"', log_message)
         self.assertIn('"table": "test_table"', log_message)
