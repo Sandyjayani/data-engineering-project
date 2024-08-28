@@ -72,7 +72,8 @@ A full history of all updates to facts is maintained in the OLTP warehouse. Reco
 
 For a more indepth look at the structure of the project please see the [documentation](./DOCUMENTATION.md)
 
-![img](./ETLPipeline.png)
+![img](./documentation/ETLPipeline.png)
+
 
 
 
