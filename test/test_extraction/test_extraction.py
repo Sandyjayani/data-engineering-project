@@ -86,10 +86,13 @@ class TestOutput:
         mock_table,
         mock_upload,
         mock_timestamp,
-        mock_logger
+        mock_logger,
     ):
         response = lambda_handler({}, {})
-        assert response["body"] == "Extraction lambda executed successfully: new data ingested"
+        assert (
+            response["body"]
+            == "Extraction lambda executed successfully: new data ingested"
+        )
 
     def test_response_if_no_data_ingested(
         self,
@@ -98,11 +101,15 @@ class TestOutput:
         mock_table,
         mock_upload,
         mock_timestamp,
-        mock_logger
+        mock_logger,
     ):
         mock_table.return_value = None
         response = lambda_handler({}, {})
-        assert response["body"] == "Extraction lambda executed successfully: no new data ingested"
+        assert (
+            response["body"]
+            == "Extraction lambda executed successfully: no new data ingested"
+        )
+
 
 # mock util functions to check they are running
 class TestCallUtils:

@@ -4,8 +4,9 @@ import pytest
 import pandas as pd
 import boto3
 import unittest
-import os 
+import os
 from unittest.mock import patch
+
 
 @pytest.fixture()
 def aws_credentials():
@@ -24,19 +25,31 @@ def mock_client(aws_credentials):
 
 
 class TestGenerateDate:
-    @pytest.mark.it("should create a date dimension DataFrame with the correct structure")
+    @pytest.mark.it(
+        "should create a date dimension DataFrame with the correct structure"
+    )
     def test_generate_date_table(self):
         df = generate_date_table()
 
         assert isinstance(df, pd.DataFrame)
         assert not df.empty
-        assert list(df.columns) == ['date_id', 'year', 'month', 'day', 'day_of_week', 'day_name', 'month_name', 'quarter']
-        assert df['date_id'].min() == pd.to_datetime('2022-01-01')
-        assert df['date_id'].max() == pd.to_datetime('2024-12-31')
-        assert df['year'].min() == 2022
-        assert df['year'].max() == 2024
+        assert list(df.columns) == [
+            "date_id",
+            "year",
+            "month",
+            "day",
+            "day_of_week",
+            "day_name",
+            "month_name",
+            "quarter",
+        ]
+        assert df["date_id"].min() == pd.to_datetime("2022-01-01")
+        assert df["date_id"].max() == pd.to_datetime("2024-12-31")
+        assert df["year"].min() == 2022
+        assert df["year"].max() == 2024
 
-class TestTransformDate():
+
+class TestTransformDate:
     @pytest.mark.it("test if it return None when the date folder exists")
     def test_transform_date_table_not_exist(self, mock_client):
         bucket_name = "smith-morra-transformation-bucket"
@@ -44,8 +57,11 @@ class TestTransformDate():
 
         mock_client.create_bucket(
             Bucket=bucket_name,
-            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"})
-        mock_client.put_object(Bucket=bucket_name, Key=f"{folder_prefix}test_file.parqueet")
+            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
+        )
+        mock_client.put_object(
+            Bucket=bucket_name, Key=f"{folder_prefix}test_file.parqueet"
+        )
 
         result = transform_date()
         assert result == None
@@ -58,14 +74,12 @@ class TestTransformDate():
 
         mock_client.create_bucket(
             Bucket=bucket_name,
-            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"})
-
-        mock_df = pd.DataFrame(
-            {'date':pd.date_range(start='2024-01-01', periods=365)}
+            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
         )
+
+        mock_df = pd.DataFrame({"date": pd.date_range(start="2024-01-01", periods=365)})
 
         mock_generate_date_data.return_value = mock_df
 
         result = transform_date()
         pd.testing.assert_frame_equal(result, mock_df)
-

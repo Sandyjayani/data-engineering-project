@@ -73,4 +73,3 @@ def insert_fact(df: pd.DataFrame, table_name: str):
     finally:
         if "conn" in locals():
             conn.close
-

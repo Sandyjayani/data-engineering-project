@@ -8,9 +8,7 @@ import pandas as pd
 @pytest.mark.it("Should return correct dictionary")
 @patch("src.load.load_lambda_handler.read_parquet_from_s3")
 @patch("src.load.load_lambda_handler.insert_dim")
-def test_lambda_handler_success(
-    mock_insert_dim, mock_read_parquet
-):
+def test_lambda_handler_success(mock_insert_dim, mock_read_parquet):
     # Arrange
     event = {}
     context = {}
@@ -35,12 +33,10 @@ def test_lambda_handler_read_parquet_error(mock_read_parquet):
 @patch("src.load.load_lambda_handler.read_parquet_from_s3")
 @patch("src.load.load_lambda_handler.insert_dim")
 def test_lambda_handler_insert_dim_data_error(
-    mock_insert_dim,
-    mock_read_from_parquet,
-    caplog
+    mock_insert_dim, mock_read_from_parquet, caplog
 ):
     mock_df = pd.DataFrame({"col1": [1, 2], "col2": ["a", "b"]})
-    mock_read_from_parquet.return_value = {'test_dim_table': mock_df}
+    mock_read_from_parquet.return_value = {"test_dim_table": mock_df}
     mock_insert_dim.side_effect = DatabaseError(
         {
             "S": "FATAL",
@@ -55,7 +51,7 @@ def test_lambda_handler_insert_dim_data_error(
 
     # Act
     with pytest.raises(DatabaseError):
-        lambda_handler('E', "C")
+        lambda_handler("E", "C")
     assert "Too many silly students connecting to the db at once!" in caplog.text
 
 
@@ -63,12 +59,10 @@ def test_lambda_handler_insert_dim_data_error(
 @patch("src.load.load_lambda_handler.read_parquet_from_s3")
 @patch("src.load.load_lambda_handler.insert_fact")
 def test_lambda_handler_insert_fact_data_error(
-    mock_insert_fact,
-    mock_read_from_parquet,
-    caplog
+    mock_insert_fact, mock_read_from_parquet, caplog
 ):
     mock_df = pd.DataFrame({"col1": [1, 2], "col2": ["a", "b"]})
-    mock_read_from_parquet.return_value = {'test_fact_table': mock_df}
+    mock_read_from_parquet.return_value = {"test_fact_table": mock_df}
     mock_insert_fact.side_effect = DatabaseError(
         {
             "S": "FATAL",
@@ -83,5 +77,5 @@ def test_lambda_handler_insert_fact_data_error(
 
     # Act
     with pytest.raises(DatabaseError):
-        lambda_handler('E', "C")
+        lambda_handler("E", "C")
     assert "Too many silly students connecting to the db at once!" in caplog.text

@@ -213,7 +213,8 @@ def test_transform_dim_counterparty_changes_do_not_affect_original_data(
     )
     assert "dim_counterparty transformation completed successfully" in caplog.text
 
-# Null values are acceptable in the schema, so we don't necessarily need this functionality. 
+
+# Null values are acceptable in the schema, so we don't necessarily need this functionality.
 # Commented out, but can be reinstated if needed.
 
 # @pytest.mark.it("should handle missing values by filling with 'Unknown")

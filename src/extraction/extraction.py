@@ -72,7 +72,7 @@ def lambda_handler(event, context):
                 logger.info(f"Uploading newest {table_name} data to s3 bucket.")
                 upload_tables_to_s3(table_data, table_name, BUCKET_NAME)
                 logger.info(f"New data from {table_name} upload to s3 bucket.")
-                
+
             else:
                 logger.info(f"No new data extracted from {table_name} table.")
 
@@ -87,7 +87,7 @@ def lambda_handler(event, context):
             output_text += "no new data ingested"
 
         return {"statusCode": 200, "body": output_text}
-    
+
     except Exception as e:
         logger.critical(f"Critical error: {e}")
         raise e
