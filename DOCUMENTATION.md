@@ -3,14 +3,17 @@
 ![img](./documentation/ETLPipeline.png)
 
 
-![img](./documentation/github_actions_logo.png)
+<img src="./documentation/github_actions_logo.png" alt="drawing" width="450" style="display: block; margin: 0 auto"/>
+
+
+
+
 
 # Github Actions CI/CD
 
 the test-and-deploy.yml file creates an ubuntu virtual machine, sets installs python on the virtual machine, establishes a conection with AWS using the AWS credentials and deploys terraform.
 
-![img](./documentation/terraform_logo.png)
-
+<img src="./documentation/terraform_logo.png" alt="drawing" width="450" style="display: block; margin: 0 auto"/>
 
 # Terraform 
 Terraform is used to set up the configuration for deploying the AWS infrastructure, structured using modules.  The files are organized to manage different parts of the data pipeline, specifically focusing on extraction, transformation, and the setup of permanent resources.
@@ -109,8 +112,7 @@ Sets up the necessary iam permissions for the extraction lambda
 
 sets up monitoring and alerting for critical errors logged by an AWS Lambda function. CloudWatch Log Metric Filter for Critical Errors and CloudWatch Metric Alarm for Critical Errors.
 
-![img](./documentation/aws_step_functions.png)
-
+<img src="./documentation/aws_step_functions.png" alt="drawing" width="450" style="display: block; margin: 0 auto"/>
 
 
 # Step Function
@@ -118,8 +120,7 @@ Step Functions is a service that lets you coordinate multiple AWS services into 
 
 ![img](./documentation/step_function.png)
 
-![img](./documentation/aws_lambda.png)
-
+<img src="./documentation/aws_lambda.png" alt="drawing" width="350" style="display: block; margin: 0 auto"/>
 
 
 # Extraction
