@@ -59,6 +59,7 @@ def read_parquet_from_s3() -> dict:
                     f"{table_name}-{timestamp_str}.parquet"
                 )
 
+
                 obj = s3_client.get_object(Bucket=bucket_name, Key=s3_key)['Body']
 
                 df = pd.read_parquet(BytesIO(obj.read()))
