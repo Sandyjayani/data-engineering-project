@@ -1,6 +1,5 @@
 import os
 import json
-import pandas as pd
 
 if os.environ.get("AWS_EXECUTION_ENV"):
     from upload_to_transformation_s3 import upload_to_transformation_s3
@@ -56,7 +55,6 @@ def lambda_handler(event, context):
         
         # loads any newly ingested data as dictionary of dataframes per table
         new_data_dict = load_ingested_tables()
-        print(new_data_dict)
 
         # passes dict to transform_currency, if there is new currency data
         # it will be passed to the upload_to_transformation_s3 
