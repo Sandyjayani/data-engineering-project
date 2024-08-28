@@ -39,11 +39,18 @@ def read_parquet_from_s3() -> dict:
     try:
         data_dicts = {}
 
-        table_list = ["dim_date", "dim_location", "dim_design", "dim_currency", "dim_counterparty", "dim_staff", "fact_sales_order"]  # noqa: E501
+        table_list = [
+            "dim_date",
+            "dim_location",
+            "dim_design",
+            "dim_currency",
+            "dim_counterparty",
+            "dim_staff",
+            "fact_sales_order",
+        ]  # noqa: E501
         for table_name in table_list:
 
             logger.info(f"Reading parquet file from S3 for table: {table_name}")
-
 
             load_timestamp = get_load_timestamp(table_name)
 
@@ -59,8 +66,7 @@ def read_parquet_from_s3() -> dict:
                     f"{table_name}-{timestamp_str}.parquet"
                 )
 
-
-                obj = s3_client.get_object(Bucket=bucket_name, Key=s3_key)['Body']
+                obj = s3_client.get_object(Bucket=bucket_name, Key=s3_key)["Body"]
 
                 df = pd.read_parquet(BytesIO(obj.read()))
                 data_dicts[table_name] = df

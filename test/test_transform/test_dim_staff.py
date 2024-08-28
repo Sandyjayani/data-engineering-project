@@ -12,9 +12,7 @@ from src.transform.dim_staff import (
 def test_df_dict():
     return {
         "staff": pd.read_csv("test/test_transform/test_data/test_staff.csv"),
-        "department": pd.read_csv(
-            "test/test_transform/test_data/test_department.csv"
-        ),
+        "department": pd.read_csv("test/test_transform/test_data/test_department.csv"),
     }
 
 

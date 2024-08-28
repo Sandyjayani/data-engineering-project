@@ -24,7 +24,7 @@ def get_load_timestamp(table_name: str):
 
     return value:
         - timestamp: str (e.g., '2024-08-14_14-09.01')"""
-    
+
     bucket_name = "smith-morra-transformation-bucket"
     key = f"{table_name}/load_timestamp.csv"
     s3_client = boto3.client("s3")
