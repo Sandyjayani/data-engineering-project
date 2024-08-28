@@ -4,7 +4,7 @@
 
 
 # Terraform 
-Terraform is used to set up the configuration for deploying AWS infrastructure, structured using modules.  The files are organized to manage different parts of a data pipeline, specifically focusing on extraction, transformation, and the setup of permanent resources.
+Terraform is used to set up the configuration for deploying the AWS infrastructure, structured using modules.  The files are organized to manage different parts of the data pipeline, specifically focusing on extraction, transformation, and the setup of permanent resources.
 
 ## Main Files
 
@@ -113,114 +113,25 @@ Step Functions is a service that lets you coordinate multiple AWS services into 
 # Extraction
 
 **extraction.py - lambda_handler(event, context)** 
+The extract lambda function is triggered every 15 minutes by the step function.  It creates a connection to the database using the create_connection() function.  Then for each table from a list of table names it gets the previous timestamp from the timestamp tables in the s3 ingestion bucket.  The get_table function then gets all the entries from the table after the last timestamp. The table is then uploaded to the ingestion bucket using the upload_tables_to_s3() function
 
-- sets up logger and opens a connection to the totesys database
 
-- gets the timestamp for the last table from the csv 
-
-- querries each table in the database and collects any updates since last checked
-
-- uploads new data to s3 bucket
-
-- returns response object with 201 status
-
-imports:
-
-- setup_logger
-    - Set up and return a logger with JSON formatting
-    - parameter: name (differnt logging instances but still in the same log group)
-    - output: a logger, could be used in the other functions 
-
-- create_connection from get_db_connection 
-    - Uses boto3 and pg8000 to establish a database connection with AWS
-
-- get_timestamp
-    - takes name of table and searches for latest timestamp in csv file for that table. If no timestamp CSV exist,
-     it will return timestamp of "0001-01-01_01.01.01".
-
-    - parameters:
-        - table_name: str
-
-    - return value:
-        - timestamp: str (e.g., '2024-08-14_14-09.01')
-
-- get_table 
-    - Queries a table using a pg8000 connection and returns all rows where last_updated is after the passed timestamp.
-    Captures the column names from the connection and uses pandas to create a data frame
-    from the result and the columns. If result is empty, returns None. Otherwise, returns dataframe.
-
-- upload_tables_to_s3
-    - get the current timestamp
-    - call save_timestamps to save the current timestamp in a csv file (for the get_timestamp func
-    which generate the timestamp as an input for get_table to input)
-    - create a var for the file key in
-    "[Table Name]/Year/Month/Day/hh-mm/[tablename]-[timestamp].csv"
-    - convert the given dataframe to csv (should be written to an in-memory
-    buffer, not via local
-    file and delete)
-    - upload the csv from the buffer to the s3
-    - return a confirmation message with the upload details
 
 
 # Transform
 
 **transformation_lambda.py - lambda_handler(event, context)**
 
-The function will be triggered within the step function after the successful execution of the extraction lambda.
+The function will be triggered by the step function after the successful execution of the extraction lambda.
 
-- instantiates a logger using the setup_logger util func
-- logs:
-    - the completion of steps within its execution
-    - any execptions that are raised
-- calls the load_ingestion_data to create a dictionary where:
-    - key: table_name
-    - value: dataframe containing any newly ingested data for that table
-- calls the transformation functions for each OLAP table,
-    - passing in the dictionary or a single dataframe
-    - and capturing the output transformed dataframes.
-- calls the upload_tables_to_s3 function, passing in
-    - the transformed dataframes to be saved as parquet tables.
-- catches any exceptions raised during execution, logs them and raises
-    - the exception again to be handled by the step function.
+This function loads the ingested tables (load_ingested_tables()) as a dictionary of dataframes. Then the transformation function for each table is called, which then returns the transformed dataframe. Each of the transformed dataframes is then uploaded to the s3 bucket using upload_to_transformation_s3()
 
-imports : 
+# Load
+**load_lambda_handler.py - lambda_handler(event,context)**
 
-- load_ingested_tables
-    reads latest file from s3 ingestion bucket and returns dict of DataFrames.
-    This function connects to the "smith-morra-ingestion-bucket" s3 bucket and retrieves the latest csv files from each table and reads the CSV files into pandas DataFrames. the DataFrames are stored in a dictionary with the table names as keys.
+The load lambda function is triggered by the step function following successful completion of the transformation lambda. 
 
-    Returns:
-        Dict: key-table_name, value-df
-
-    Raises:
-        Exception: if there is an error loading data from s3, an exception is raised.
-
-    Logging:
-        Logs at the start and successful completion for each table. logs error if data loading fails.
+This function uses read_parquet_from_s3() which returns a dictionary of dataframes.  Each dataframe is then inserted into the OLAP database - if the table is a dimentions table it uses insert_dim and overwrites the previous stored data if the the table is a fact table it uses the insert_fact and adjoined to the existing data.
 
 
-
-```    
-transformations = [
-    (transform_currency, 'dim_currency'),
-    (transform_counterparty, 'dim_counterparty'),
-    (transform_design, 'dim_design'),
-    (transform_location, 'dim_location'),
-    (transform_sales_order, 'sales_order', 'fact_sales_order'),
-    (transform_staff, 'dim_staff'),
-    (transform_date, 'dim_date')
-] 
-```
-
-- upload_to_transformation
-
-
-    - get the current timestamp
-    - call save_timestamps to save the current timestamp in a csv file (for the get_timestamp func
-    which generate the timestamp as an input for get_table to input)
-    - create a var for the file key in
-    "[Table Name]/Year/Month/Day/hh-mm/[tablename]-[timestamp].csv"
-    - convert the given dataframe to csv (should be written to an in-memory buffer, not via local file and delete)
-    - upload the csv from the buffer to the s3
-    - return a confirmation message with the upload details
    
