@@ -13,7 +13,24 @@ else:
 
 
 def insert_dim(df: pd.DataFrame, table_name: str):
+    """
+    Upsert dimensional data into a specified database table.
 
+    Handles insertion or update of data from a DataFrame into various dimensional
+    tables. Supports custom handling for dim_date, dim_location, dim_staff, and
+    dim_counterparty tables, with a generic approach for others.
+
+    Args:
+        df (pd.DataFrame): Data to be upserted.
+        table_name (str): Target database table name.
+
+    Raises:
+        Exception: On database insertion errors.
+
+    Logs:
+        Info: Successful insertion count.
+        Critical: Any errors encountered.
+    """
     logger = setup_logger("load_logger")
     try:
         conn = create_connection("load")
@@ -49,7 +66,7 @@ def insert_dim(df: pd.DataFrame, table_name: str):
                     phone=row.phone,
                 )
                 row_count += 1
-        
+
         elif table_name == "dim_staff":
             for _, row in df.iterrows():
                 update_query = ", ".join(

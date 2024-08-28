@@ -11,6 +11,25 @@ else:
 
 
 def insert_fact(df: pd.DataFrame, table_name: str):
+    """
+    Insert data from a DataFrame into a specified database table.
+
+    This function connects to a database, constructs an INSERT query based on the
+    DataFrame columns, and inserts each row of the DataFrame into the specified table.
+    It's specifically tailored for the 'fact_sales_order' table.
+
+    Args:
+        df (pd.DataFrame): The DataFrame containing the data to be inserted.
+        table_name (str): The name of the table to insert the data into.
+
+    Raises:
+        Exception: If there's an error during the database insertion process.
+
+    Logs:
+        Info: Number of rows inserted successfully.
+        Critical: Any errors that occur during insertion.
+    """
+
     logger = setup_logger("load_logger")
     try:
         conn = create_connection("load")
