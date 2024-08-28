@@ -2,6 +2,8 @@
 
 ![img](./ETLPipeline.png)
 
+# Github Actions CI/CD
+the test-and-deploy.yml file creates an ubuntu virtual machine, sets installs python on the virtual machine, establishes a conection with AWS using the AWS credentials and deploys terraform.
 
 # Terraform 
 Terraform is used to set up the configuration for deploying the AWS infrastructure, structured using modules.  The files are organized to manage different parts of the data pipeline, specifically focusing on extraction, transformation, and the setup of permanent resources.
@@ -131,7 +133,7 @@ This function loads the ingested tables (load_ingested_tables()) as a dictionary
 
 The load lambda function is triggered by the step function following successful completion of the transformation lambda. 
 
-This function uses read_parquet_from_s3() which returns a dictionary of dataframes.  Each dataframe is then inserted into the OLAP database - if the table is a dimentions table it uses insert_dim and overwrites the previous stored data if the the table is a fact table it uses the insert_fact and adjoined to the existing data.
+This function uses read_parquet_from_s3() which returns a dictionary of dataframes.  Each dataframe is then inserted into the OLAP database - if the table is a dimentions table it uses insert_dim and overwrites the previous stored data if the the table is a fact table it uses the insert_fact and adjoins to the existing data.
 
 
    
