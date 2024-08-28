@@ -19,7 +19,6 @@ def insert_dim(df: pd.DataFrame, table_name: str):
         conn = create_connection("load")
 
         # Convert timestamp to date string
-        # if 'date_id' in df.columns:
         if table_name == "dim_date":
             df["date_id"] = df["date_id"].dt.strftime("%Y-%m-%d")
 
@@ -70,7 +69,7 @@ def insert_dim(df: pd.DataFrame, table_name: str):
                     email_address=row.email_address
                 )
                 row_count += 1
-        
+
         elif table_name == "dim_counterparty":
             for _, row in df.iterrows():
                 update_query = ", ".join(
@@ -105,9 +104,6 @@ def insert_dim(df: pd.DataFrame, table_name: str):
                 conn.run(insert_query)
                 row_count += 1
 
-
-
-
         logger.info(f"{row_count} rows inserted into table {table_name} successfully")
 
     except Exception as e:
@@ -117,4 +113,3 @@ def insert_dim(df: pd.DataFrame, table_name: str):
     finally:
         if conn:
             conn.close
-
