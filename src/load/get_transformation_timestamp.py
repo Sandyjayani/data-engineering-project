@@ -63,4 +63,3 @@ def get_transformation_timestamp(table_name: str):
             extra={"table_name": table_name, "bucket_name": bucket_name},
         )
         raise e
-
