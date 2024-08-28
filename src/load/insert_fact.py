@@ -52,5 +52,6 @@ def insert_fact(df: pd.DataFrame, table_name: str):
         raise e
 
     finally:
-        if conn:
+        if "conn" in locals():
             conn.close
+
