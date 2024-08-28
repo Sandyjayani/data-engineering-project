@@ -23,7 +23,6 @@ resource "aws_iam_role" "unified_state_machine_role" {
     EOF
 }
 
-
 data "aws_iam_policy_document" "sf_document" {
   statement {
     actions = [
