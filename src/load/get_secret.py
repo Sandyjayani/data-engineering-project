@@ -3,7 +3,10 @@ from botocore.exceptions import ClientError
 
 
 def get_secret(secret_name):
-    if secret_name not in ["DataSource_PostgresDB_Credentials","DataTarget_PostgresDB_Credentials"]:
+    if secret_name not in [
+        "DataSource_PostgresDB_Credentials",
+        "DataTarget_PostgresDB_Credentials",
+    ]:
         if type(secret_name) == str:
             raise ValueError
         else:

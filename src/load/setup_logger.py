@@ -37,6 +37,4 @@ def setup_logger(name: str):
         json_handler.setFormatter(formatter)
         logger.addHandler(json_handler)
 
-    # print(dir(logger.handlers[0].formatter))
-
     return logger

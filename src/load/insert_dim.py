@@ -11,7 +11,6 @@ else:
     from src.load.get_db_connection import create_connection
 
 
-
 def insert_dim(df: pd.DataFrame, table_name: str):
     """
     Upsert dimensional data into a specified database table.
@@ -74,7 +73,7 @@ def insert_dim(df: pd.DataFrame, table_name: str):
                         f"{identifier(col)} = EXCLUDED.{identifier(col)}"
                         for col in column_lst
                     ]
-                )            
+                )
                 insert_query = f"INSERT INTO {identifier(table_name)} ({columns}) VALUES (:staff_id, :first_name, :last_name, :department_name, :location, :email_address) ON CONFLICT ({identifier(primary_key)}) DO UPDATE SET {update_query}"
                 conn.run(
                     insert_query,
@@ -83,7 +82,7 @@ def insert_dim(df: pd.DataFrame, table_name: str):
                     last_name=row.last_name,
                     department_name=row.department_name,
                     location=row.location,
-                    email_address=row.email_address
+                    email_address=row.email_address,
                 )
                 row_count += 1
 

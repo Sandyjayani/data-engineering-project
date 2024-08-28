@@ -38,12 +38,12 @@ def transform_counterparty(df_dict: dict):
         logger.info("Starting transform counterparty")
 
         cp_df = df_dict.get("counterparty")
-        
+
         if cp_df is None:
             logger.info("No new address data to transform.")
             return None
-        
-        address_df = load_combined_tables('address', 'ingest')
+
+        address_df = load_combined_tables("address", "ingest")
 
         counterparty_df = cp_df.copy(deep=True)
 
@@ -53,7 +53,7 @@ def transform_counterparty(df_dict: dict):
             left_on="legal_address_id",
             right_on="address_id",
             how="left",
-            validate="m:1"
+            validate="m:1",
         )
 
         columns = [
@@ -68,19 +68,17 @@ def transform_counterparty(df_dict: dict):
             "phone",
         ]
 
-
         transformed_df = combined_df[columns]
 
-        # Null values are acceptable in the schema, so we don't necessarily need this functionality. 
+        # Null values are acceptable in the schema, so we don't necessarily need this functionality.
         # Commented out, but can be reinstated if needed.
-        
+
         # for column in transformed_df.columns:
         #     if transformed_df[column].isnull().any():
         #         if column == "counterparty_id":
         #             transformed_df = transformed_df.dropna(subset=[column])
         #         else:
         #             transformed_df.fillna({column: "Unknown"}, inplace=True)
-
 
         transformed_df.columns = [
             "counterparty_id",
@@ -91,7 +89,7 @@ def transform_counterparty(df_dict: dict):
             "counterparty_legal_city",
             "counterparty_legal_postal_code",
             "counterparty_legal_country",
-            "counterparty_legal_phone_number"
+            "counterparty_legal_phone_number",
         ]
 
         logger.info("dim_counterparty transformation completed successfully")
