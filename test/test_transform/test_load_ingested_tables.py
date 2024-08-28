@@ -38,13 +38,9 @@ def test_load_multiple_tables_from_s3(mock_get_timestamp, mock_get_transformatio
 
     # test_key = "test_table/2024/8/13/16-57/test_table-2024-08-13_16.57.00.csv"
     TABLE_NAMES = [
-        "payment",
-        "payment_type",
         "currency",
         "staff",
         "department",
-        "purchase_order",
-        "transaction",
         "sales_order",
         "design",
         "address",

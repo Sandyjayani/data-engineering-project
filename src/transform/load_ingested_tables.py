@@ -70,10 +70,7 @@ def load_ingested_tables():
                     )
 
                     obj = s3.get_object(Bucket=BUCKET_NAME, Key=s3_key)["Body"]
-                    obj = s3.get_object(Bucket=BUCKET_NAME, Key=s3_key)["Body"]
 
-                    df = pd.read_csv(StringIO(obj.read().decode("utf-8")))
-                    data_dicts[table] = df
                     df = pd.read_csv(StringIO(obj.read().decode("utf-8")))
                     data_dicts[table] = df
 
