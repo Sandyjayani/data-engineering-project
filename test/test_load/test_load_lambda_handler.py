@@ -2,17 +2,13 @@ import pytest
 from unittest.mock import patch, MagicMock
 from src.load.load_lambda_handler import lambda_handler
 from pg8000.native import Connection, Error, DatabaseError
-from pg8000.native import Connection, Error, DatabaseError
 import pandas as pd
 
 
 @pytest.mark.it("Should return correct dictionary")
-@pytest.mark.it("Should return correct dictionary")
 @patch("src.load.load_lambda_handler.read_parquet_from_s3")
 @patch("src.load.load_lambda_handler.insert_dim")
-@patch("src.load.load_lambda_handler.insert_dim")
 def test_lambda_handler_success(
-    mock_insert_dim, mock_read_parquet
     mock_insert_dim, mock_read_parquet
 ):
     # Arrange
