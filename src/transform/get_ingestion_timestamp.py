@@ -5,7 +5,7 @@ from io import StringIO
 from botocore.exceptions import ClientError
 import os
 
-if os.environ.get("AWS_EXECUTION_ENV") is not None:
+if os.environ.get("AWS_EXECUTION_ENV"):
     from setup_logger import setup_logger
 else:
     from src.transform.setup_logger import setup_logger
@@ -24,7 +24,7 @@ def get_ingestion_timestamp(table_name: str):
 
     return value:
         - timestamp: str (e.g., '2024-08-14_14-09.01')"""
-    
+
     bucket_name = "smith-morra-ingestion-bucket"
     key = f"{table_name}/timestamps.csv"
     s3_client = boto3.client("s3")
@@ -63,15 +63,3 @@ def get_ingestion_timestamp(table_name: str):
             extra={"table_name": table_name, "bucket_name": bucket_name},
         )
         raise e
-
-
-# TypeError: catching classes that do not inherit from BaseException is not allowed
-# except s3_client.exceptions.NoSuchKey:
-#     logger.error(f"No timestamps file found for table '{table_name}'. This might be the first run.",
-#                 extra={'table_name': table_name, 'bucket_name': bucket_name})
-#     return '0001-01-01_01-01'
-
-# except ClientError as e:
-#     logger.error(f"An AWS related error occurred: {e}",
-#                 extra={'table_name': table_name, 'bucket_name': bucket_name})
-#     raise e

@@ -11,15 +11,30 @@ else:
     from src.load.get_db_connection import create_connection
 
 
-
 def insert_dim(df: pd.DataFrame, table_name: str):
+    """
+    Upsert dimensional data into a specified database table.
 
+    Handles insertion or update of data from a DataFrame into various dimensional
+    tables. Supports custom handling for dim_date, dim_location, dim_staff, and
+    dim_counterparty tables, with a generic approach for others.
+
+    Args:
+        df (pd.DataFrame): Data to be upserted.
+        table_name (str): Target database table name.
+
+    Raises:
+        Exception: On database insertion errors.
+
+    Logs:
+        Info: Successful insertion count.
+        Critical: Any errors encountered.
+    """
     logger = setup_logger("load_logger")
     try:
         conn = create_connection("load")
 
         # Convert timestamp to date string
-        # if 'date_id' in df.columns:
         if table_name == "dim_date":
             df["date_id"] = df["date_id"].dt.strftime("%Y-%m-%d")
 
@@ -50,7 +65,7 @@ def insert_dim(df: pd.DataFrame, table_name: str):
                     phone=row.phone,
                 )
                 row_count += 1
-        
+
         elif table_name == "dim_staff":
             for _, row in df.iterrows():
                 update_query = ", ".join(
@@ -58,7 +73,7 @@ def insert_dim(df: pd.DataFrame, table_name: str):
                         f"{identifier(col)} = EXCLUDED.{identifier(col)}"
                         for col in column_lst
                     ]
-                )            
+                )
                 insert_query = f"INSERT INTO {identifier(table_name)} ({columns}) VALUES (:staff_id, :first_name, :last_name, :department_name, :location, :email_address) ON CONFLICT ({identifier(primary_key)}) DO UPDATE SET {update_query}"
                 conn.run(
                     insert_query,
@@ -67,10 +82,10 @@ def insert_dim(df: pd.DataFrame, table_name: str):
                     last_name=row.last_name,
                     department_name=row.department_name,
                     location=row.location,
-                    email_address=row.email_address
+                    email_address=row.email_address,
                 )
                 row_count += 1
-        
+
         elif table_name == "dim_counterparty":
             for _, row in df.iterrows():
                 update_query = ", ".join(
@@ -105,9 +120,6 @@ def insert_dim(df: pd.DataFrame, table_name: str):
                 conn.run(insert_query)
                 row_count += 1
 
-
-
-
         logger.info(f"{row_count} rows inserted into table {table_name} successfully")
 
     except Exception as e:
@@ -117,4 +129,3 @@ def insert_dim(df: pd.DataFrame, table_name: str):
     finally:
         if conn:
             conn.close
-
